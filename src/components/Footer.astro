@@ -1,0 +1,21 @@
+---
+const today = new Date();
+---
+
+<footer>
+	&copy; {today.getFullYear()} Taraka Vishnumolakala
+</footer>
+
+<style>
+	footer {
+		padding: 2em 1em;
+		text-align: center;
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		border-top: 1px solid var(--border);
+		font-family: var(--font-mono);
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+</style>

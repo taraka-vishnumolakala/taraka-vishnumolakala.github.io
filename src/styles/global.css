@@ -1,6 +1,6 @@
 :root {
-	--font-sans: "Atkinson Hyperlegible Next", system-ui, sans-serif;
-	--font-mono: "Atkinson Hyperlegible Mono", "Fira Code", ui-monospace, monospace;
+	--font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Geist", sans-serif;
+	--font-mono: ui-monospace, "Geist Mono", "Fira Code", monospace;
 
 	/* Light theme (default) */
 	--bg: #f9f9f7;

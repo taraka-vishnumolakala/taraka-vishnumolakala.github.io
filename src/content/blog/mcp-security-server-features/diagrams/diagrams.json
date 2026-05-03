@@ -28,6 +28,33 @@
       "history": [
         "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': four trust zones (user/application/local-subprocess/remote-service) with labeled boundary crossings — green for trusted, amber for no-auth-shared-privileges, red for OAuth-protected"
       ]
+    },
+    "tool-poisoning-flow.png": {
+      "diagramId": "LdyasqWtdflzB_y3Rv4W",
+      "diagramName": "tool-poisoning-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #1: malicious server returns tool description with hidden directives; LLM reads full description, user sees only the tool name; LLM exfiltrates SSH key while showing user the expected result"
+      ]
+    },
+    "rug-pull-timeline.png": {
+      "diagramId": "4YWB2edvlgRzzRwyNFVZ",
+      "diagramName": "rug-pull-timeline",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #2: rug-pull lifecycle Day 0 published / Day 1 installed / Day 14 silent update / Day 30 silent exfiltration; color progression green→blue→amber→red; references CVE-2025-54136 (MCPoison)"
+      ]
+    },
+    "cross-server-injection-flow.png": {
+      "diagramId": "SbmvK8ovPIR3QPN_6aSW",
+      "diagramName": "cross-server-injection-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #4: malicious Server A's tool result contains hidden instruction that steers LLM's call to trusted Server B (silent BCC to attacker); compromise is in LLM context, never in Server B's logs"
+      ]
     }
   }
 }

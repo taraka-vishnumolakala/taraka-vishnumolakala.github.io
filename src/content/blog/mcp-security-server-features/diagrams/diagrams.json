@@ -1,0 +1,33 @@
+{
+  "fileId": "RbLQ1xlyed7OUST5Fu74",
+  "eraserTitle": "blog/mcp-security-server-features",
+  "diagrams": {
+    "architecture.png": {
+      "diagramId": "vHTm6NNbjaUCZYD_WbFS1",
+      "diagramName": "architecture",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': AI Application Host with LLM + 3 MCP clients connecting to local stdio, remote HTTPS, and internal HTTPS MCP servers; OAuth 2.1 to AS"
+      ]
+    },
+    "primitives-overview.png": {
+      "diagramId": "-OxJTII-yd8IWmP9eBUT",
+      "diagramName": "primitives-overview",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': three primitive types (Tools amber/model-controlled, Resources grey/app-controlled, Prompts blue/user-controlled)"
+      ]
+    },
+    "trust-boundaries.png": {
+      "diagramId": "TkcQQ-gRHM6bBkmSCDVV",
+      "diagramName": "trust-boundaries",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': four trust zones (user/application/local-subprocess/remote-service) with labeled boundary crossings — green for trusted, amber for no-auth-shared-privileges, red for OAuth-protected"
+      ]
+    }
+  }
+}

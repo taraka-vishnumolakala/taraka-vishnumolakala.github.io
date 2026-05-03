@@ -1,14 +1,35 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+type TocSection = {
+	slug: string;
+	text: string;
+	children: { slug: string; text: string }[];
+};
+
+const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+
+const tocSections: TocSection[] = [];
+let currentSection: TocSection | null = null;
+for (const h of headings) {
+	if (h.depth === 2) {
+		currentSection = { slug: h.slug, text: h.text, children: [] };
+		tocSections.push(currentSection);
+	} else if (h.depth === 3 && currentSection) {
+		currentSection.children.push({ slug: h.slug, text: h.text });
+	}
+}
+const hasToc = tocSections.length > 0;
 ---
 
 <html lang="en">
@@ -16,12 +37,12 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+				max-width: 1480px;
 			}
+
 			.hero-image {
 				width: 100%;
+				margin-bottom: 2rem;
 			}
 			.hero-image img {
 				display: block;
@@ -29,17 +50,118 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
 			}
+
+			.layout {
+				display: grid;
+				grid-template-columns: 280px minmax(0, 1100px);
+				gap: 3rem;
+				align-items: start;
+				justify-content: center;
+			}
+
+			.layout.no-toc {
+				grid-template-columns: minmax(0, 1100px);
+				justify-content: center;
+			}
+
+			.toc {
+				position: sticky;
+				top: 1.5rem;
+				font-size: 0.85rem;
+				line-height: 1.5;
+				border-left: 1px solid var(--border-soft);
+			}
+
+			.toc-label {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--text-faint);
+				margin: 0 0 0.75rem 1rem;
+			}
+
+			.toc-details > summary {
+				display: none;
+			}
+
+			.toc ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+
+			.toc-list > li {
+				margin: 0;
+			}
+
+			.toc a {
+				display: block;
+				padding: 0.4rem 1rem;
+				color: var(--text-muted);
+				text-decoration: none;
+				border-left: 2px solid transparent;
+				margin-left: -1px;
+				transition:
+					color 0.15s ease,
+					border-color 0.15s ease;
+				line-height: 1.45;
+			}
+
+			.toc a:hover {
+				color: var(--heading);
+				text-decoration: none;
+			}
+
+			.toc a.active {
+				color: var(--accent);
+				border-left-color: var(--accent);
+				font-weight: 500;
+			}
+
+			.toc-children {
+				max-height: 0;
+				overflow: hidden;
+				opacity: 0;
+				transition:
+					max-height 0.3s ease,
+					opacity 0.2s ease;
+			}
+
+			.toc-section.expanded > .toc-children {
+				max-height: 2000px;
+				opacity: 1;
+			}
+
+			.toc-children a {
+				padding-left: 2rem;
+				font-size: 0.8rem;
+				color: var(--text-faint);
+			}
+
+			.toc-children a:hover {
+				color: var(--heading);
+			}
+
+			.toc-children a.active {
+				color: var(--accent);
+			}
+
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
+				min-width: 0;
 				color: var(--text);
 			}
+
+			.prose :global(h2),
+			.prose :global(h3),
+			.prose :global(h4) {
+				scroll-margin-top: 1.5rem;
+			}
+
 			.title {
 				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
+				padding: 0 0 1em;
+				text-align: left;
 				line-height: 1;
 			}
 			.title h1 {
@@ -52,6 +174,65 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+
+			@media (max-width: 960px) {
+				.layout {
+					grid-template-columns: 1fr;
+					gap: 0;
+				}
+
+				.toc {
+					position: relative;
+					top: 0;
+					margin-bottom: 2rem;
+					padding: 1rem 0 1rem 1rem;
+					border-left: 3px solid var(--accent-soft);
+					background: var(--bg-card);
+					border-radius: 0 6px 6px 0;
+				}
+
+				.toc-details > summary {
+					cursor: pointer;
+					list-style: none;
+					font-family: var(--font-mono);
+					font-size: 0.78rem;
+					letter-spacing: 0.08em;
+					text-transform: uppercase;
+					color: var(--text-muted);
+					padding: 0.25rem 0;
+					display: flex;
+					align-items: center;
+					gap: 0.5rem;
+				}
+
+				.toc-details > summary::-webkit-details-marker {
+					display: none;
+				}
+
+				.toc-details > summary::before {
+					content: '▸';
+					transition: transform 0.15s ease;
+					color: var(--text-faint);
+				}
+
+				.toc-details[open] > summary::before {
+					transform: rotate(90deg);
+				}
+
+				.toc-label {
+					display: none;
+				}
+
+				.toc-list {
+					margin-top: 0.5rem;
+				}
+
+				/* On mobile, expand all sections so the entire TOC is browseable */
+				.toc-children {
+					max-height: 2000px;
+					opacity: 1;
+				}
+			}
 		</style>
 	</head>
 
@@ -62,25 +243,118 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
 				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+				<div class={`layout ${hasToc ? '' : 'no-toc'}`}>
+					{hasToc && (
+						<aside class="toc" aria-label="Table of contents">
+							<details class="toc-details" open>
+								<summary>On this page</summary>
+								<p class="toc-label">On this page</p>
+								<ul class="toc-list">
+									{tocSections.map((section) => (
+										<li class="toc-section" data-toc-section={section.slug}>
+											<a
+												href={`#${section.slug}`}
+												data-toc-link={section.slug}
+											>
+												{section.text}
+											</a>
+											{section.children.length > 0 && (
+												<ul class="toc-children">
+													{section.children.map((child) => (
+														<li>
+															<a
+																href={`#${child.slug}`}
+																data-toc-link={child.slug}
+															>
+																{child.text}
+															</a>
+														</li>
+													))}
+												</ul>
+											)}
+										</li>
+									))}
+								</ul>
+							</details>
+						</aside>
+					)}
+					<div class="prose">
+						<div class="title">
+							<div class="date">
+								<FormattedDate date={pubDate} />
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											Last updated on <FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+							<h1>{title}</h1>
+							<hr />
 						</div>
-						<h1>{title}</h1>
-						<hr />
+						<slot />
 					</div>
-					<slot />
 				</div>
 			</article>
 		</main>
 		<Footer />
+
+		<script>
+			const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+			if (links.length > 0) {
+				const linkBySlug = new Map<string, HTMLAnchorElement>();
+				const sectionBySlug = new Map<string, HTMLElement>();
+				const allSections = Array.from(
+					document.querySelectorAll<HTMLElement>('[data-toc-section]'),
+				);
+
+				links.forEach((link) => {
+					const slug = link.dataset.tocLink;
+					if (!slug) return;
+					linkBySlug.set(slug, link);
+					const section = link.closest<HTMLElement>('[data-toc-section]');
+					if (section) sectionBySlug.set(slug, section);
+				});
+
+				const headings = Array.from(linkBySlug.keys())
+					.map((slug) => document.getElementById(slug))
+					.filter((el): el is HTMLElement => el !== null);
+
+				let activeSlug: string | null = null;
+				const setActive = (slug: string | null) => {
+					if (slug === activeSlug) return;
+					if (activeSlug) linkBySlug.get(activeSlug)?.classList.remove('active');
+					if (slug) linkBySlug.get(slug)?.classList.add('active');
+					activeSlug = slug;
+
+					const activeSection = slug ? sectionBySlug.get(slug) : null;
+					allSections.forEach((s) => {
+						s.classList.toggle('expanded', s === activeSection);
+					});
+				};
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						const visible = entries
+							.filter((e) => e.isIntersecting)
+							.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+						if (visible.length > 0) {
+							setActive(visible[0].target.id);
+							return;
+						}
+
+						const above = headings.filter((h) => h.getBoundingClientRect().top < 100);
+						if (above.length > 0) {
+							setActive(above[above.length - 1].id);
+						}
+					},
+					{ rootMargin: '-80px 0px -70% 0px', threshold: 0 },
+				);
+
+				headings.forEach((h) => observer.observe(h));
+			}
+		</script>
 	</body>
 </html>

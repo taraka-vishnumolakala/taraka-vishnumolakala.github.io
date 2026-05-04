@@ -49,7 +49,7 @@ You can't reason about the threat model without a clear picture of what MCP actu
 
 MCP is a client-server protocol. A **client** runs inside an AI application (a chat app, an IDE, a custom agent). A **server** runs as a separate process, either as a subprocess of the client (stdio transport) or as a remote HTTP service (Streamable HTTP transport). One client typically connects to multiple servers simultaneously, and the LLM driving the client sees the union of capabilities across all of them.
 
-![MCP architecture: an AI application host with an LLM and three MCP clients, each connecting to a different MCP server (local stdio subprocess, remote HTTP, internal HTTP), with the two HTTP servers using OAuth 2.1 against an authorization server](./diagrams/architecture.png)
+![MCP architecture: an AI application host (LLM and three MCP clients) connecting to a local stdio MCP server (no auth, process boundary), a public remote MCP server (OAuth 2.1, third-party), and an internal MCP server inside a Corporate Network boundary (auth via API key, OAuth 2.1, or mTLS); each remote server connects to its own backend or third-party API](./diagrams/architecture.png)
 
 Two architectural facts matter for security:
 
@@ -74,7 +74,7 @@ The three primitives differ in **who controls invocation**: tools are model-cont
 
 A useful mental model is to draw the trust boundaries explicitly. Every interaction between trust zones is a place where a check must happen.
 
-![MCP trust boundaries: four zones (User in green, Application with the LLM agent in blue, Local subprocess holding the stdio MCP server in amber, Remote service holding HTTP MCP servers and upstream APIs in red), with the boundary crossings between them labeled by their auth model](./diagrams/trust-boundaries.png)
+![MCP trust boundaries: five zones each enclosed in a red boundary box (User Trust Zone, Application Trust Zone, Local Subprocess Zone, Remote Service Zone, Upstream API Zone), with arrows colored by auth model — green for trusted user input, amber for the no-auth process boundary to stdio servers, red for OAuth/API-key/mTLS to HTTPS servers, and dashed amber arrows showing retrieved data flowing back into the LLM's reasoning context as a trust boundary](./diagrams/trust-boundaries.png)
 
 The boundaries that matter:
 

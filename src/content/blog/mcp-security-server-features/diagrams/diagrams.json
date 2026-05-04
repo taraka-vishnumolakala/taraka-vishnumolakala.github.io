@@ -6,9 +6,10 @@
       "diagramId": "vHTm6NNbjaUCZYD_WbFS1",
       "diagramName": "architecture",
       "diagramType": "flowchart-diagram",
-      "lastUpdated": "2026-05-03",
+      "lastUpdated": "2026-05-04",
       "history": [
-        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': AI Application Host with LLM + 3 MCP clients connecting to local stdio, remote HTTPS, and internal HTTPS MCP servers; OAuth 2.1 to AS"
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': AI Application Host with LLM + 3 MCP clients connecting to local stdio, remote HTTPS, and internal HTTPS MCP servers; OAuth 2.1 to AS",
+        "2026-05-04 reflect production reality: distinct auth labels per scenario (stdio = no auth, public remote = OAuth 2.1, internal = API key OR OAuth 2.1 OR mTLS); added Corporate Network boundary around Internal MCP Server + Internal Backend Database; added Third-party API node downstream of public remote server"
       ]
     },
     "primitives-overview.png": {
@@ -24,9 +25,10 @@
       "diagramId": "TkcQQ-gRHM6bBkmSCDVV",
       "diagramName": "trust-boundaries",
       "diagramType": "flowchart-diagram",
-      "lastUpdated": "2026-05-03",
+      "lastUpdated": "2026-05-04",
       "history": [
-        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': four trust zones (user/application/local-subprocess/remote-service) with labeled boundary crossings — green for trusted, amber for no-auth-shared-privileges, red for OAuth-protected"
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': four trust zones (user/application/local-subprocess/remote-service) with labeled boundary crossings — green for trusted, amber for no-auth-shared-privileges, red for OAuth-protected",
+        "2026-05-04 redrawn for clarity: every trust zone now has a RED boundary box (User, Application, Local Subprocess, Remote Service, Upstream API). Node color inside each zone signals trust level; arrow color signals auth model at the crossing; dashed amber arrows highlight retrieved-data-into-LLM-context as the most-missed trust boundary"
       ]
     },
     "tool-poisoning-flow.png": {

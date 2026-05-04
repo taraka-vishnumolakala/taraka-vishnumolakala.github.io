@@ -316,7 +316,41 @@ Same two boundaries as Tools. Two new attack surfaces sit on top of them. A pois
 
 ## Completion: argument autocomplete and the quietest data-leak channel
 
-<!-- Six-step lens. completion/complete, ref/prompt and ref/resource, stateful context.arguments. Abuser angle: completion endpoints leak enumerable identifiers without surfacing in tool-call audit logs. Optional diagram: completion-attack-flow.png. -->
+### What it is
+
+Servers can offer argument autocompletion for prompts and resource templates. The user starts typing an argument, the client asks the server for suggestions, and the server returns a list. Think IDE intellisense, scoped to MCP arguments.
+
+### How it's intended to work
+
+The `completion/complete` method takes a `ref` (`ref/prompt` with a prompt name or `ref/resource` with a URI template), an `argument` of `{name, value}` where `value` is whatever the user has typed so far, and an optional `context.arguments` map carrying values the user has already filled in for *other* arguments in the same form. The server returns `completion: {values, total?, hasMore?}`. Servers declare `completions: {}` in their capabilities.
+
+### Trust boundary crossed
+
+Two crossings, both unusual. First, **server → client UI**: completion suggestions render directly in the user's interface, often without any model in the loop. Second, **client → server**, where the user's partial input plus the stateful `context.arguments` map flow to the server on every keystroke. That second one is what makes Completion the quietest data-leak channel in the spec.
+
+### Abuser stories
+
+**1. Identifier enumeration.** *As a malicious server, I want my completion endpoint to reveal the full list of valid usernames, project IDs, file paths, or tenant IDs so I can enumerate the target environment, all without a single `tools/call` appearing in the audit log.* Completions are usually treated as UI fluff. They're a query API.
+
+**2. Cross-tenant enumeration.** *As a malicious tenant on a multi-user server, I want the completion endpoint to return identifiers scoped to other tenants because the server keys results off the connection rather than the validated identity.* Same authorization gap as Resources, with even less audit.
+
+**3. Context leakage via stateful arguments.** *As a malicious server, I want the user's partially-typed values from other fields, surfaced through `context.arguments`, so I can fingerprint sensitive substrings the user never intended to send.* A user typing into a "password" field that the form schema mistakenly named something else (or that the server lies about) sends fragments of every keystroke.
+
+**4. Display-vs-value mismatch.** *As a malicious server, I want my completion `values` to render one label in the UI and carry a different actual value, so the user clicks "production" and selects "production-evil".* Homoglyphs, zero-width characters, and invisible suffixes all live here.
+
+### Detection signals
+
+- **Per-call audit.** Log every `completion/complete` with `ref`, the partial `value`, and the count and hash of returned suggestions. Treat completion as a request type, not as silent UI traffic.
+- **Per-caller divergence.** Same partial value, different responses to different validated identities, when the underlying data shouldn't differ. That's authorization-by-connection, not by user.
+- **Display-value mismatch.** Reject or flag suggestions where the rendered label and the inserted value do not match byte-for-byte (after Unicode normalization).
+- **Enumeration patterns.** Sliding-window analysis on partial values from the same caller. Sequential alphabet walks, prefix exhaustion, and rapid wildcard expansion are markers.
+
+### Mitigations
+
+- **Spec.** Completion is described as a utility. Authorization, rate limits, and privacy properties are not normative. Treat the gap as load-bearing.
+- **Server.** Authorize completion against the validated identity, not the connection. Refuse to include other tenants' identifiers in candidate lists. Avoid `context.arguments` unless the form genuinely requires it. Don't log partial values.
+- **Client.** Render the `value`, or the `label` and the `value` together when they differ. Cap suggestions per second per server. Treat the request as audit-worthy.
+- **Gateway.** Rate-limit `completion/complete` per caller. DLP-scan both the partial submissions and the suggestion payloads. Alert on display-value mismatch and on enumeration patterns.
 
 ## Logging as a server-side primitive
 

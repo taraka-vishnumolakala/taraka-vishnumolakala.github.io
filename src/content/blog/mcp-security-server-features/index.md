@@ -49,7 +49,7 @@ You can't reason about the threat model without a clear picture of what MCP actu
 
 MCP is a client-server protocol. A **client** runs inside an AI application (a chat app, an IDE, a custom agent). A **server** runs as a separate process, either as a subprocess of the client (stdio transport) or as a remote HTTP service (Streamable HTTP transport). One client typically connects to multiple servers simultaneously, and the LLM driving the client sees the union of capabilities across all of them.
 
-![MCP architecture: an AI application host (LLM and three MCP clients) connecting to a local stdio MCP server (no auth, process boundary), a public remote MCP server (OAuth 2.1, third-party), and an internal MCP server inside a Corporate Network boundary (auth via API key, OAuth 2.1, or mTLS); each remote server connects to its own backend or third-party API](./diagrams/architecture.png)
+![MCP architecture (left to right): a User interacts with the MCP Client inside the AI Application Host (trusted green zone on the user's machine). The Host calls a Cloud LLM Provider over HTTPS as a separate external service. The MCP Client maintains three concurrent connections — a local stdio subprocess (no auth, process boundary), a public remote MCP server using OAuth 2.1 (third-party, with its own Authorization Server and downstream API), and an internal enterprise MCP server inside a Corporate Network boundary using API key or OAuth 2.1 or mTLS](./diagrams/architecture.png)
 
 Two architectural facts matter for security:
 
@@ -74,7 +74,7 @@ The three primitives differ in **who controls invocation**: tools are model-cont
 
 A useful mental model is to draw the trust boundaries explicitly. Every interaction between trust zones is a place where a check must happen.
 
-![MCP trust boundaries: five zones each enclosed in a red boundary box (User Trust Zone, Application Trust Zone, Local Subprocess Zone, Remote Service Zone, Upstream API Zone), with arrows colored by auth model — green for trusted user input, amber for the no-auth process boundary to stdio servers, red for OAuth/API-key/mTLS to HTTPS servers, and dashed amber arrows showing retrieved data flowing back into the LLM's reasoning context as a trust boundary](./diagrams/trust-boundaries.png)
+![MCP trust boundaries: six zones colored by trust level. User Trust Zone and Application Trust Zone (containing the AI Application Host and MCP Client) are green for trusted. Local Subprocess Zone is amber for shared-privilege warning. Remote Service Zone is red for untrusted third-party. Cloud LLM Provider Zone and Upstream API Zone are grey. Arrows are colored by auth model — green for trusted user input, amber for the no-auth process boundary to stdio servers, red for OAuth or API key or mTLS to HTTPS servers, grey for the LLM API call. Reverse arrows back into the MCP Client mark where retrieved data enters the LLM's reasoning context](./diagrams/trust-boundaries.png)
 
 The boundaries that matter:
 

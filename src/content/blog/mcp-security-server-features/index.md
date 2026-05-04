@@ -1,6 +1,6 @@
 ---
 title: "Threat-Modeling MCP's Server Features"
-description: "Part 1 of the MCP Security series. A feature-by-feature threat model of Tools, Resources, Prompts, and the server-side utilities the 2025-11-25 spec expanded."
+description: "Part 1 of the MCP Security series. A feature-by-feature threat model of Tools, Resources, Prompts, and the server-side utilities MCP added in 2025-11-25."
 pubDate: 2026-05-03
 tags:
   - mcp
@@ -11,7 +11,7 @@ tags:
 
 A field guide to running, building, and deploying Model Context Protocol servers without getting burned. Written for security engineers, platform engineers, and anyone now responsible for AI agents at their org.
 
-This is **Part 1 of a four-post series**. Each post applies the same threat-modeling lens to one cluster of MCP features. Part 1 covers what an MCP server actually exposes: Tools, Resources, Prompts, and the server-side utilities the [2025-11-25 spec](https://modelcontextprotocol.io/specification/2025-11-25) just expanded. The post walks the lens through each one so you can run it yourself on whatever the spec adds next.
+This is **Part 1 of a four-post series**. Each post applies the same threat-modeling lens to one cluster of MCP features. Part 1 covers what an MCP server actually exposes: Tools, Resources, Prompts, and the server-side utilities [MCP added in 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25). The post walks the lens through each one so you can run it yourself on whatever MCP adds next.
 
 > **MCP Security series**, Part 1 of 4
 >
@@ -24,18 +24,18 @@ This is **Part 1 of a four-post series**. Each post applies the same threat-mode
 
 If you're using or building MCP servers and you want to reason about what could go wrong, start here. There's no prerequisite MCP background. The post starts with what a server is, what it exposes, and where the trust boundaries land. By the end you'll have applied the same six-step lens to seven distinct server-side features and seen how attacks compose across them.
 
-If you've already read about Tools and Resources elsewhere, the new material is in the second half: tool output schema and the dual error model, the completion utility (one of the quietest data-leak channels in MCP), the server-side logging primitive, and pagination as a cross-tenant attack surface. All of that is in the 2025-11-25 spec. Very little of it is in the threat-modeling literature yet.
+If you've already read about Tools and Resources elsewhere, the new material is in the second half: tool output schema and the dual error model, the completion utility (one of the quietest data-leak channels in MCP), the server-side logging primitive, and pagination as a cross-tenant attack surface. All of that is new in MCP 2025-11-25. Very little of it is in the threat-modeling literature yet.
 
 ## The threat-modeling lens
 
-For each feature in this post, and every feature in Parts 2, 3, and 4, we walk through the same six steps in the same order. By the third or fourth feature you'll be running the lens yourself. By the end of Part 4 you can apply it to whatever the spec adds next.
+For each feature in this post, and every feature in Parts 2, 3, and 4, we walk through the same six steps in the same order. By the third or fourth feature you'll be running the lens yourself. By the end of Part 4 you can apply it to whatever MCP adds next.
 
 1. **What it is.** A one-paragraph definition. No threat content. Just enough to be sure we're talking about the same feature.
 2. **How it's intended to work.** Protocol mechanics. JSON-RPC method names, capability declarations, the normal flow. Where useful, a diagram.
 3. **Trust boundary crossed.** Which of MCP's trust boundaries the feature crosses. We map those out in the next section.
 4. **Abuser stories.** Stated as: *"As a malicious **role**, I want to **abuse the feature** so I can **consequence**."* Roles include malicious server, compromised package, malicious tenant, malicious user, network attacker, compromised client, compromised model output. Each abuser story is the inverse of a user story and is what the rest of the section defends against.
 5. **Detection signals.** What the feature emits when abused, or fails to emit. Specific log fields, alert conditions, gateway-side reconciliation patterns. Every signal we name has a corresponding row in Part 4's reference table.
-6. **Mitigations.** Layered: spec-level (what the spec MUSTs and SHOULDs), server-side, client-side, gateway-level. Where a mitigation only works at one layer, that's called out. Where the spec's rule is advisory and not actually enforced by the SDK, the gap is named.
+6. **Mitigations.** Layered: protocol-level (what MCP itself MUSTs and SHOULDs), server-side, client-side, gateway-level. Where a mitigation only works at one layer, that's called out. Where MCP's rule is advisory and not actually enforced by the SDK, the gap is named.
 
 Why this lens and not STRIDE or attack trees or the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/)? STRIDE is comprehensive but feels academic. "Tampering" doesn't land as concretely as *"as a malicious server, I want to drain your API budget."* Attack trees are useful for one feature in isolation but compose badly across a series. The OWASP MCP Top 10 is a list of known risks, not a method for finding new ones. Abuser stories plus trust boundaries plus layered detection and mitigation is concrete enough to read end to end and structured enough to apply.
 
@@ -163,7 +163,7 @@ The compromise is in the LLM's instructions, not in either server's behavior. Se
 
 ### Mitigations
 
-- **Spec.** Tool `annotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) are *advisory*. Clients SHOULD respect them. The spec doesn't enforce. Treat the gap as load-bearing. If your client doesn't honor `destructiveHint: true`, the spec doesn't save you.
+- **Protocol.** Tool `annotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) are *advisory*. Clients SHOULD respect them. MCP doesn't enforce. Treat the gap as load-bearing. If your client doesn't honor `destructiveHint: true`, the protocol doesn't save you.
 - **Server (the legitimate kind).** Keep descriptions free of instruction-like prose ("then do X", "always Y", "before responding"). Anything imperative belongs to the *user*, not your tool description. Pin a content-hashed manifest of every description you ship. Sign it if your distribution channel supports signing.
 - **Client.** Display the *full* tool description before first approval, not just the name and one-line summary. Require human confirmation for any consequential call (filesystem, network, credentials), even if the user pre-approved the server. Alert on any change to a previously-approved description and treat the change as a re-approval event. Where possible, isolate trust between connected servers. Don't let Server A's result steer a call to Server B without re-checking.
 - **Gateway.** Maintain an allowlist of approved servers. Log every `tools/list` and `tools/call` with the full description hash and full argument set. Alert on description-hash mismatch, on cross-server data-flow patterns, and on tool calls without a corresponding user-visible turn.
@@ -203,7 +203,7 @@ This is qualitatively different from tool poisoning. Tool poisoning lives in the
 
 **3. Subscription push at a sensitive moment.** *As a malicious server, I want to stay quiet for weeks, then push a poisoned update via `notifications/resources/updated` exactly when the agent is mid-task.* The agent re-reads the resource on subscription update. Subscription is a channel for the server to inject context whenever it wants, which is a substantially weaker guarantee than the user thinks they're approving when they "subscribe to file changes."
 
-**4. Annotation-driven steering.** *As a malicious server, I want to mark my poisoned resource with `audience: ["assistant"]` and `priority: 1.0` so the client preferentially feeds it into the model when context is tight.* Annotations are advisory. The spec doesn't enforce that a server's self-declared priority is honest. A client that uses `priority` as an automatic ranking signal hands the server a steering knob.
+**4. Annotation-driven steering.** *As a malicious server, I want to mark my poisoned resource with `audience: ["assistant"]` and `priority: 1.0` so the client preferentially feeds it into the model when context is tight.* Annotations are advisory. MCP doesn't enforce that a server's self-declared priority is honest. A client that uses `priority` as an automatic ranking signal hands the server a steering knob.
 
 **5. Cross-tenant resource leakage.** *As a malicious tenant on a multi-user server, I want resources scoped to another tenant to surface in my session because the server keys its resource list off the connection rather than the validated identity.* Resources have to be authorized per user the same way tool calls are. A server that returns the same `resources/list` regardless of caller is leaking by design.
 
@@ -217,7 +217,7 @@ This is qualitatively different from tool poisoning. Tool poisoning lives in the
 
 ### Mitigations
 
-- **Spec.** Annotations are advisory in the same way tool annotations are advisory. Clients SHOULD use them, the spec doesn't enforce. Don't let `priority: 1.0` outrank user intent.
+- **Protocol.** Annotations are advisory in the same way tool annotations are advisory. Clients SHOULD use them, MCP doesn't enforce. Don't let `priority: 1.0` outrank user intent.
 - **Server.** Validate URI patterns against an allowlist before expansion. Reject path traversal explicitly. Scope resources to the validated identity, not the connection. Don't trust template arguments. Don't echo arguments back into the URI without sanitization.
 - **Client.** Treat resource content as untrusted, the same way you'd treat a web page. Show the user what's about to be attached to context. Don't auto-merge subscription updates while the agent is mid-action without re-confirming. If a resource carries instruction-like prose, surface it.
 - **Gateway.** DLP-scan resource content before it reaches the model. Pin a URI-to-content-hash record per session and alert on drift. Treat `notifications/resources/updated` as an audit event in its own right, not a quiet refresh.
@@ -265,7 +265,7 @@ The cost asymmetry is brutal. A single malicious template, invoked once, can dri
 
 ### Mitigations
 
-- **Spec.** The spec frames Prompts as user-controlled. That's a UX claim about who invokes them. It is not a content claim. The content is the server's.
+- **Protocol.** MCP frames Prompts as user-controlled. That's a UX claim about who invokes them. It is not a content claim. The content is the server's.
 - **Server.** Keep templates short and descriptive. No "then do X", no "always Y", no `system`-role messages that override client-side guardrails.
 - **Client.** Show the full expanded message list before execution. Require per-tool confirmation for any tool calls a prompt would trigger, even if the user already invoked the prompt. Don't auto-execute multi-step expansions.
 - **Gateway.** Pin prompt-expansion hashes per server-and-name pair. Alert on hash drift, on collisions, and on expansions whose role field is `system` from a server that didn't previously emit one.
@@ -274,7 +274,7 @@ The cost asymmetry is brutal. A single malicious template, invoked once, can dri
 
 ### What it is
 
-Two related additions in the 2025-11-25 spec. First, tools can now declare an `outputSchema` (JSON Schema) describing the shape of their results, and return a `structuredContent` field that the client validates against that schema. Second, the spec formalizes that errors flow through *two* different channels depending on what failed.
+Two related additions MCP made in 2025-11-25. First, tools can now declare an `outputSchema` (JSON Schema) describing the shape of their results, and return a `structuredContent` field that the client validates against that schema. Second, errors now formally flow through *two* different channels depending on what failed.
 
 ### How it's intended to work
 
@@ -311,7 +311,7 @@ Same two boundaries as Tools. Two new attack surfaces sit on top of them. A pois
 
 ### Mitigations
 
-- **Spec.** The two-channel error model is described in the spec. Which channel to use for what is described informally. Don't expect strong guarantees about which mode a server picks.
+- **Protocol.** MCP defines the two-channel error model. Which channel to use for what is described informally. Don't expect strong guarantees about which mode a server picks.
 - **Server.** Validate your own `structuredContent` against your declared `outputSchema` before sending. Keep `content` and `structuredContent` semantically equivalent. Reserve `isError: true` for genuine, user-actionable errors.
 - **Client.** Show the user the same fields you feed the LLM. Don't auto-retry on `isError: true`. Treat the error text as untrusted prose, not as an instruction.
 - **Gateway.** Validate `structuredContent` against the declared schema at the proxy. Pin schema hashes. Alert on schema or expansion drift.
@@ -328,7 +328,7 @@ The `completion/complete` method takes a `ref` (`ref/prompt` with a prompt name 
 
 ### Trust boundary crossed
 
-Two crossings, both unusual. First, **server → client UI**: completion suggestions render directly in the user's interface, often without any model in the loop. Second, **client → server**, where the user's partial input plus the stateful `context.arguments` map flow to the server on every keystroke. That second one is what makes Completion the quietest data-leak channel in the spec.
+Two crossings, both unusual. First, **server → client UI**: completion suggestions render directly in the user's interface, often without any model in the loop. Second, **client → server**, where the user's partial input plus the stateful `context.arguments` map flow to the server on every keystroke. That second one is what makes Completion the quietest data-leak channel in MCP.
 
 ### Abuser stories
 
@@ -349,7 +349,7 @@ Two crossings, both unusual. First, **server → client UI**: completion suggest
 
 ### Mitigations
 
-- **Spec.** Completion is described as a utility. Authorization, rate limits, and privacy properties are not normative. Treat the gap as load-bearing.
+- **Protocol.** Completion is described as a utility. Authorization, rate limits, and privacy properties are not normative. Treat the gap as load-bearing.
 - **Server.** Authorize completion against the validated identity, not the connection. Refuse to include other tenants' identifiers in candidate lists. Avoid `context.arguments` unless the form genuinely requires it. Don't log partial values.
 - **Client.** Render the `value`, or the `label` and the `value` together when they differ. Cap suggestions per second per server. Treat the request as audit-worthy.
 - **Gateway.** Rate-limit `completion/complete` per caller. DLP-scan both the partial submissions and the suggestion payloads. Alert on display-value mismatch and on enumeration patterns.
@@ -362,7 +362,7 @@ Servers can emit log messages to clients. Levels follow [RFC 5424](https://datat
 
 ### How it's intended to work
 
-The client sets a minimum severity with `logging/setLevel(level)`, and the server pushes via `notifications/message` carrying `level`, an optional `logger` name, and a `data` payload. A server declares `logging: {}` to advertise the capability. The spec is explicit: log messages **MUST NOT** contain credentials, secrets, PII, or internal system details.
+The client sets a minimum severity with `logging/setLevel(level)`, and the server pushes via `notifications/message` carrying `level`, an optional `logger` name, and a `data` payload. A server declares `logging: {}` to advertise the capability. MCP is explicit on one point: log messages **MUST NOT** contain credentials, secrets, PII, or internal system details.
 
 ### Trust boundary crossed
 
@@ -370,9 +370,9 @@ Server → Client, with a long tail. Log messages don't usually stop at the clie
 
 ### Abuser stories
 
-**1. Secret leak via notifications/message.** *As a buggy or compromised server, I want my error logs to include the request body, environment variables, or stack traces so the client's log pipeline ingests data the spec told me not to send.* The client trusts the server's redaction by default. The spec line is normative. The protocol does not enforce it.
+**1. Secret leak via notifications/message.** *As a buggy or compromised server, I want my error logs to include the request body, environment variables, or stack traces so the client's log pipeline ingests data MCP told me not to send.* The client trusts the server's redaction by default. The MUST-NOT rule is normative. The protocol does not enforce it.
 
-**2. Log volume DoS.** *As a malicious server, I want to flood `notifications/message` so the client's logging pipeline drops legitimate events or fills disk.* No per-server rate limit ships in the spec.
+**2. Log volume DoS.** *As a malicious server, I want to flood `notifications/message` so the client's logging pipeline drops legitimate events or fills disk.* MCP doesn't ship a per-server rate limit.
 
 **3. Logger-name spoofing.** *As a malicious server, I want my `logger` field to read like another component's name so my events blend into someone else's traffic and my exfiltration looks like routine telemetry.* Logger names are server-asserted strings.
 
@@ -387,7 +387,7 @@ Server → Client, with a long tail. Log messages don't usually stop at the clie
 
 ### Mitigations
 
-- **Spec.** "MUST NOT include credentials/PII" is normative and unenforced. Plan for the gap.
+- **Protocol.** "MUST NOT include credentials/PII" is normative and unenforced. Plan for the gap.
 - **Server.** Strip sensitive fields *before* `notifications/message`. Cap message size and emission rate. Don't echo request bodies into errors.
 - **Client.** Re-redact server-emitted logs at the boundary. Don't trust the server's claim that the payload is safe. Surface server identity on every routed log line.
 - **Gateway.** Centralize log-message handling. Re-redact, rate-limit, attribute to validated server identity, alert on logger-name spoofing, alert on volume anomalies.
@@ -396,11 +396,11 @@ Server → Client, with a long tail. Log messages don't usually stop at the clie
 
 ### What it is
 
-`tools/list`, `resources/list`, `prompts/list`, and other enumerative methods page their results. The spec defines an opaque `cursor` field that the client carries back to the server to request the next page.
+`tools/list`, `resources/list`, `prompts/list`, and other enumerative methods page their results. MCP defines an opaque `cursor` field that the client carries back to the server to request the next page.
 
 ### How it's intended to work
 
-The server returns a result page plus an optional `nextCursor` string. The client makes the next call with `cursor` set to that value. The spec says cursors are opaque to clients, which means the *client* must not parse them. It does not say the *server* must mint them carefully.
+The server returns a result page plus an optional `nextCursor` string. The client makes the next call with `cursor` set to that value. Cursors are declared opaque to clients, which means the *client* must not parse them. There is no matching constraint that the *server* must mint them carefully.
 
 ### Trust boundary crossed
 
@@ -422,7 +422,7 @@ Server → Client → Server. The cursor round-trips. On a multi-tenant server, 
 
 ### Mitigations
 
-- **Spec.** Cursors are described as opaque to clients. Server-side properties (binding, TTL, content) are not normative.
+- **Protocol.** Cursors are described as opaque to clients. Server-side properties (binding, TTL, content) are not normative.
 - **Server.** Mint cursors as HMACs over `(caller identity, page index, query digest, issued-at)`. Set TTL. Never serialize sensitive state into the cursor.
 - **Gateway.** Treat cursor validation as a first-class step. Reject cursors not minted for the current caller. Strip and re-mint cursors when proxying to enforce identity binding even on servers that don't.
 
@@ -446,10 +446,10 @@ The throughline: every cross-feature pattern stops being defensible once you tre
 
 A compact summary of the mitigations by layer, applied across every feature in this post. Use it as a checklist when reviewing a new server.
 
-**Spec-level realities to plan around.**
+**Protocol-level realities to plan around.**
 
 - Tool annotations, resource annotations, prompt user-controlled framing, completion authorization, log-message redaction, and cursor properties are all *advisory or unspecified*. Plan for the gap.
-- The spec describes *behavior*, not enforcement. There is no protocol-level cop.
+- MCP describes *behavior*, not enforcement. There is no protocol-level cop.
 
 **Server-side responsibilities (the legitimate kind).**
 
@@ -486,7 +486,7 @@ A focused list for someone shipping or reviewing a server today. Post 4 carries 
 
 ## What's next
 
-Server features are half the picture. The other half is what flows in the *opposite* direction. Servers can call clients, ask the user for input, request LLM completions, and discover the user's filesystem roots. Part 2 walks Roots, Sampling, and Elicitation through the same lens. Elicitation is where the spec just (2025-11-25) added a URL mode for OAuth and payment flows, which is a lot of new attack surface in a single capability.
+Server features are half the picture. The other half is what flows in the *opposite* direction. Servers can call clients, ask the user for input, request LLM completions, and discover the user's filesystem roots. Part 2 walks Roots, Sampling, and Elicitation through the same lens. Elicitation is where MCP just added (in 2025-11-25) a URL mode for OAuth and payment flows, which is a lot of new attack surface in a single capability.
 
 Part 3 covers the wire that all of this rides on. OAuth, transports, sessions, and the new Tasks state machine. Part 4 is operations: supply chain, gateway architecture, deployment patterns, and the consolidated attack-to-mitigation reference table.
 

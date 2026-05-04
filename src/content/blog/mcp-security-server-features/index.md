@@ -426,19 +426,67 @@ Server → Client → Server. The cursor round-trips. On a multi-tenant server, 
 
 ## Cross-feature attack patterns within server features
 
-<!-- Combinations: cross-server orchestration injection (multi-feature framing), annotation-driven steering combined with subscription-pushed updates, completion + logging exfiltration chains. -->
+The single-feature treatments above each stand on their own. The interesting failures, the ones that hit production hardest, come from combinations. A few worth naming before we leave server features.
+
+**Annotation-driven steering plus subscription push.** A server marks a poisoned resource with `audience: ["assistant"]` and `priority: 1.0`, then waits. Days later, mid-task, it pushes `notifications/resources/updated`. The client refetches. The client's context-budgeting heuristic, looking at `priority`, drops a competing low-priority resource. The poisoned one stays. The model never sees the resource it was supposed to.
+
+**Completion plus Logging as a paired exfiltration chain.** Completion is the unaudited query channel. Logging is the unaudited push channel. A server can use the first to learn (which usernames exist, what the project tree looks like, which prefixes match) and the second to leak (encoded in `data` fields, in `logger` names, in level distributions). Neither channel sits in the same pane of glass as `tools/call` audit. The two together are an end-to-end exfiltration loop that touches no tool.
+
+**Cross-server orchestration injection, revisited.** Treated as a Tools story above. From a multi-feature angle: it's a Resources or Tools result poisoning a Tools call. The attack lives in the seam between two primitives, not inside either one. The mitigation has to live at the seam too. Inter-server isolation is a feature of the *client*, not of any single server.
+
+**Schema poisoning plus content drift.** A poisoned `outputSchema` plus a `structuredContent` that disagrees with `content` is the UI-vs-LLM split made worse. The user reviews the rendered `content`. The model acts on `structuredContent`. The schema decides which fields the gateway DLP-scans and which it misses.
+
+**Cursor leakage plus subscription replay.** A cross-tenant cursor leak gives an attacker a list of resource URIs they shouldn't see. A subscription on those URIs gives them push notifications when the legitimate tenant's data changes. Two unaudited primitives composed into a passive monitoring pipe.
+
+The throughline: every cross-feature pattern stops being defensible once you treat features as siloed. The lens has to run *across* features in production, not only within each.
 
 ## Mitigations summary for server features
 
-<!-- Compact reference table or bulleted summary. -->
+A compact summary of the mitigations by layer, applied across every feature in this post. Use it as a checklist when reviewing a new server.
+
+**Spec-level realities to plan around.**
+
+- Tool annotations, resource annotations, prompt user-controlled framing, completion authorization, log-message redaction, and cursor properties are all *advisory or unspecified*. Plan for the gap.
+- The spec describes *behavior*, not enforcement. There is no protocol-level cop.
+
+**Server-side responsibilities (the legitimate kind).**
+
+- Treat every primitive's content as adversarial input to your own logging and rendering. Sanitize before you emit.
+- Bind every list, every read, every cursor, every completion, and every subscription to the validated identity. Never to the connection.
+- Pin manifests of tool descriptions, prompt templates, resource URI patterns, and output schemas. Sign them where you can.
+
+**Client-side responsibilities.**
+
+- Surface the full content the model will see, not the pretty summary. Tools, resources, prompt expansions, error messages, completion suggestions.
+- Re-confirm consequential actions per call, not per session. Pre-approval is for inventories. Confirmation is for actions.
+- Re-redact and re-validate everything a server emits. Don't trust server-side claims about safety.
+
+**Gateway-side responsibilities.**
+
+- One audit pane, every method, every server. `tools/call`, `resources/read`, `prompts/get`, `completion/complete`, `notifications/message`, `notifications/resources/updated`, every cursor.
+- DLP and schema validation at the boundary. Pin per-tool, per-prompt, per-resource hashes. Alert on drift.
+- Identity-bound cursors, tenant-bound resource lists, rate limits per primitive per server.
 
 ## Builder checklist
 
-<!-- Short, actionable. Not the omnibus checklist (Post 4). -->
+A focused list for someone shipping or reviewing a server today. Post 4 carries the full operational checklist.
+
+- [ ] Tool descriptions are free of imperative prose. No "then do X", no "always Y", no `system`-tone instructions.
+- [ ] `outputSchema` declared for any tool whose output a client should validate. `structuredContent` matches `content` semantically.
+- [ ] Resources are scoped to the validated identity. Path templates validate against an allowlist before expansion. Path traversal is rejected explicitly.
+- [ ] Resource annotations (`audience`, `priority`, `lastModified`) reflect reality. No silent priority bumps.
+- [ ] Subscriptions only push for resources the caller is authorized to see *now*, not at subscription time.
+- [ ] Prompt templates are short, declarative, and free of forged `assistant` or `system` turns. Expansion is deterministic per `(name, args, identity)`.
+- [ ] Completion is authorized per validated identity. Suggestions are byte-equal in label and value, post Unicode normalization. Partial values are not logged.
+- [ ] `notifications/message` payloads pass DLP at emit time. No credentials, no env values, no request bodies in errors. Logger names are within the declared allowlist.
+- [ ] Cursors are HMAC'd over caller identity, query digest, and issuance time. TTL configured. No sensitive state inside the cursor.
+- [ ] Every method emits an audit record. `completion/complete` is audited the same as `tools/call`.
 
 ## What's next
 
-<!-- Cross-link to Post 2 (client capabilities), brief teaser. Restate series-nav block. -->
+Server features are half the picture. The other half is what flows in the *opposite* direction. Servers can call clients, ask the user for input, request LLM completions, and discover the user's filesystem roots. Part 2 walks Roots, Sampling, and Elicitation through the same lens. Elicitation is where the spec just (2025-11-25) added a URL mode for OAuth and payment flows, which is a lot of new attack surface in a single capability.
+
+Part 3 covers the wire that all of this rides on. OAuth, transports, sessions, and the new Tasks state machine. Part 4 is operations: supply chain, gateway architecture, deployment patterns, and the consolidated attack-to-mitigation reference table.
 
 > **MCP Security series**, Part 1 of 4
 >

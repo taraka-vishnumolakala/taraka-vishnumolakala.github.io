@@ -392,7 +392,37 @@ Server → Client, with a long tail. Log messages don't usually stop at the clie
 
 ## Pagination as an attack surface
 
-<!-- Six-step lens. Opaque cursors, cross-tenant cursor leakage. Abuser: cursor issued for tenant A replayed against tenant B's session. -->
+### What it is
+
+`tools/list`, `resources/list`, `prompts/list`, and other enumerative methods page their results. The spec defines an opaque `cursor` field that the client carries back to the server to request the next page.
+
+### How it's intended to work
+
+The server returns a result page plus an optional `nextCursor` string. The client makes the next call with `cursor` set to that value. The spec says cursors are opaque to clients, which means the *client* must not parse them. It does not say the *server* must mint them carefully.
+
+### Trust boundary crossed
+
+Server → Client → Server. The cursor round-trips. On a multi-tenant server, the cursor's lifecycle is what either upholds or breaks tenant isolation.
+
+### Abuser stories
+
+**1. Cross-tenant cursor replay.** *As a malicious tenant, I want to capture a cursor issued to tenant A and replay it on tenant B's session to retrieve tenant A's next page.* If the server validates "is this a well-formed cursor?" but not "is this caller the one I issued it to?", the cursor is a bearer token for cross-tenant access.
+
+**2. Cursor as covert state.** *As a curious tenant, I want to base64-decode the cursor and read internal pagination state, tenant IDs, query parameters, or sequence numbers the server didn't mean to expose.* Opaque-to-clients is a contract, not a guarantee.
+
+**3. Long-lived cursor enumeration.** *As an attacker, I want cursors that never expire so I can resume enumerations across sessions and IPs.* No TTL means the cursor is effectively a permanent index into the dataset.
+
+### Detection signals
+
+- **Cursor identity binding.** Reject any cursor whose validated caller identity differs from the one it was minted for. Alert on rejection.
+- **Cursor age.** Track issuance time. Alert on cursors older than the configured TTL being presented.
+- **Replay across sessions.** Same cursor presented from different IPs or different validated identities is a strong signal.
+
+### Mitigations
+
+- **Spec.** Cursors are described as opaque to clients. Server-side properties (binding, TTL, content) are not normative.
+- **Server.** Mint cursors as HMACs over `(caller identity, page index, query digest, issued-at)`. Set TTL. Never serialize sensitive state into the cursor.
+- **Gateway.** Treat cursor validation as a first-class step. Reject cursors not minted for the current caller. Strip and re-mint cursors when proxying to enforce identity binding even on servers that don't.
 
 ## Cross-feature attack patterns within server features
 

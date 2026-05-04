@@ -11,7 +11,7 @@ tags:
 
 A field guide to running, building, and deploying Model Context Protocol servers without getting burned. Written for security engineers, platform engineers, and anyone now responsible for AI agents at their org.
 
-This is **Part 1 of a four-post series**. Each post applies the same threat-modeling lens to one cluster of MCP features. Part 1 covers what an MCP server actually exposes: Tools, Resources, Prompts, and the server-side utilities the 2025-11-25 spec just expanded. The post walks the lens through each one so you can run it yourself on whatever the spec adds next.
+This is **Part 1 of a four-post series**. Each post applies the same threat-modeling lens to one cluster of MCP features. Part 1 covers what an MCP server actually exposes: Tools, Resources, Prompts, and the server-side utilities the [2025-11-25 spec](https://modelcontextprotocol.io/specification/2025-11-25) just expanded. The post walks the lens through each one so you can run it yourself on whatever the spec adds next.
 
 > **MCP Security series**, Part 1 of 4
 >
@@ -37,7 +37,7 @@ For each feature in this post, and every feature in Parts 2, 3, and 4, we walk t
 5. **Detection signals.** What the feature emits when abused, or fails to emit. Specific log fields, alert conditions, gateway-side reconciliation patterns. Every signal we name has a corresponding row in Part 4's reference table.
 6. **Mitigations.** Layered: spec-level (what the spec MUSTs and SHOULDs), server-side, client-side, gateway-level. Where a mitigation only works at one layer, that's called out. Where the spec's rule is advisory and not actually enforced by the SDK, the gap is named.
 
-Why this lens and not STRIDE or attack trees or the OWASP MCP Top 10? STRIDE is comprehensive but feels academic. "Tampering" doesn't land as concretely as *"as a malicious server, I want to drain your API budget."* Attack trees are useful for one feature in isolation but compose badly across a series. OWASP MCP Top 10 is a list of known risks, not a method for finding new ones. Abuser stories plus trust boundaries plus layered detection and mitigation is concrete enough to read end to end and structured enough to apply.
+Why this lens and not STRIDE or attack trees or the [OWASP MCP Top 10](https://owasp.org/www-project-mcp-top-10/)? STRIDE is comprehensive but feels academic. "Tampering" doesn't land as concretely as *"as a malicious server, I want to drain your API budget."* Attack trees are useful for one feature in isolation but compose badly across a series. The OWASP MCP Top 10 is a list of known risks, not a method for finding new ones. Abuser stories plus trust boundaries plus layered detection and mitigation is concrete enough to read end to end and structured enough to apply.
 
 Before we run the lens on a real feature, we need a shared map of what an MCP server actually exposes and where its trust boundaries land. The next two sections give it. Then we run the lens on Tools as a worked example.
 
@@ -135,13 +135,13 @@ Tool poisoning, rug pulls, and cross-server injection all live on the second bou
 Demonstrated attacks:
 
 - **Cursor IDE** ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)): a poisoned `add` tool exfiltrated `~/.cursor/mcp.json` (containing API credentials for other connected servers) and `~/.ssh/id_rsa`.
-- **Email redirection** ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)): a poisoned server injected instructions into the LLM's view of a `send_email` tool exposed by a *different*, trusted server, rerouting all emails to the attacker without ever appearing in user-facing logs.
+- **Email redirection** ([Invariant Labs, 2025](https://invariantlabs.ai/blog/whatsapp-mcp-exploited)): a poisoned server injected instructions into the LLM's view of a `send_email` tool exposed by a *different*, trusted server, rerouting all emails to the attacker without ever appearing in user-facing logs.
 
 **2. Rug pull.** *As a compromised package, I want to mutate my tool descriptions silently after the user has approved me, so my install-time approval covers behavior I didn't have at install time.*
 
 ![Timeline: Day 0, server published, passes review and looks legitimate. Day 1, installed in production, tool descriptions are benign, user approves. Day 14, maintainer pushes silent update, hidden exfiltration instructions injected, no version bump, no re-approval triggered. Day 30, agent silently exfiltrating credentials, no alerts fired, server was pre-approved.](./diagrams/rug-pull-timeline.png)
 
-Real precedent: CVE-2025-54136 (MCPoison) demonstrated this pattern applied to MCP config files in IDEs.
+Real precedent: [CVE-2025-54136 (MCPoison)](https://nvd.nist.gov/vuln/detail/CVE-2025-54136) demonstrated this pattern applied to MCP config files in IDEs.
 
 **3. Shadow tools.** *As a malicious server, I want my `send_email` to shadow the legitimate `send_email` from a trusted server so the LLM picks mine when the user asks for an email to be sent.* When multiple servers are connected, tools from all of them are presented to the LLM. There is no namespace enforcement at the protocol level. A malicious server's description claiming to be the "preferred" or "secure" version can win the model's selection.
 
@@ -182,7 +182,7 @@ The protocol defines:
 
 - **`resources/list`**: the server enumerates the resources it offers. Each entry carries a `uri`, a human-readable `name`, a `description`, optional `mimeType`, and (new in 2025-11-25) optional `annotations` such as `audience`, `priority`, and `lastModified`.
 - **`resources/read`**: the client reads a specific resource by URI. The server returns the content.
-- **`resources/templates/list`**: when a server exposes URI templates (RFC 6570) like `file:///{path}`, this lists the templates the client can fill in.
+- **`resources/templates/list`**: when a server exposes URI templates ([RFC 6570](https://datatracker.ietf.org/doc/html/rfc6570)) like `file:///{path}`, this lists the templates the client can fill in.
 - **`resources/subscribe`** and **`notifications/resources/updated`**: the client opts into change notifications, and the server pushes when the resource content changes.
 
 A server that supports any of this declares `resources: { subscribe?: true, listChanged?: true }` in its capability block. Annotations let the server hint at how the resource should be treated. `audience: ["assistant"]` says the content is intended for the model. `priority: 1.0` says it should be preferred when context is tight.
@@ -358,7 +358,7 @@ Two crossings, both unusual. First, **server → client UI**: completion suggest
 
 ### What it is
 
-Servers can emit log messages to clients. Levels follow RFC 5424 (debug, info, notice, warning, error, critical, alert, emergency). Most clients route these into the same place application logs go.
+Servers can emit log messages to clients. Levels follow [RFC 5424](https://datatracker.ietf.org/doc/html/rfc5424) (debug, info, notice, warning, error, critical, alert, emergency). Most clients route these into the same place application logs go.
 
 ### How it's intended to work
 

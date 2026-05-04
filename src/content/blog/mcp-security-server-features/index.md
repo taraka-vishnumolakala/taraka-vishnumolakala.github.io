@@ -354,7 +354,41 @@ Two crossings, both unusual. First, **server → client UI**: completion suggest
 
 ## Logging as a server-side primitive
 
-<!-- Six-step lens. logging/setLevel, notifications/message, RFC 5424 levels. Spec mandate: log messages MUST NOT contain credentials, secrets, PII, or internal system details. Abuser angle: misconfigured/compromised server emits secrets via notifications/message; client trusts the server's own redaction. -->
+### What it is
+
+Servers can emit log messages to clients. Levels follow RFC 5424 (debug, info, notice, warning, error, critical, alert, emergency). Most clients route these into the same place application logs go.
+
+### How it's intended to work
+
+The client sets a minimum severity with `logging/setLevel(level)`, and the server pushes via `notifications/message` carrying `level`, an optional `logger` name, and a `data` payload. A server declares `logging: {}` to advertise the capability. The spec is explicit: log messages **MUST NOT** contain credentials, secrets, PII, or internal system details.
+
+### Trust boundary crossed
+
+Server → Client, with a long tail. Log messages don't usually stop at the client. They flow into log aggregators, SIEMs, and dashboards. Those downstream systems often have weaker access controls than the agent's runtime context. A leak that started inside the server's process can land in a dashboard a different team has access to.
+
+### Abuser stories
+
+**1. Secret leak via notifications/message.** *As a buggy or compromised server, I want my error logs to include the request body, environment variables, or stack traces so the client's log pipeline ingests data the spec told me not to send.* The client trusts the server's redaction by default. The spec line is normative. The protocol does not enforce it.
+
+**2. Log volume DoS.** *As a malicious server, I want to flood `notifications/message` so the client's logging pipeline drops legitimate events or fills disk.* No per-server rate limit ships in the spec.
+
+**3. Logger-name spoofing.** *As a malicious server, I want my `logger` field to read like another component's name so my events blend into someone else's traffic and my exfiltration looks like routine telemetry.* Logger names are server-asserted strings.
+
+**4. Side-channel exfiltration.** *As a malicious server, I want to encode data in the level field, in burst timing, or in low-entropy benign-looking text so the agent operator never reads my logs as suspect.* Logging traffic is rarely correlated against tool-call audit. That gap is the channel.
+
+### Detection signals
+
+- **DLP at ingest.** Re-scan every `notifications/message` `data` field for credentials, tokens, PII, file paths above the project root, hex blobs, base64 strings.
+- **Per-server volume thresholds.** Messages per minute per server. Spike alerts on previously quiet servers.
+- **Logger-name allowlist.** Each server declares the `logger` strings it owns at install. Reject or flag deviations.
+- **Level-distribution drift.** Servers that suddenly shift from `info` to `error` (or vice versa) without corresponding behavior change. Useful as a side-channel marker.
+
+### Mitigations
+
+- **Spec.** "MUST NOT include credentials/PII" is normative and unenforced. Plan for the gap.
+- **Server.** Strip sensitive fields *before* `notifications/message`. Cap message size and emission rate. Don't echo request bodies into errors.
+- **Client.** Re-redact server-emitted logs at the boundary. Don't trust the server's claim that the payload is safe. Surface server identity on every routed log line.
+- **Gateway.** Centralize log-message handling. Re-redact, rate-limit, attribute to validated server identity, alert on logger-name spoofing, alert on volume anomalies.
 
 ## Pagination as an attack surface
 

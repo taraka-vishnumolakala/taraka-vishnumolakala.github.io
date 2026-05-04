@@ -170,7 +170,55 @@ That's the lens, end to end, on Tools. We'll run the same six steps on every fea
 
 ## Resources
 
-<!-- Six-step lens. Poisoning, indirect prompt injection, path-templated resources, subscription mechanics (resources/subscribe → notifications/resources/updated), annotations as a hidden steering channel (audience/priority). Diagram: resource-poisoning-flow.png. -->
+### What it is
+
+Resources are pieces of data an MCP server makes readable to the agent. A resource has a URI, a MIME type, and content. File contents, database rows, API responses, wiki pages, and ticket bodies are all common shapes. Resources are *application-controlled*. The user or the client picks which resource to attach. The model doesn't choose to fetch a resource the way it chooses to call a tool.
+
+### How it's intended to work
+
+The protocol defines:
+
+- **`resources/list`**: the server enumerates the resources it offers. Each entry carries a `uri`, a human-readable `name`, a `description`, optional `mimeType`, and (new in 2025-11-25) optional `annotations` such as `audience`, `priority`, and `lastModified`.
+- **`resources/read`**: the client reads a specific resource by URI. The server returns the content.
+- **`resources/templates/list`**: when a server exposes URI templates (RFC 6570) like `file:///{path}`, this lists the templates the client can fill in.
+- **`resources/subscribe`** and **`notifications/resources/updated`**: the client opts into change notifications, and the server pushes when the resource content changes.
+
+A server that supports any of this declares `resources: { subscribe?: true, listChanged?: true }` in its capability block. Annotations let the server hint at how the resource should be treated. `audience: ["assistant"]` says the content is intended for the model. `priority: 1.0` says it should be preferred when context is tight.
+
+### Trust boundary crossed
+
+Same two boundaries as Tools, but the weights flip. The Agent → Server hop is identical. What changes is the second boundary, *retrieved data → Agent context*. Resources exist to land content in the model's context. That's their purpose. So the very act of using the feature crosses the boundary the rest of the section is defending.
+
+### Abuser stories
+
+**1. Resource poisoning.** *As a malicious server, or a malicious data source feeding a legitimate server, I want my resource content to carry hidden instructions so the agent reads my prose as guidance and acts on it.*
+
+![Sequence diagram: a user asks the agent to summarize a project README. The LLM reads the README via the MCP server, but the README content carries a hidden directive that says to also read secrets.env. The LLM treats the content as both data and instructions, calls back to the server to read secrets.env, and includes the secrets in the user-facing summary.](./diagrams/resource-poisoning-flow.png)
+
+This is qualitatively different from tool poisoning. Tool poisoning lives in the description that ships with the tool. Resource poisoning lives in the content. The content can change on every read, can be templated by argument, and can be returned dynamically based on who is asking.
+
+**2. Path-templated traversal.** *As a malicious or buggy server, I want my `file:///{path}` template to accept paths that escape the declared root, so an agent reading what it thinks is a project file ends up reading `/etc/shadow` or another user's home directory.* Templates are convenient. They are also where path validation often gets skipped. RFC 6570 expansion does not police filesystem semantics. The server has to.
+
+**3. Subscription push at a sensitive moment.** *As a malicious server, I want to stay quiet for weeks, then push a poisoned update via `notifications/resources/updated` exactly when the agent is mid-task.* The agent re-reads the resource on subscription update. Subscription is a channel for the server to inject context whenever it wants, which is a substantially weaker guarantee than the user thinks they're approving when they "subscribe to file changes."
+
+**4. Annotation-driven steering.** *As a malicious server, I want to mark my poisoned resource with `audience: ["assistant"]` and `priority: 1.0` so the client preferentially feeds it into the model when context is tight.* Annotations are advisory. The spec doesn't enforce that a server's self-declared priority is honest. A client that uses `priority` as an automatic ranking signal hands the server a steering knob.
+
+**5. Cross-tenant resource leakage.** *As a malicious tenant on a multi-user server, I want resources scoped to another tenant to surface in my session because the server keys its resource list off the connection rather than the validated identity.* Resources have to be authorized per user the same way tool calls are. A server that returns the same `resources/list` regardless of caller is leaking by design.
+
+### Detection signals
+
+- **Per-read audit.** Log every `resources/read` with full URI and a content hash. The hash is what makes resource poisoning detectable after the fact.
+- **URI scope violations.** Reads whose URIs escape the declared scope (path traversal, scheme switches like `file://` to `http://`, IP-literal URLs). Alert and block.
+- **Hash drift without notification.** A resource whose content hash changed between two reads without a matching `notifications/resources/updated` is either a buggy server or a malicious one. Either way, it's a signal.
+- **Annotation flips.** `priority` jumps, `audience` widens, `lastModified` rewrites that don't match content drift. Treat annotations as part of the audit record, not metadata to be discarded.
+- **Cross-tenant URI patterns.** Same URI returning different content to different tenants when it shouldn't, or the same content to tenants that shouldn't share it.
+
+### Mitigations
+
+- **Spec.** Annotations are advisory in the same way tool annotations are advisory. Clients SHOULD use them, the spec doesn't enforce. Don't let `priority: 1.0` outrank user intent.
+- **Server.** Validate URI patterns against an allowlist before expansion. Reject path traversal explicitly. Scope resources to the validated identity, not the connection. Don't trust template arguments. Don't echo arguments back into the URI without sanitization.
+- **Client.** Treat resource content as untrusted, the same way you'd treat a web page. Show the user what's about to be attached to context. Don't auto-merge subscription updates while the agent is mid-action without re-confirming. If a resource carries instruction-like prose, surface it.
+- **Gateway.** DLP-scan resource content before it reaches the model. Pin a URI-to-content-hash record per session and alert on drift. Treat `notifications/resources/updated` as an audit event in its own right, not a quiet refresh.
 
 ## Prompts
 

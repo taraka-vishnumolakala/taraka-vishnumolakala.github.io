@@ -55,6 +55,15 @@
       "history": [
         "2026-05-03 created — Tools section abuser story #4: malicious Server A's tool result contains hidden instruction that steers LLM's call to trusted Server B (silent BCC to attacker); compromise is in LLM context, never in Server B's logs"
       ]
+    },
+    "resource-poisoning-flow.png": {
+      "diagramId": "akIM0mjg-zg0hVkMJHs-",
+      "diagramName": "resource-poisoning-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-04 created — Resources section abuser story: poisoned README content carries hidden directive that steers the LLM into reading secrets.env on the next call; data and instruction share the same channel"
+      ]
     }
   }
 }

@@ -9,7 +9,7 @@ tags:
   - mcp-security-series
 ---
 
-A field guide to running, building, and deploying Model Context Protocol servers without getting burned. Written for security engineers, platform engineers, and anyone whose job description recently grew an "AI agent" bullet point.
+A field guide to running, building, and deploying Model Context Protocol servers without getting burned. Written for security engineers, platform engineers, and anyone now responsible for AI agents at their org.
 
 This is **Part 1 of a four-post series**. Each post applies the same threat-modeling lens to one cluster of MCP features. Part 1 covers what an MCP server actually exposes: Tools, Resources, Prompts, and the server-side utilities the 2025-11-25 spec just expanded. The post walks the lens through each one so you can run it yourself on whatever the spec adds next.
 
@@ -25,6 +25,21 @@ This is **Part 1 of a four-post series**. Each post applies the same threat-mode
 If you're using or building MCP servers and you want to reason about what could go wrong, start here. There's no prerequisite MCP background. The post starts with what a server is, what it exposes, and where the trust boundaries land. By the end you'll have applied the same six-step lens to seven distinct server-side features and seen how attacks compose across them.
 
 If you've already read about Tools and Resources elsewhere, the new material is in the second half: tool output schema and the dual error model, the completion utility (one of the quietest data-leak channels in MCP), the server-side logging primitive, and pagination as a cross-tenant attack surface. All of that is in the 2025-11-25 spec. Very little of it is in the threat-modeling literature yet.
+
+## The threat-modeling lens
+
+For each feature in this post, and every feature in Parts 2, 3, and 4, we walk through the same six steps in the same order. By the third or fourth feature you'll be running the lens yourself. By the end of Part 4 you can apply it to whatever the spec adds next.
+
+1. **What it is.** A one-paragraph definition. No threat content. Just enough to be sure we're talking about the same feature.
+2. **How it's intended to work.** Protocol mechanics. JSON-RPC method names, capability declarations, the normal flow. Where useful, a diagram.
+3. **Trust boundary crossed.** Which of MCP's trust boundaries the feature crosses. We map those out in the next section.
+4. **Abuser stories.** Stated as: *"As a malicious **role**, I want to **abuse the feature** so I can **consequence**."* Roles include malicious server, compromised package, malicious tenant, malicious user, network attacker, compromised client, compromised model output. Each abuser story is the inverse of a user story and is what the rest of the section defends against.
+5. **Detection signals.** What the feature emits when abused, or fails to emit. Specific log fields, alert conditions, gateway-side reconciliation patterns. Every signal we name has a corresponding row in Part 4's reference table.
+6. **Mitigations.** Layered: spec-level (what the spec MUSTs and SHOULDs), server-side, client-side, gateway-level. Where a mitigation only works at one layer, that's called out. Where the spec's rule is advisory and not actually enforced by the SDK, the gap is named.
+
+Why this lens and not STRIDE or attack trees or the OWASP MCP Top 10? STRIDE is comprehensive but feels academic. "Tampering" doesn't land as concretely as *"as a malicious server, I want to drain your API budget."* Attack trees are useful for one feature in isolation but compose badly across a series. OWASP MCP Top 10 is a list of known risks, not a method for finding new ones. Abuser stories plus trust boundaries plus layered detection and mitigation is concrete enough to read end to end and structured enough to apply.
+
+Before we run the lens on a real feature, we need a shared map of what an MCP server actually exposes and where its trust boundaries land. The next two sections give it. Then we run the lens on Tools as a worked example.
 
 ## Architecture, primitives, and the trust-boundary map
 
@@ -83,19 +98,6 @@ Three things make MCP's threat model different from traditional API security:
 
 The rest of this post organizes around the first observation. Every server-side feature we cover is a place where the LLM reads something an attacker would like to control: a tool description, a resource body, a prompt template, a completion suggestion, a log line, the neighbor records returned alongside a paginated cursor.
 
-## The threat-modeling lens
-
-For each feature in this post, and every feature in Parts 2, 3, and 4, we walk through the same six steps in the same order. By the third or fourth feature you'll be running the lens yourself. By the end of Part 4 you can apply it to whatever the spec adds next.
-
-1. **What it is.** A one-paragraph definition. No threat content. Just enough to be sure we're talking about the same feature.
-2. **How it's intended to work.** Protocol mechanics. JSON-RPC method names, capability declarations, the normal flow. Where useful, a diagram.
-3. **Trust boundary crossed.** Which of the boundaries from the previous section the feature operates across. Naming the boundary explicitly anchors the rest of the analysis.
-4. **Abuser stories.** Stated as: *"As a malicious **role**, I want to **abuse the feature** so I can **consequence**."* Roles include malicious server, compromised package, malicious tenant, malicious user, network attacker, compromised client, compromised model output. Each abuser story is the inverse of a user story and is what the rest of the section defends against.
-5. **Detection signals.** What the feature emits when abused, or fails to emit. Specific log fields, alert conditions, gateway-side reconciliation patterns. Every signal we name has a corresponding row in Part 4's reference table.
-6. **Mitigations.** Layered: spec-level (what the spec MUSTs and SHOULDs), server-side, client-side, gateway-level. Where a mitigation only works at one layer, that's called out. Where the spec's rule is advisory and not actually enforced by the SDK, the gap is named.
-
-Why this lens and not STRIDE or attack trees or the OWASP MCP Top 10? STRIDE is comprehensive but feels academic. "Tampering" doesn't land as concretely as *"as a malicious server, I want to drain your API budget."* Attack trees are useful for one feature in isolation but compose badly across a series. OWASP MCP Top 10 is a list of known risks, not a method for finding new ones. Abuser stories plus trust boundaries plus layered detection and mitigation is concrete enough to read end to end and structured enough to apply.
-
 We start with the easiest feature to intuit, Tools, and run the full lens on it as a worked example.
 
 ## Tools: the lens, walked through
@@ -132,8 +134,8 @@ Tool poisoning, rug pulls, and cross-server injection all live on the second bou
 
 Demonstrated attacks:
 
-- **Cursor IDE (Invariant Labs, 2025)**: a poisoned `add` tool exfiltrated `~/.cursor/mcp.json` (containing API credentials for other connected servers) and `~/.ssh/id_rsa`.
-- **Email redirection**: a poisoned server injected instructions into the LLM's view of a `send_email` tool exposed by a *different*, trusted server, rerouting all emails to the attacker without ever appearing in user-facing logs.
+- **Cursor IDE** ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)): a poisoned `add` tool exfiltrated `~/.cursor/mcp.json` (containing API credentials for other connected servers) and `~/.ssh/id_rsa`.
+- **Email redirection** ([Invariant Labs, 2025](https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks)): a poisoned server injected instructions into the LLM's view of a `send_email` tool exposed by a *different*, trusted server, rerouting all emails to the attacker without ever appearing in user-facing logs.
 
 **2. Rug pull.** *As a compromised package, I want to mutate my tool descriptions silently after the user has approved me, so my install-time approval covers behavior I didn't have at install time.*
 

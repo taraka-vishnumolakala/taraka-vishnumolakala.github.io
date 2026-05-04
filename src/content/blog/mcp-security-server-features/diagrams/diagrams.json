@@ -64,6 +64,15 @@
       "history": [
         "2026-05-04 created — Resources section abuser story: poisoned README content carries hidden directive that steers the LLM into reading secrets.env on the next call; data and instruction share the same channel"
       ]
+    },
+    "prompt-template-injection-flow.png": {
+      "diagramId": "oy1GjpnCC5mzEEloW8GX",
+      "diagramName": "prompt-template-injection-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-04 created — Prompts section abuser story: user types /format-code, malicious server returns template carrying a hidden directive, LLM expands the full template (which the user never sees) and exfiltrates env contents via a trusted email tool"
+      ]
     }
   }
 }

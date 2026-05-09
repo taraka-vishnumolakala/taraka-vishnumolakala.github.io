@@ -1,0 +1,310 @@
+---
+interface Props {
+	markdownPath?: string;
+}
+
+const { markdownPath } = Astro.props;
+const hasMarkdown = Boolean(markdownPath);
+---
+
+<div class="page-actions" data-page-actions>
+	<button
+		type="button"
+		class="page-actions-toggle"
+		aria-label="Page actions"
+		aria-haspopup="true"
+		aria-expanded="false"
+		data-page-actions-toggle
+	>
+		<svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+			<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+		</svg>
+		<span class="label">Copy page</span>
+		<svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<polyline points="6 9 12 15 18 9"></polyline>
+		</svg>
+	</button>
+
+	<div class="page-actions-menu" role="menu" hidden data-page-actions-menu>
+		{hasMarkdown && (
+			<button
+				type="button"
+				class="action-item"
+				role="menuitem"
+				data-action="copy"
+				data-md-path={markdownPath}
+			>
+				<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+				</svg>
+				<span class="text">
+					<span class="title" data-copy-label>Copy page</span>
+					<span class="subtitle">Copy page as Markdown for LLMs</span>
+				</span>
+			</button>
+		)}
+
+		{hasMarkdown && (
+			<a
+				class="action-item"
+				role="menuitem"
+				href={markdownPath}
+				target="_blank"
+				rel="noopener"
+			>
+				<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+					<polyline points="14 2 14 8 20 8"></polyline>
+					<line x1="9" y1="13" x2="15" y2="13"></line>
+					<line x1="9" y1="17" x2="15" y2="17"></line>
+				</svg>
+				<span class="text">
+					<span class="title">View as Markdown</span>
+					<span class="subtitle">View this page as plain text</span>
+				</span>
+			</a>
+		)}
+
+		<a
+			class="action-item"
+			role="menuitem"
+			href="/llms.txt"
+			target="_blank"
+			rel="noopener"
+		>
+			<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+			</svg>
+			<span class="text">
+				<span class="title">llms.txt</span>
+				<span class="subtitle">Open llms.txt for this site</span>
+			</span>
+		</a>
+	</div>
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-page-actions]');
+	const toggle = document.querySelector<HTMLButtonElement>('[data-page-actions-toggle]');
+	const menu = document.querySelector<HTMLElement>('[data-page-actions-menu]');
+
+	if (root && toggle && menu) {
+		const open = () => {
+			menu.hidden = false;
+			toggle.setAttribute('aria-expanded', 'true');
+			root.classList.add('open');
+		};
+		const close = () => {
+			menu.hidden = true;
+			toggle.setAttribute('aria-expanded', 'false');
+			root.classList.remove('open');
+		};
+
+		toggle.addEventListener('click', () => {
+			if (menu.hidden) open();
+			else close();
+		});
+
+		document.addEventListener('click', (e) => {
+			if (!root.contains(e.target as Node)) close();
+		});
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') close();
+		});
+
+		const copyButton = menu.querySelector<HTMLButtonElement>('[data-action="copy"]');
+		if (copyButton) {
+			const label = copyButton.querySelector<HTMLElement>('[data-copy-label]');
+			const originalLabel = label?.textContent ?? 'Copy page';
+			copyButton.addEventListener('click', async () => {
+				const path = copyButton.dataset.mdPath;
+				if (!path || !label) return;
+				try {
+					const res = await fetch(path);
+					if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
+					const text = await res.text();
+					await navigator.clipboard.writeText(text);
+					label.textContent = 'Copied!';
+					setTimeout(() => {
+						label.textContent = originalLabel;
+						close();
+					}, 900);
+				} catch (err) {
+					console.error('Copy failed', err);
+					label.textContent = 'Copy failed';
+					setTimeout(() => {
+						label.textContent = originalLabel;
+					}, 1500);
+				}
+			});
+		}
+	}
+</script>
+
+<style>
+	.page-actions {
+		position: fixed;
+		top: 5rem;
+		right: 1.5rem;
+		z-index: 50;
+		font-family: var(--font-sans);
+	}
+
+	.page-actions-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.45rem 0.85rem;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text);
+		font-size: 0.85rem;
+		font-weight: 500;
+		font-family: inherit;
+		cursor: pointer;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease,
+			background 0.15s ease,
+			color 0.15s ease;
+	}
+
+	.page-actions-toggle:hover,
+	.page-actions.open .page-actions-toggle {
+		border-color: var(--accent-soft);
+		color: var(--heading);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 18px rgba(46, 123, 207, 0.1);
+	}
+
+	.page-actions-toggle:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.page-actions-toggle .icon-copy,
+	.page-actions-toggle .icon-chevron {
+		width: 14px;
+		height: 14px;
+	}
+
+	.page-actions-toggle .icon-chevron {
+		transition: transform 0.18s ease;
+	}
+
+	.page-actions.open .page-actions-toggle .icon-chevron {
+		transform: rotate(180deg);
+	}
+
+	.page-actions-menu {
+		position: absolute;
+		top: calc(100% + 0.5rem);
+		right: 0;
+		min-width: 300px;
+		max-width: calc(100vw - 2rem);
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 32px rgba(0, 0, 0, 0.08);
+		padding: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+
+	.page-actions-menu[hidden] {
+		display: none;
+	}
+
+	.action-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.55rem 0.7rem;
+		background: transparent;
+		border: none;
+		border-radius: 6px;
+		color: var(--text);
+		text-decoration: none;
+		font-family: inherit;
+		font-size: 0.85rem;
+		text-align: left;
+		cursor: pointer;
+		width: 100%;
+		transition:
+			background 0.12s ease,
+			color 0.12s ease;
+	}
+
+	.action-item:hover,
+	.action-item:focus-visible {
+		background: rgba(46, 123, 207, 0.06);
+		color: var(--heading);
+		text-decoration: none;
+	}
+
+	.action-item:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: -2px;
+	}
+
+	.action-item .icon {
+		flex-shrink: 0;
+		width: 18px;
+		height: 18px;
+		color: var(--text-muted);
+	}
+
+	.action-item:hover .icon,
+	.action-item:focus-visible .icon {
+		color: var(--accent);
+	}
+
+	.action-item .text {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		line-height: 1.3;
+	}
+
+	.action-item .title {
+		font-weight: 500;
+		color: inherit;
+	}
+
+	.action-item .subtitle {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		margin-top: 0.1rem;
+	}
+
+	@media (max-width: 768px) {
+		.page-actions {
+			top: 4.25rem;
+			right: 0.75rem;
+		}
+
+		.page-actions-toggle {
+			padding: 0.4rem 0.55rem;
+			gap: 0.35rem;
+		}
+
+		.page-actions-toggle .label {
+			display: none;
+		}
+
+		.page-actions-toggle .icon-chevron {
+			width: 12px;
+			height: 12px;
+		}
+
+		.page-actions-menu {
+			min-width: 260px;
+		}
+	}
+</style>

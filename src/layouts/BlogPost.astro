@@ -8,6 +8,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
+	id: string;
 	headings?: MarkdownHeading[];
 };
 
@@ -17,7 +18,7 @@ type TocSection = {
 	children: { slug: string; text: string }[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+const { id, title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
 
 const tocSections: TocSection[] = [];
 let currentSection: TocSection | null = null;
@@ -35,6 +36,7 @@ const hasToc = tocSections.length > 0;
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
+		<link rel="alternate" type="text/markdown" href={`/blog/${id}.md`} />
 		<style>
 			main {
 				max-width: 1480px;

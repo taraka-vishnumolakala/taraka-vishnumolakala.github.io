@@ -1,0 +1,7 @@
+# Taraka Vishnumolakala
+
+> Welcome to my website!
+
+## MCP Security Series
+
+- [Threat-Modeling MCP's Server Features](https://taraka-vishnumolakala.github.io/blog/mcp-security-server-features.md): Part 1 of the MCP Security series. A feature-by-feature threat model of Tools, Resources, Prompts, and the server-side utilities MCP added in 2025-11-25.

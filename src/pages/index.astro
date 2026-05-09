@@ -18,29 +18,33 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 					<img src="/taraka.png" alt="Taraka Vishnumolakala" />
 				</div>
 				<div class="split-content">
-					<p class="job-title">Sr. Cybersecurity Engineer, Security Architecture · <a href="https://www.workday.com" target="_blank" rel="noopener noreferrer">Workday, Inc</a></p>
+					<p class="job-title">Sr. Cybersecurity Engineer, Security Architecture · <a href="https://www.workday.com" class="workday-link" target="_blank" rel="noopener noreferrer">Workday, Inc</a></p>
 					<p>
 						I started my career as a software engineer. That experience gave
 						me a deep appreciation for the decisions developers make under
 						pressure, along with the oversights those decisions can leave
 						behind. It shaped how I approach security today. Rather than
-						treating it as an external audit, I work as someone who
-						understands where systems are most likely to fail and how those
-						gaps translate into real attack surface.
+						looking for known vulnerability classes or following a rigid
+						framework, I work as someone who understands where systems are
+						most likely to fail and how those gaps translate into real
+						attack surface.
 					</p>
 					<p>
-						Today I specialize in application and API security, cloud
-						infrastructure hardening, threat modeling, and offensive security,
-						including pentesting and red teaming that feed actionable findings
-						back into the engineering process. I also focus on AI and ML risk
-						by assessing model attack surfaces and designing controls for
-						systems whose behavior is inherently non-deterministic.
+						Today I specialize in Agentic Security and the stack that
+						powers it, from protocols like MCP, A2A, and A2UI to agent
+						identity and agent-building frameworks such as LangGraph and
+						the Claude Agent SDK. This builds on my prior experience in
+						application and API security, cloud infrastructure hardening,
+						threat modeling, and offensive security, with findings flowing
+						back into the development lifecycle through a shift left
+						approach.
 					</p>
 					<p>
-						I care about building security cultures that last. That means
-						running security champions programs, embedding security awareness
-						into engineering workflows, and empowering developers to own
-						security as a natural part of how they build.
+						I care about building security cultures that stick with
+						developers. That means running security champions programs,
+						embedding security into engineering workflows, and giving
+						engineering and security leadership actionable feedback on how
+						the teams are performing.
 					</p>
 					<p class="links">
 						<a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer">
@@ -116,6 +120,12 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	.split-content a:hover {
 		color: var(--heading);
 		text-decoration-color: var(--text-muted);
+	}
+
+	.split-content .workday-link,
+	.split-content .workday-link:hover {
+		color: #0a4d8c;
+		text-decoration-color: #0a4d8c;
 	}
 
 	.links {

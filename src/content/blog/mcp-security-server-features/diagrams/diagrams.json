@@ -1,0 +1,82 @@
+{
+  "fileId": "RbLQ1xlyed7OUST5Fu74",
+  "eraserTitle": "blog/mcp-security-server-features",
+  "diagrams": {
+    "architecture.png": {
+      "diagramId": "vHTm6NNbjaUCZYD_WbFS1",
+      "diagramName": "architecture",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': AI Application Host with LLM + 3 MCP clients connecting to local stdio, remote HTTPS, and internal HTTPS MCP servers; OAuth 2.1 to AS",
+        "2026-05-04 reflect production reality: distinct auth labels per scenario (stdio = no auth, public remote = OAuth 2.1, internal = API key OR OAuth 2.1 OR mTLS); added Corporate Network boundary around Internal MCP Server + Internal Backend Database; added Third-party API node downstream of public remote server",
+        "2026-05-04 hand-coded DSL via mcp__eraser__update (no AI roundtrip): left-to-right flow User -> MCP Client (inside green AI Application Host on user's machine); Cloud LLM Provider modeled as external service the Host calls via HTTPS, not inside the Host; trusted zones green, untrusted zones color-coded by trust level"
+      ]
+    },
+    "primitives-overview.png": {
+      "diagramId": "-OxJTII-yd8IWmP9eBUT",
+      "diagramName": "primitives-overview",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': three primitive types (Tools amber/model-controlled, Resources grey/app-controlled, Prompts blue/user-controlled)"
+      ]
+    },
+    "trust-boundaries.png": {
+      "diagramId": "TkcQQ-gRHM6bBkmSCDVV",
+      "diagramName": "trust-boundaries",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-03 created — section 'Architecture, primitives, and the trust-boundary map': four trust zones (user/application/local-subprocess/remote-service) with labeled boundary crossings — green for trusted, amber for no-auth-shared-privileges, red for OAuth-protected",
+        "2026-05-04 redrawn for clarity: every trust zone now has a RED boundary box (User, Application, Local Subprocess, Remote Service, Upstream API). Node color inside each zone signals trust level; arrow color signals auth model at the crossing; dashed amber arrows highlight retrieved-data-into-LLM-context as the most-missed trust boundary",
+        "2026-05-04 hand-coded DSL via mcp__eraser__update (no AI roundtrip): zones now colored by trust level (trusted zones GREEN, Local Subprocess amber, Remote Service red, LLM Provider and Upstream API grey) instead of all-red. Added Cloud LLM Provider Zone since the LLM is an external service, not part of the Application Host. Six zones total"
+      ]
+    },
+    "tool-poisoning-flow.png": {
+      "diagramId": "LdyasqWtdflzB_y3Rv4W",
+      "diagramName": "tool-poisoning-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #1: malicious server returns tool description with hidden directives; LLM reads full description, user sees only the tool name; LLM exfiltrates SSH key while showing user the expected result"
+      ]
+    },
+    "rug-pull-timeline.png": {
+      "diagramId": "4YWB2edvlgRzzRwyNFVZ",
+      "diagramName": "rug-pull-timeline",
+      "diagramType": "flowchart-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #2: rug-pull lifecycle Day 0 published / Day 1 installed / Day 14 silent update / Day 30 silent exfiltration; color progression green→blue→amber→red; references CVE-2025-54136 (MCPoison)"
+      ]
+    },
+    "cross-server-injection-flow.png": {
+      "diagramId": "SbmvK8ovPIR3QPN_6aSW",
+      "diagramName": "cross-server-injection-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-03",
+      "history": [
+        "2026-05-03 created — Tools section abuser story #4: malicious Server A's tool result contains hidden instruction that steers LLM's call to trusted Server B (silent BCC to attacker); compromise is in LLM context, never in Server B's logs"
+      ]
+    },
+    "resource-poisoning-flow.png": {
+      "diagramId": "akIM0mjg-zg0hVkMJHs-",
+      "diagramName": "resource-poisoning-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-04 created — Resources section abuser story: poisoned README content carries hidden directive that steers the LLM into reading secrets.env on the next call; data and instruction share the same channel"
+      ]
+    },
+    "prompt-template-injection-flow.png": {
+      "diagramId": "oy1GjpnCC5mzEEloW8GX",
+      "diagramName": "prompt-template-injection-flow",
+      "diagramType": "sequence-diagram",
+      "lastUpdated": "2026-05-04",
+      "history": [
+        "2026-05-04 created — Prompts section abuser story: user types /format-code, malicious server returns template carrying a hidden directive, LLM expands the full template (which the user never sees) and exfiltrates env contents via a trusted email tool"
+      ]
+    }
+  }
+}

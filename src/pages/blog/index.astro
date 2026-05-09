@@ -12,8 +12,10 @@ function buildExcerpt(body: string | undefined): string {
 	if (!body) return '';
 	const plain = body
 		.replace(/^---[\s\S]*?---/, '')
+		.replace(/^\s*(?:import|export)\s+[^;]*;[ \t]*\n?/gm, '')
 		.replace(/```[\s\S]*?```/g, '')
 		.replace(/`[^`]*`/g, '')
+		.replace(/<\/?[A-Z][A-Za-z0-9]*[^>]*\/?>/g, '')
 		.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
 		.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
 		.replace(/^#{1,6}\s+/gm, '')

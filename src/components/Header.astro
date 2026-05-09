@@ -1,6 +1,11 @@
 ---
 import HeaderLink from './HeaderLink.astro';
+import PageActions from './PageActions.astro';
 import { SITE_TITLE } from '../consts';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '');
+const postMatch = pathname.match(/^\/blog\/(.+)$/);
+const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 ---
 
 <header>
@@ -26,6 +31,7 @@ import { SITE_TITLE } from '../consts';
 		</div>
 	</nav>
 </header>
+<PageActions markdownPath={markdownPath} />
 
 <script>
 	const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');

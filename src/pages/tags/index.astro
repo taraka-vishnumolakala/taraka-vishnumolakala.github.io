@@ -22,6 +22,9 @@ const tags = [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 	<head>
 		<BaseHead title={`Tags — ${SITE_TITLE}`} description="Browse posts by tag" />
 		<style>
+			main {
+				max-width: 1400px;
+			}
 			ul {
 				list-style: none;
 				margin: 0;

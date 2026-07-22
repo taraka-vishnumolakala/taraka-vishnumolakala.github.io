@@ -34,14 +34,17 @@ const tags = [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 				display: inline-flex;
 				align-items: center;
 				gap: 0.4rem;
-				padding: 0.3rem 0.75rem;
+				padding: 0.35rem 0.9rem;
 				border: 1px solid var(--border);
-				border-radius: 4px;
+				border-radius: 999px;
 				font-size: 0.78rem;
 				color: var(--text);
+				transition:
+					border-color 0.15s ease,
+					color 0.15s ease;
 			}
 			ul li a:hover {
-				border-color: var(--accent);
+				border-color: var(--heading);
 				color: var(--heading);
 			}
 			.count {

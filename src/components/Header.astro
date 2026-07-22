@@ -73,7 +73,7 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 <style>
 	header {
 		margin: 0;
-		background: var(--bg-card);
+		background: var(--bg);
 		border-bottom: 1px solid var(--border-soft);
 		position: relative;
 	}
@@ -94,9 +94,8 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 
 	.nav-links a {
 		padding: 1em 0.6em;
-		color: var(--text);
+		color: var(--text-muted);
 		font-size: 0.95rem;
-		border-bottom: 2px solid transparent;
 		text-decoration: none;
 		transition: color 0.15s ease;
 	}
@@ -107,7 +106,6 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 
 	.nav-links a.active {
 		color: var(--heading);
-		border-bottom-color: var(--accent);
 	}
 
 	.nav-left {
@@ -117,7 +115,7 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 
 	.nav-left h2 {
 		margin: 0;
-		font-size: 1.5rem;
+		font-size: 1.15rem;
 		font-weight: 600;
 		line-height: 1;
 		border: none;
@@ -155,12 +153,12 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 	}
 
 	.nav-toggle:hover {
-		background: rgba(46, 123, 207, 0.06);
+		background: rgba(0, 0, 0, 0.04);
 		border-color: var(--border);
 	}
 
 	.nav-toggle:focus-visible {
-		outline: 2px solid var(--accent);
+		outline: 2px solid var(--heading);
 		outline-offset: 2px;
 	}
 
@@ -246,8 +244,8 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 
 		.nav-links a.active {
 			border-bottom: none;
-			border-left-color: var(--accent);
-			background: rgba(46, 123, 207, 0.04);
+			border-left-color: var(--heading);
+			background: rgba(0, 0, 0, 0.03);
 		}
 	}
 </style>

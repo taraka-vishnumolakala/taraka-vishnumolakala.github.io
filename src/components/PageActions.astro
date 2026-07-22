@@ -176,13 +176,12 @@ const hasMarkdown = Boolean(markdownPath);
 
 	.page-actions-toggle:hover,
 	.page-actions.open .page-actions-toggle {
-		border-color: var(--accent-soft);
+		border-color: var(--heading);
 		color: var(--heading);
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 18px rgba(46, 123, 207, 0.1);
 	}
 
 	.page-actions-toggle:focus-visible {
-		outline: 2px solid var(--accent);
+		outline: 2px solid var(--heading);
 		outline-offset: 2px;
 	}
 
@@ -209,7 +208,7 @@ const hasMarkdown = Boolean(markdownPath);
 		background: var(--bg-card);
 		border: 1px solid var(--border);
 		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 32px rgba(0, 0, 0, 0.08);
+		box-shadow: var(--box-shadow);
 		padding: 0.5rem;
 		display: flex;
 		flex-direction: column;
@@ -242,13 +241,13 @@ const hasMarkdown = Boolean(markdownPath);
 
 	.action-item:hover,
 	.action-item:focus-visible {
-		background: rgba(46, 123, 207, 0.06);
+		background: rgba(0, 0, 0, 0.04);
 		color: var(--heading);
 		text-decoration: none;
 	}
 
 	.action-item:focus-visible {
-		outline: 2px solid var(--accent);
+		outline: 2px solid var(--heading);
 		outline-offset: -2px;
 	}
 
@@ -261,7 +260,7 @@ const hasMarkdown = Boolean(markdownPath);
 
 	.action-item:hover .icon,
 	.action-item:focus-visible .icon {
-		color: var(--accent);
+		color: var(--heading);
 	}
 
 	.action-item .text {

@@ -16,11 +16,9 @@ const { title, open = false } = Astro.props;
 
 <style>
 	.collapsible {
-		background-color: var(--bg-code);
-		border: 1px solid var(--bg-code-border);
-		border-left: 3px solid var(--accent);
-		border-radius: 0 4px 4px 0;
-		box-shadow: var(--box-shadow);
+		background-color: var(--bg-subtle);
+		border: 1px solid var(--border);
+		border-radius: 8px;
 		margin: 2em 0;
 		overflow: hidden;
 	}
@@ -46,7 +44,7 @@ const { title, open = false } = Astro.props;
 	.collapsible > summary::before {
 		content: "▸";
 		display: inline-block;
-		color: var(--accent);
+		color: var(--text-faint);
 		font-size: 0.85em;
 		transition: transform 0.15s ease;
 	}
@@ -56,13 +54,13 @@ const { title, open = false } = Astro.props;
 	}
 
 	.collapsible > summary:hover {
-		color: var(--accent-dim);
+		color: var(--heading);
 	}
 
 	.collapsible-body {
 		padding: 0.25em 1em 0.75em 1em;
 		border-top: 1px solid var(--bg-code-border);
-		background-color: #fbfbfb;
+		background-color: #ffffff;
 	}
 
 	.collapsible-body :global(pre) {

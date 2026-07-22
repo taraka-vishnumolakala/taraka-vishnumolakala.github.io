@@ -10,6 +10,7 @@ import Header from '../components/Header.astro';
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings?: MarkdownHeading[];
+	readingTime?: number;
 };
 
 type TocSection = {
@@ -18,7 +19,18 @@ type TocSection = {
 	children: { slug: string; text: string }[];
 };
 
-const { id, title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+const {
+	id,
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	author,
+	tags,
+	headings = [],
+	readingTime,
+} = Astro.props;
 
 const tocSections: TocSection[] = [];
 let currentSection: TocSection | null = null;
@@ -50,37 +62,35 @@ const hasToc = tocSections.length > 0;
 				display: block;
 				margin: 0 auto;
 				border-radius: 12px;
-				box-shadow: var(--box-shadow);
 			}
 
 			.layout {
 				display: grid;
-				grid-template-columns: 280px minmax(0, 1100px);
+				grid-template-columns: 1fr minmax(0, 860px) 1fr;
 				gap: 3rem;
 				align-items: start;
-				justify-content: center;
 			}
 
 			.layout.no-toc {
-				grid-template-columns: minmax(0, 1100px);
+				grid-template-columns: minmax(0, 860px);
 				justify-content: center;
 			}
 
 			.toc {
 				position: sticky;
 				top: 1.5rem;
-				font-size: 0.85rem;
+				width: 240px;
+				justify-self: end;
+				font-size: 0.8rem;
 				line-height: 1.5;
-				border-left: 1px solid var(--border-soft);
 			}
 
 			.toc-label {
-				font-family: var(--font-mono);
 				font-size: 0.72rem;
 				letter-spacing: 0.1em;
 				text-transform: uppercase;
 				color: var(--text-faint);
-				margin: 0 0 0.75rem 1rem;
+				margin: 0 0 0.75rem 1.2rem;
 			}
 
 			.toc-details > summary {
@@ -98,16 +108,25 @@ const hasToc = tocSections.length > 0;
 			}
 
 			.toc a {
-				display: block;
-				padding: 0.4rem 1rem;
-				color: var(--text-muted);
+				display: flex;
+				align-items: center;
+				gap: 0.7rem;
+				padding: 0.4rem 0;
+				color: #8a8a8a;
 				text-decoration: none;
-				border-left: 2px solid transparent;
-				margin-left: -1px;
-				transition:
-					color 0.15s ease,
-					border-color 0.15s ease;
+				transition: color 0.15s ease;
 				line-height: 1.45;
+			}
+
+			.toc a::before {
+				content: '';
+				width: 8px;
+				height: 1px;
+				background: #e0e0e0;
+				flex-shrink: 0;
+				transition:
+					width 0.15s ease,
+					background 0.15s ease;
 			}
 
 			.toc a:hover {
@@ -116,9 +135,13 @@ const hasToc = tocSections.length > 0;
 			}
 
 			.toc a.active {
-				color: var(--accent);
-				border-left-color: var(--accent);
+				color: var(--heading);
 				font-weight: 500;
+			}
+
+			.toc a.active::before {
+				width: 16px;
+				background: var(--heading);
 			}
 
 			.toc-children {
@@ -136,9 +159,13 @@ const hasToc = tocSections.length > 0;
 			}
 
 			.toc-children a {
-				padding-left: 2rem;
+				padding-left: 1rem;
 				font-size: 0.8rem;
 				color: var(--text-faint);
+			}
+
+			.toc-children a::before {
+				width: 6px;
 			}
 
 			.toc-children a:hover {
@@ -146,7 +173,11 @@ const hasToc = tocSections.length > 0;
 			}
 
 			.toc-children a.active {
-				color: var(--accent);
+				color: var(--heading);
+			}
+
+			.toc-children a.active::before {
+				width: 10px;
 			}
 
 			.prose {
@@ -160,21 +191,49 @@ const hasToc = tocSections.length > 0;
 				scroll-margin-top: 1.5rem;
 			}
 
-			.title {
-				margin-bottom: 1em;
-				padding: 0 0 1em;
-				text-align: left;
-				line-height: 1;
+			.post-header {
+				margin-bottom: 2rem;
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
+			.breadcrumb {
+				font-size: 0.85rem;
 				color: var(--text-muted);
+				margin: 0;
 			}
-			.last-updated-on {
-				font-style: italic;
+			.breadcrumb a {
+				color: inherit;
+				text-decoration: none;
+				transition: color 0.15s ease;
+			}
+			.breadcrumb a:hover {
+				color: var(--heading);
+			}
+			.breadcrumb .sep {
+				padding: 0 0.5rem;
+				color: var(--text-faint);
+			}
+			.post-title {
+				font-size: clamp(2.5rem, 5vw, 3.5rem);
+				font-weight: 500;
+				letter-spacing: -0.02em;
+				line-height: 1.1;
+				margin: 0.75rem 0 2rem;
+			}
+			.post-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 2.5rem;
+				padding-bottom: 1.5rem;
+				border-bottom: 1px dotted #c9c9c9;
+			}
+			.meta-label {
+				display: block;
+				font-size: 0.75rem;
+				color: var(--text-faint);
+				margin-bottom: 0.2rem;
+			}
+			.meta-value {
+				font-size: 0.9rem;
+				color: var(--heading);
 			}
 
 			@media (max-width: 960px) {
@@ -186,17 +245,18 @@ const hasToc = tocSections.length > 0;
 				.toc {
 					position: relative;
 					top: 0;
+					width: auto;
+					justify-self: stretch;
 					margin-bottom: 2rem;
-					padding: 1rem 0 1rem 1rem;
-					border-left: 3px solid var(--accent-soft);
-					background: var(--bg-card);
-					border-radius: 0 6px 6px 0;
+					padding: 1rem;
+					border: 1px solid var(--border);
+					background: var(--bg-subtle);
+					border-radius: 8px;
 				}
 
 				.toc-details > summary {
 					cursor: pointer;
 					list-style: none;
-					font-family: var(--font-mono);
 					font-size: 0.78rem;
 					letter-spacing: 0.08em;
 					text-transform: uppercase;
@@ -281,20 +341,48 @@ const hasToc = tocSections.length > 0;
 						</aside>
 					)}
 					<div class="prose">
-						<div class="title">
-							<div class="date">
-								<FormattedDate date={pubDate} />
+						<header class="post-header">
+							<p class="breadcrumb">
+								<a href="/blog">Blog</a>
+								{
+									tags?.[0] && (
+										<>
+											<span class="sep">/</span>
+											<span>{tags[0]}</span>
+										</>
+									)
+								}
+							</p>
+							<h1 class="post-title">{title}</h1>
+							<div class="post-meta">
+								<div class="meta-col">
+									<span class="meta-label">Written by</span>
+									<span class="meta-value">{author}</span>
+								</div>
+								<div class="meta-col">
+									<span class="meta-label">Published</span>
+									<span class="meta-value"><FormattedDate date={pubDate} /></span>
+								</div>
 								{
 									updatedDate && (
-										<div class="last-updated-on">
-											Last updated on <FormattedDate date={updatedDate} />
+										<div class="meta-col">
+											<span class="meta-label">Last updated</span>
+											<span class="meta-value">
+												<FormattedDate date={updatedDate} />
+											</span>
+										</div>
+									)
+								}
+								{
+									readingTime && (
+										<div class="meta-col">
+											<span class="meta-label">Reading time</span>
+											<span class="meta-value">{readingTime} min read</span>
 										</div>
 									)
 								}
 							</div>
-							<h1>{title}</h1>
-							<hr />
-						</div>
+						</header>
 						<slot />
 					</div>
 				</div>

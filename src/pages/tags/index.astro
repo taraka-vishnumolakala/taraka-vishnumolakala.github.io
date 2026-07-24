@@ -25,6 +25,17 @@ const tags = [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 			main {
 				max-width: 1400px;
 			}
+			.page-header {
+				max-width: 720px;
+				margin-bottom: 2rem;
+			}
+			.page-header h1 {
+				margin: 0 0 0.75rem;
+			}
+			.page-header p {
+				margin: 0;
+				color: var(--text-secondary);
+			}
 			ul {
 				list-style: none;
 				margin: 0;
@@ -63,6 +74,10 @@ const tags = [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 	<body>
 		<Header />
 		<main>
+			<header class="page-header">
+				<h1>Topics</h1>
+				<p>Browse writing by security and technology topic.</p>
+			</header>
 			{
 				tags.length === 0 ? (
 					<p class="empty">No tags yet.</p>

@@ -31,7 +31,7 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 		</div>
 	</nav>
 </header>
-<PageActions markdownPath={markdownPath} />
+{markdownPath && <PageActions markdownPath={markdownPath} />}
 
 <script>
 	const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
@@ -207,6 +207,7 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 
 		.nav-toggle {
 			display: block;
+			grid-column: 2;
 		}
 
 		.nav-links {
@@ -214,6 +215,8 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 			top: 100%;
 			right: 0;
 			left: 0;
+			grid-column: 1 / -1;
+			justify-self: stretch;
 			flex-direction: column;
 			gap: 0;
 			background: var(--bg-card);

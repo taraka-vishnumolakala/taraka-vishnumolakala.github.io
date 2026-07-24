@@ -3,7 +3,7 @@
 	--font-display: var(--font-sans);
 	--font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
 
-	--bg: #fafafa;
+	--bg: #ffffff;
 	--bg-subtle: #ededed;
 	--bg-card: #ffffff;
 	--bg-code: #f2f2f2;
@@ -47,9 +47,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	background:
-		radial-gradient(circle at 86% 2%, rgba(0, 0, 0, 0.035), transparent 28rem),
-		linear-gradient(rgba(17, 17, 17, 0.028) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(17, 17, 17, 0.028) 1px, transparent 1px),
+		radial-gradient(circle at 86% 2%, rgba(0, 0, 0, 0.025), transparent 28rem),
+		linear-gradient(rgba(17, 17, 17, 0.02) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(17, 17, 17, 0.02) 1px, transparent 1px),
 		var(--bg);
 	background-size:
 		auto,

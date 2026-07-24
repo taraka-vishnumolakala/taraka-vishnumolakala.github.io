@@ -4,10 +4,11 @@ description: "Part 1 of the MCP Security series. A feature-by-feature threat mod
 pubDate: 2026-05-03
 series: "MCP Security Series"
 tags:
-  - mcp
-  - security
-  - threat-modeling
-  - mcp-security-series
+  - agent-and-ml-security
+  - agent-identity
+  - model-lifecycle-controls
+  - system-design
+  - secure-integration
 ---
 
 A field guide to running, building, and deploying Model Context Protocol servers without getting burned. Written for security engineers, platform engineers, and anyone now responsible for AI agents at their org.

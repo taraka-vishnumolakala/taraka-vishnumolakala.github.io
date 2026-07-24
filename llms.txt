@@ -1,6 +1,6 @@
 # Taraka Vishnumolakala
 
-> Welcome to my website!
+> Security architecture and research across security system design, application and API security, cloud security, ML security, agentic systems, and threat modeling.
 
 ## MCP Security Series
 

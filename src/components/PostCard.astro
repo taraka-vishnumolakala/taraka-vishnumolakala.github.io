@@ -1,0 +1,267 @@
+---
+import { Image } from 'astro:assets';
+import fallbackCover from '../assets/blog-placeholder-1.jpg';
+import type { BlogPost } from '../lib/blog';
+import PostMeta from './PostMeta.astro';
+import TagPill from './TagPill.astro';
+
+type Props = {
+	post: BlogPost;
+	variant: 'featured' | 'grid' | 'list';
+	index?: number;
+};
+
+const { post, variant, index = 0 } = Astro.props;
+const href = `/blog/${post.id}/`;
+const coverImage = post.data.coverImage ?? fallbackCover;
+const coverAlt = post.data.coverAlt ?? '';
+---
+
+{
+	variant === 'featured' && (
+		<article class="featured-card">
+			<a
+				class="featured-visual"
+				href={href}
+				aria-label={`Read ${post.data.title}`}
+			>
+				<Image src={coverImage} alt={coverAlt} width={1100} />
+			</a>
+			<div class="featured-copy">
+				<PostMeta post={post} seriesFirst />
+				<h2>
+					<a href={href}>{post.data.title}</a>
+				</h2>
+				<p>{post.data.description}</p>
+				<div class="featured-footer">
+					<div class="card-tags">
+						{post.data.tags?.slice(0, 3).map((tag) => <TagPill tag={tag} />)}
+					</div>
+					<a class="read-link" href={href}>
+						Read article <span aria-hidden="true">→</span>
+					</a>
+				</div>
+			</div>
+		</article>
+	)
+}
+
+{
+	variant === 'grid' && (
+		<article class="post-card post-card--grid">
+			<PostMeta post={post} />
+			<h2>
+				<a href={href}>{post.data.title}</a>
+			</h2>
+			<p>{post.data.description}</p>
+			<a class="read-link" href={href}>
+				Read article <span aria-hidden="true">→</span>
+			</a>
+		</article>
+	)
+}
+
+{
+	variant === 'list' && (
+		<article class="post-card post-card--list">
+			<div class="post-index">{String(index + 1).padStart(2, '0')}</div>
+			<div class="post-copy">
+				<PostMeta post={post} variant="tag" />
+				<h2>
+					<a href={href}>{post.data.title}</a>
+				</h2>
+				<p>{post.data.description}</p>
+			</div>
+			<a class="read-link read-link--list" href={href}>
+				Read article <span aria-hidden="true">→</span>
+			</a>
+		</article>
+	)
+}
+
+<style>
+	.featured-card {
+		display: grid;
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		background: var(--bg-card);
+		box-shadow: var(--box-shadow-soft);
+		overflow: hidden;
+	}
+
+	.featured-visual {
+		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: 450px;
+		padding: clamp(1.5rem, 4vw, 3rem);
+		border-right: 1px solid var(--border);
+		background:
+			radial-gradient(circle at 70% 25%, rgba(17, 17, 17, 0.12), transparent 18rem),
+			var(--accent-faint);
+	}
+
+	.featured-visual img {
+		width: 100%;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		box-shadow: var(--box-shadow);
+		transition: transform 0.25s ease;
+	}
+
+	.featured-visual:hover img {
+		transform: translateY(-4px) rotate(-0.35deg);
+	}
+
+	.featured-copy {
+		display: flex;
+		flex-direction: column;
+		padding: clamp(2rem, 5vw, 4rem);
+	}
+
+	.featured-copy h2,
+	.post-card--grid h2 {
+		margin-bottom: 1.1rem;
+	}
+
+	.featured-copy h2 {
+		font-size: var(--font-size-section-title);
+	}
+
+	.featured-copy h2 a:hover,
+	.post-card h2 a:hover {
+		color: var(--accent-strong);
+	}
+
+	.featured-copy > p {
+		margin: 0 0 2rem;
+		color: var(--text-secondary);
+		line-height: 1.75;
+	}
+
+	.featured-footer {
+		margin-top: auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+	}
+
+	.card-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+
+	.read-link {
+		flex-shrink: 0;
+		color: var(--accent-strong);
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
+	.read-link:hover {
+		color: var(--heading);
+		transform: translateX(3px);
+	}
+
+	.post-card--grid {
+		padding: 2rem 2rem 2rem 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.post-card--grid:nth-child(even) {
+		padding-right: 0;
+		padding-left: 2rem;
+		border-left: 1px solid var(--border);
+	}
+
+	.post-card--grid h2,
+	.post-card--list h2 {
+		font-size: var(--font-size-card-title);
+	}
+
+	.post-card--grid > p {
+		color: var(--text-secondary);
+	}
+
+	.post-card--list {
+		display: grid;
+		grid-template-columns: 44px minmax(0, 1fr) auto;
+		gap: 2rem;
+		align-items: start;
+		padding: 2.5rem 0;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.post-index {
+		color: var(--accent);
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+	}
+
+	.post-card--list h2 {
+		margin-bottom: 0.8rem;
+	}
+
+	.post-copy > p {
+		max-width: 680px;
+		margin: 0;
+		color: var(--text-secondary);
+		line-height: 1.7;
+	}
+
+	.read-link--list {
+		margin-top: 1.8rem;
+		font-size: 0.82rem;
+		white-space: nowrap;
+	}
+
+	@media (max-width: 860px) {
+		.featured-card {
+			grid-template-columns: 1fr;
+		}
+
+		.featured-visual {
+			min-height: 340px;
+			border-right: 0;
+			border-bottom: 1px solid var(--border);
+		}
+	}
+
+	@media (max-width: 760px) {
+		.post-card--list {
+			grid-template-columns: 34px minmax(0, 1fr);
+			gap: 1.25rem;
+			padding: 2rem 0;
+		}
+
+		.read-link--list {
+			grid-column: 2;
+			margin-top: 0;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.featured-footer {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.featured-visual {
+			min-height: 240px;
+			padding: 1.25rem;
+		}
+
+		.featured-copy {
+			padding: 2rem 1.4rem;
+		}
+
+		.post-card--grid,
+		.post-card--grid:nth-child(even) {
+			padding: 1.75rem 0;
+			border-left: 0;
+		}
+	}
+</style>

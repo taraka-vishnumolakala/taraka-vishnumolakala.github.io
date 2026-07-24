@@ -1,17 +1,9 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
+<SiteLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
 		<main class="home-main">
 			<section class="hero" id="about">
 				<div class="hero-copy">
@@ -437,8 +429,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				</div>
 			</section>
 		</main>
-		<Footer />
-		<script>
+		<script slot="body-end">
 			const timelineItems = Array.from(
 				document.querySelectorAll<HTMLElement>('[data-timeline-item]'),
 			);
@@ -464,8 +455,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				timelineItems.forEach((item) => item.classList.add('is-visible'));
 			}
 		</script>
-	</body>
-</html>
+</SiteLayout>
 
 <style>
 	.home-main {

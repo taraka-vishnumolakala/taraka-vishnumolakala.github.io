@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { BLOG_TAGS } from './content/taxonomy';
 
 const blog = defineCollection({
 	// Load Markdown and MDX files in the `src/content/blog/` directory.
@@ -14,7 +15,9 @@ const blog = defineCollection({
 			author: z.string().default('Taraka Vishnumolakala'),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: image().optional(),
-			tags: z.array(z.string()).optional(),
+			coverImage: image().optional(),
+			coverAlt: z.string().optional(),
+			tags: z.array(z.enum(BLOG_TAGS)).optional(),
 			series: z.string().optional(),
 		}),
 });

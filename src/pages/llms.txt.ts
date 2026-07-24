@@ -1,11 +1,12 @@
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getBlogEntries } from '../lib/blog';
 
 const FALLBACK_GROUP = 'Posts';
 
 export async function GET(context: APIContext): Promise<Response> {
-	const posts = (await getCollection('blog')).sort(
+	const posts = (await getBlogEntries()).sort(
 		(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
 	);
 

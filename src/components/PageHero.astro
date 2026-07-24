@@ -1,0 +1,145 @@
+---
+type Props = {
+	variant: 'writing' | 'tags' | 'tag';
+	eyebrow: string;
+	title: string;
+	summary: string;
+	meta?: string;
+	backHref?: string;
+	backLabel?: string;
+};
+
+const {
+	variant,
+	eyebrow,
+	title,
+	summary,
+	meta,
+	backHref,
+	backLabel,
+} = Astro.props;
+---
+
+<header class:list={['page-hero', `page-hero--${variant}`]}>
+	<div>
+		{backHref && backLabel && (
+			<a class="back-link" href={backHref}>← {backLabel}</a>
+		)}
+		<p class="eyebrow">{eyebrow}</p>
+		<h1>{title}</h1>
+	</div>
+	{
+		variant === 'tags' ? (
+			<p>{summary}</p>
+		) : (
+			<div class={variant === 'writing' ? 'page-summary' : 'topic-summary'}>
+				<p>{summary}</p>
+				{meta && <span>{meta}</span>}
+			</div>
+		)
+	}
+</header>
+
+<style>
+	.page-hero {
+		display: grid;
+		align-items: end;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.page-hero--writing {
+		grid-template-columns: minmax(0, 0.9fr) minmax(380px, 0.7fr);
+		gap: clamp(3rem, 10vw, 9rem);
+		padding-bottom: 4.5rem;
+	}
+
+	.page-hero--tags {
+		grid-template-columns: minmax(0, 1fr) minmax(360px, 0.65fr);
+		gap: clamp(3rem, 10vw, 9rem);
+		padding-bottom: 4.5rem;
+	}
+
+	.page-hero--tag {
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 0.6fr);
+		gap: clamp(3rem, 9vw, 7rem);
+		padding-bottom: 4rem;
+	}
+
+	.page-hero h1 {
+		font-size: var(--font-size-page-title);
+		line-height: 1.04;
+	}
+
+	.page-summary p {
+		margin: 0 0 1.3rem;
+		color: var(--text-secondary);
+		font-size: 1.08rem;
+		line-height: 1.72;
+	}
+
+	.page-summary span,
+	.topic-summary span {
+		color: var(--accent-strong);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+	}
+
+	.page-hero--tags > p {
+		margin: 0;
+		color: var(--text-secondary);
+		font-size: 1.08rem;
+		line-height: 1.72;
+	}
+
+	.back-link {
+		display: inline-block;
+		margin-bottom: 2rem;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+	}
+
+	.back-link:hover {
+		color: var(--accent-strong);
+		transform: translateX(-3px);
+	}
+
+	.topic-summary p {
+		margin: 0 0 1rem;
+		color: var(--text-secondary);
+		line-height: 1.72;
+	}
+
+	.topic-summary span {
+		font-size: 0.66rem;
+		letter-spacing: 0.08em;
+	}
+
+	@media (max-width: 860px) {
+		.page-hero--writing {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+
+		.page-summary {
+			max-width: 620px;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.page-hero--tags,
+		.page-hero--tag {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+			padding-bottom: 3rem;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.page-hero--writing {
+			grid-template-columns: 1fr;
+			padding-bottom: 3rem;
+		}
+	}
+</style>

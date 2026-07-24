@@ -2,10 +2,8 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import SiteLayout from './SiteLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
@@ -49,15 +47,16 @@ for (const heading of headings) {
 const hasToc = tocSections.length > 0;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
-		<link rel="alternate" type="text/markdown" href={`/blog/${id}.md`} />
-	</head>
-
-	<body>
-		<div class="reading-progress" aria-hidden="true"><span></span></div>
-		<Header />
+<SiteLayout title={title} description={description} image={heroImage}>
+	<link
+		slot="head"
+		rel="alternate"
+		type="text/markdown"
+		href={`/blog/${id}.md`}
+	/>
+	<div slot="before-header" class="reading-progress" aria-hidden="true">
+		<span></span>
+	</div>
 		<main>
 			<article>
 				{heroImage && (
@@ -154,9 +153,8 @@ const hasToc = tocSections.length > 0;
 				</div>
 			</article>
 		</main>
-		<Footer />
 
-		<script>
+		<script slot="body-end">
 			const responsiveToc =
 				document.querySelector<HTMLDetailsElement>('[data-responsive-toc]');
 			const compactLayout = window.matchMedia('(max-width: 1240px)');
@@ -242,8 +240,7 @@ const hasToc = tocSections.length > 0;
 				articleHeadings.forEach((heading) => observer.observe(heading));
 			}
 		</script>
-	</body>
-</html>
+</SiteLayout>
 
 <style>
 	.reading-progress {

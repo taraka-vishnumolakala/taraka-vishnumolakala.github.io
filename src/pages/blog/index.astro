@@ -1,170 +1,66 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import researchVisual from '../../content/blog/mcp-security-server-features/diagrams/architecture.png';
+import PageHero from '../../components/PageHero.astro';
+import PostCard from '../../components/PostCard.astro';
+import TagPill from '../../components/TagPill.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import { getReadingTime } from '../../lib/reading-time';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getBlogPosts, getTags } from '../../lib/blog';
 
-const posts = (await getCollection('blog'))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.map((post) => ({
-		...post,
-		readingTime: getReadingTime(post.body ?? ''),
-	}));
-
+const posts = await getBlogPosts();
 const featured = posts[0];
 const remaining = posts.slice(1);
-const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
-	(a, b) => a.localeCompare(b),
-);
+const tags = getTags(posts);
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead
-			title={`Writing — ${SITE_TITLE}`}
-			description={SITE_DESCRIPTION}
+<SiteLayout
+	title={`Writing — ${SITE_TITLE}`}
+	description={SITE_DESCRIPTION}
+>
+	<main>
+		<PageHero
+			variant="writing"
+			eyebrow="Research & field notes"
+			title="Writing"
+			summary="Technical analysis across application and API security, cloud security, ML and agentic security, threat modeling, and defensive engineering."
+			meta={`${String(posts.length).padStart(2, '0')} published ${posts.length === 1 ? 'article' : 'articles'}`}
 		/>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<header class="page-hero">
+
+		{tags.length > 0 && (
+			<nav class="topic-nav" aria-label="Filter writing by tag">
+				<span>Browse by tag</span>
 				<div>
-					<p class="eyebrow">Research & field notes</p>
-					<h1>Writing</h1>
+					{tags.map((tag) => <TagPill tag={tag} />)}
 				</div>
-				<div class="page-summary">
-					<p>
-						Technical analysis across application and API security, cloud
-						security, ML and agentic security, threat modeling, and defensive
-						engineering.
-					</p>
-					<span>{String(posts.length).padStart(2, '0')} published {posts.length === 1 ? 'article' : 'articles'}</span>
+			</nav>
+		)}
+
+		{featured ? (
+			<section class="featured-section" aria-labelledby="featured-heading">
+				<p class="section-label" id="featured-heading">Featured research</p>
+				<PostCard post={featured} variant="featured" />
+			</section>
+		) : (
+			<div class="empty">No published writing yet.</div>
+		)}
+
+		{remaining.length > 0 && (
+			<section class="archive-section" aria-labelledby="archive-heading">
+				<div class="archive-heading">
+					<p class="section-label" id="archive-heading">More writing</p>
+					<span>{remaining.length} {remaining.length === 1 ? 'article' : 'articles'}</span>
 				</div>
-			</header>
-
-			{tags.length > 0 && (
-				<nav class="topic-nav" aria-label="Filter writing by tag">
-					<span>Browse by tag</span>
-					<div>
-						{tags.map((tag) => (
-							<a class="tag" href={`/tags/${tag}/`}>{tag}</a>
-						))}
-					</div>
-				</nav>
-			)}
-
-			{featured ? (
-				<section class="featured-section" aria-labelledby="featured-heading">
-					<p class="section-label" id="featured-heading">Featured research</p>
-					<article class="featured-card">
-						<a
-							class="featured-visual"
-							href={`/blog/${featured.id}/`}
-							aria-label={`Read ${featured.data.title}`}
-						>
-							<Image
-								src={researchVisual}
-								alt="MCP architecture connecting users, AI applications, model providers, and servers"
-								width={1100}
-							/>
-						</a>
-						<div class="featured-copy">
-							<div class="article-meta">
-								<span>{featured.data.series ?? 'Security research'}</span>
-								<span><FormattedDate date={featured.data.pubDate} /></span>
-								<span>{featured.readingTime} min read</span>
-							</div>
-							<h2>
-								<a href={`/blog/${featured.id}/`}>{featured.data.title}</a>
-							</h2>
-							<p>{featured.data.description}</p>
-							<div class="featured-footer">
-								<div class="card-tags">
-									{featured.data.tags?.slice(0, 3).map((tag) => (
-										<a class="tag" href={`/tags/${tag}/`}>{tag}</a>
-									))}
-								</div>
-								<a class="read-link" href={`/blog/${featured.id}/`}>
-									Read article <span aria-hidden="true">→</span>
-								</a>
-							</div>
-						</div>
-					</article>
-				</section>
-			) : (
-				<div class="empty">No published writing yet.</div>
-			)}
-
-			{remaining.length > 0 && (
-				<section class="archive-section" aria-labelledby="archive-heading">
-					<div class="archive-heading">
-						<p class="section-label" id="archive-heading">More writing</p>
-						<span>{remaining.length} {remaining.length === 1 ? 'article' : 'articles'}</span>
-					</div>
-					<div class="post-grid">
-						{remaining.map((post) => (
-							<article class="post-card">
-								<div class="article-meta">
-									<span><FormattedDate date={post.data.pubDate} /></span>
-									<span>{post.readingTime} min read</span>
-								</div>
-								<h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
-								<p>{post.data.description}</p>
-								<a class="read-link" href={`/blog/${post.id}/`}>
-									Read article <span aria-hidden="true">→</span>
-								</a>
-							</article>
-						))}
-					</div>
-				</section>
-			)}
-		</main>
-		<Footer />
-	</body>
-</html>
+				<div class="post-grid">
+					{remaining.map((post) => <PostCard post={post} variant="grid" />)}
+				</div>
+			</section>
+		)}
+	</main>
+</SiteLayout>
 
 <style>
 	main {
 		padding-top: 5.5rem;
 		padding-bottom: 7rem;
-	}
-
-	.page-hero {
-		display: grid;
-		grid-template-columns: minmax(0, 0.9fr) minmax(380px, 0.7fr);
-		gap: clamp(3rem, 10vw, 9rem);
-		align-items: end;
-		padding-bottom: 4.5rem;
-		border-bottom: 1px solid var(--border);
-	}
-
-	.page-hero h1 {
-		font-size: var(--font-size-page-title);
-		line-height: 1.04;
-	}
-
-	.page-summary p {
-		margin: 0 0 1.3rem;
-		color: var(--text-secondary);
-		font-size: 1.08rem;
-		line-height: 1.72;
-	}
-
-	.page-summary span,
-	.section-label,
-	.archive-heading > span {
-		color: var(--accent-strong);
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		letter-spacing: 0.09em;
-		text-transform: uppercase;
 	}
 
 	.topic-nav {
@@ -190,116 +86,21 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		gap: 0.45rem;
 	}
 
-	.topic-nav a:hover,
-	.card-tags a:hover {
-		border-color: var(--accent);
-		color: var(--accent-strong);
-	}
-
 	.featured-section {
 		padding-top: 5rem;
 	}
 
-	.section-label {
-		margin: 0 0 1.25rem;
-	}
-
-	.featured-card {
-		display: grid;
-		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		background: var(--bg-card);
-		box-shadow: var(--box-shadow-soft);
-		overflow: hidden;
-	}
-
-	.featured-visual {
-		position: relative;
-		display: grid;
-		place-items: center;
-		min-height: 450px;
-		padding: clamp(1.5rem, 4vw, 3rem);
-		border-right: 1px solid var(--border);
-		background:
-			radial-gradient(circle at 70% 25%, rgba(17, 17, 17, 0.12), transparent 18rem),
-			var(--accent-faint);
-	}
-
-	.featured-visual img {
-		width: 100%;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		box-shadow: var(--box-shadow);
-		transition: transform 0.25s ease;
-	}
-
-	.featured-visual:hover img {
-		transform: translateY(-4px) rotate(-0.35deg);
-	}
-
-	.featured-copy {
-		display: flex;
-		flex-direction: column;
-		padding: clamp(2rem, 5vw, 4rem);
-	}
-
-	.article-meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.7rem 1.25rem;
-		margin-bottom: 1.7rem;
-		color: var(--text-faint);
+	.section-label,
+	.archive-heading > span {
+		color: var(--accent-strong);
 		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		letter-spacing: 0.05em;
+		font-size: 0.68rem;
+		letter-spacing: 0.09em;
 		text-transform: uppercase;
 	}
 
-	.featured-copy h2,
-	.post-card h2 {
-		margin-bottom: 1.1rem;
-	}
-
-	.featured-copy h2 {
-		font-size: var(--font-size-section-title);
-	}
-
-	.featured-copy h2 a:hover,
-	.post-card h2 a:hover {
-		color: var(--accent-strong);
-	}
-
-	.featured-copy > p {
-		margin: 0 0 2rem;
-		color: var(--text-secondary);
-		line-height: 1.75;
-	}
-
-	.featured-footer {
-		margin-top: auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.5rem;
-	}
-
-	.card-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-	}
-
-	.read-link {
-		flex-shrink: 0;
-		color: var(--accent-strong);
-		font-size: 0.85rem;
-		font-weight: 600;
-	}
-
-	.read-link:hover {
-		color: var(--heading);
-		transform: translateX(3px);
+	.section-label {
+		margin: 0 0 1.25rem;
 	}
 
 	.archive-section {
@@ -320,25 +121,6 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.post-card {
-		padding: 2rem 2rem 2rem 0;
-		border-bottom: 1px solid var(--border);
-	}
-
-	.post-card:nth-child(even) {
-		padding-right: 0;
-		padding-left: 2rem;
-		border-left: 1px solid var(--border);
-	}
-
-	.post-card h2 {
-		font-size: var(--font-size-card-title);
-	}
-
-	.post-card > p {
-		color: var(--text-secondary);
-	}
-
 	.empty {
 		margin-top: 4rem;
 		padding: 3rem;
@@ -348,40 +130,13 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		text-align: center;
 	}
 
-	@media (max-width: 860px) {
-		.page-hero,
-		.featured-card {
-			grid-template-columns: 1fr;
-		}
-
-		.page-hero {
-			gap: 2rem;
-		}
-
-		.page-summary {
-			max-width: 620px;
-		}
-
-		.featured-visual {
-			min-height: 340px;
-			border-right: 0;
-			border-bottom: 1px solid var(--border);
-		}
-	}
-
 	@media (max-width: 620px) {
 		main {
 			padding-top: 4rem;
 			padding-bottom: 5rem;
 		}
 
-		.page-hero {
-			grid-template-columns: 1fr;
-			padding-bottom: 3rem;
-		}
-
-		.topic-nav,
-		.featured-footer {
+		.topic-nav {
 			align-items: flex-start;
 			flex-direction: column;
 		}
@@ -390,23 +145,8 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 			padding-top: 3.75rem;
 		}
 
-		.featured-visual {
-			min-height: 240px;
-			padding: 1.25rem;
-		}
-
-		.featured-copy {
-			padding: 2rem 1.4rem;
-		}
-
 		.post-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.post-card,
-		.post-card:nth-child(even) {
-			padding: 1.75rem 0;
-			border-left: 0;
 		}
 	}
 </style>

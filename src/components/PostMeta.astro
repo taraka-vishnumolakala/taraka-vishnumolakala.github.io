@@ -1,0 +1,43 @@
+---
+import type { BlogPost } from '../lib/blog';
+import FormattedDate from './FormattedDate.astro';
+
+type Props = {
+	post: BlogPost;
+	variant?: 'blog' | 'tag';
+	seriesFirst?: boolean;
+};
+
+const { post, variant = 'blog', seriesFirst = false } = Astro.props;
+const series = post.data.series;
+---
+
+<div class:list={['article-meta', `article-meta--${variant}`]}>
+	{seriesFirst && <span>{series ?? 'Security research'}</span>}
+	<span><FormattedDate date={post.data.pubDate} /></span>
+	<span>{post.readingTime} min read</span>
+	{!seriesFirst && series && <span>{series}</span>}
+</div>
+
+<style>
+	.article-meta {
+		display: flex;
+		flex-wrap: wrap;
+		color: var(--text-faint);
+		font-family: var(--font-mono);
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.article-meta--blog {
+		gap: 0.7rem 1.25rem;
+		margin-bottom: 1.7rem;
+		font-size: 0.64rem;
+	}
+
+	.article-meta--tag {
+		gap: 0.65rem 1.1rem;
+		margin-bottom: 1rem;
+		font-size: 0.62rem;
+	}
+</style>

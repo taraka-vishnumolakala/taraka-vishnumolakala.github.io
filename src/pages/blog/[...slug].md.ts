@@ -1,9 +1,10 @@
-import { getCollection, type CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
+import { getBlogEntries } from '../../lib/blog';
 import { mdxBodyToMarkdown } from '../../lib/mdx-to-md';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const posts = await getBlogEntries();
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: { post },

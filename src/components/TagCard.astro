@@ -1,0 +1,84 @@
+---
+import { formatTag, getTagDescription } from '../lib/blog';
+
+type Props = {
+	tag: string;
+	count: number;
+	index: number;
+};
+
+const { tag, count, index } = Astro.props;
+---
+
+<a class="topic-card" href={`/tags/${tag}/`}>
+	<div class="topic-meta">
+		<span>{String(index + 1).padStart(2, '0')}</span>
+		<span>{count} {count === 1 ? 'article' : 'articles'}</span>
+	</div>
+	<h2>{formatTag(tag)}</h2>
+	<p>{getTagDescription(tag)}</p>
+	<strong>Explore tag <span aria-hidden="true">→</span></strong>
+</a>
+
+<style>
+	.topic-card {
+		min-height: 330px;
+		display: flex;
+		flex-direction: column;
+		padding: clamp(1.75rem, 4vw, 3rem);
+		border-right: 1px solid var(--border);
+		border-bottom: 1px solid var(--border);
+		background: rgba(255, 255, 255, 0.42);
+	}
+
+	.topic-card:hover {
+		z-index: 1;
+		background: var(--bg-card);
+		box-shadow: var(--box-shadow-soft);
+		transform: translateY(-3px);
+	}
+
+	.topic-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 3rem;
+		color: var(--text-faint);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.topic-meta span:first-child {
+		color: var(--accent);
+	}
+
+	.topic-card h2 {
+		margin-bottom: 0.8rem;
+		font-size: var(--font-size-card-title);
+	}
+
+	.topic-card > p {
+		max-width: 480px;
+		margin: 0 0 2rem;
+		color: var(--text-secondary);
+		line-height: 1.7;
+	}
+
+	.topic-card strong {
+		margin-top: auto;
+		color: var(--accent-strong);
+		font-size: 0.84rem;
+	}
+
+	.topic-card:hover strong {
+		color: var(--heading);
+	}
+
+	@media (max-width: 760px) {
+		.topic-card {
+			min-height: 280px;
+		}
+	}
+</style>

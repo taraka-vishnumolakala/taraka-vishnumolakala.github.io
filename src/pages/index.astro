@@ -241,6 +241,23 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 							</div>
 						</div>
 					</article>
+					<article>
+						<span>Certifications</span>
+						<ul class="certification-list">
+							<li>
+								<strong>CISSP</strong>
+								<span>ISC2</span>
+							</li>
+							<li>
+								<strong>AWS Red Team Expert</strong>
+								<span>HackTricks Training</span>
+							</li>
+							<li>
+								<strong>Web Application Security Professional</strong>
+								<span>Pentester Academy</span>
+							</li>
+						</ul>
+					</article>
 				</div>
 			</section>
 
@@ -263,7 +280,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						<span>Professional profile</span>
+						<span>Social media profile</span>
 						<strong>LinkedIn ↗</strong>
 					</a>
 				</div>
@@ -642,7 +659,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 	.background-grid {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		border-top: 1px solid var(--border);
 		border-left: 1px solid var(--border);
 	}
@@ -695,6 +712,39 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 		color: var(--text-muted);
 		font-size: 0.8rem;
 		line-height: 1.55;
+	}
+
+	.certification-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.certification-list li {
+		padding: 1.15rem 0;
+		border-top: 1px solid var(--border-soft);
+	}
+
+	.certification-list li:first-child {
+		padding-top: 0;
+		border-top: 0;
+	}
+
+	.certification-list strong,
+	.certification-list span {
+		display: block;
+	}
+
+	.certification-list strong {
+		margin-bottom: 0.25rem;
+		color: var(--heading);
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+
+	.certification-list span {
+		color: var(--text-muted);
+		font-size: 0.76rem;
 	}
 
 	.connect-section {

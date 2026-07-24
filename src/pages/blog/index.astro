@@ -50,8 +50,8 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 			</header>
 
 			{tags.length > 0 && (
-				<nav class="topic-nav" aria-label="Filter writing by topic">
-					<span>Browse by topic</span>
+				<nav class="topic-nav" aria-label="Filter writing by tag">
+					<span>Browse by tag</span>
 					<div>
 						{tags.map((tag) => (
 							<a class="tag" href={`/tags/${tag}/`}>{tag}</a>

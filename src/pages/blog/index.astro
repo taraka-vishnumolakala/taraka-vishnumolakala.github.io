@@ -41,9 +41,9 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 				</div>
 				<div class="page-summary">
 					<p>
-						Deep technical analysis of agentic systems, protocol security,
-						and the engineering practices that make complex software more
-						defensible.
+						Technical analysis across application and API security, cloud
+						infrastructure, agentic systems, threat modeling, and defensive
+						engineering.
 					</p>
 					<span>{String(posts.length).padStart(2, '0')} published {posts.length === 1 ? 'article' : 'articles'}</span>
 				</div>
@@ -222,7 +222,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		padding: clamp(1.5rem, 4vw, 3rem);
 		border-right: 1px solid var(--border);
 		background:
-			radial-gradient(circle at 70% 25%, rgba(15, 113, 117, 0.16), transparent 18rem),
+			radial-gradient(circle at 70% 25%, rgba(17, 17, 17, 0.12), transparent 18rem),
 			var(--accent-faint);
 	}
 
@@ -230,6 +230,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		width: 100%;
 		border: 1px solid var(--border);
 		border-radius: 8px;
+		filter: grayscale(1);
 		box-shadow: var(--box-shadow);
 		transition: transform 0.25s ease;
 	}

@@ -1,29 +1,29 @@
 :root {
 	--font-sans: "Public Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+	--font-display: var(--font-sans);
 	--font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
 
-	--bg: #f4f6f3;
-	--bg-subtle: #edf1ed;
+	--bg: #fafafa;
+	--bg-subtle: #ededed;
 	--bg-card: #ffffff;
-	--bg-code: #eef2ef;
-	--bg-code-border: #d9e1dc;
-	--text: #223039;
-	--text-secondary: #526169;
-	--text-muted: #68777e;
-	--text-faint: #87939a;
-	--heading: #0d2028;
-	--bold: #10272f;
-	--accent: #0f7175;
-	--accent-strong: #09575b;
-	--accent-soft: #dcebea;
-	--accent-faint: #edf5f4;
-	--border: #d8e0dc;
-	--border-soft: #e5ebe7;
-	--selection: rgba(15, 113, 117, 0.17);
-	--highlight-bg: rgba(15, 113, 117, 0.11);
-	--box-shadow: 0 18px 50px rgba(16, 39, 47, 0.1);
-	--box-shadow-soft: 0 8px 24px rgba(16, 39, 47, 0.07);
+	--bg-code: #f2f2f2;
+	--bg-code-border: #dddddd;
+	--text: #262626;
+	--text-secondary: #555555;
+	--text-muted: #6b6b6b;
+	--text-faint: #8a8a8a;
+	--heading: #111111;
+	--bold: #111111;
+	--accent: #333333;
+	--accent-strong: #111111;
+	--accent-soft: #e4e4e4;
+	--accent-faint: #f0f0f0;
+	--border: #d8d8d8;
+	--border-soft: #e6e6e6;
+	--selection: rgba(17, 17, 17, 0.14);
+	--highlight-bg: rgba(17, 17, 17, 0.08);
+	--box-shadow: 0 18px 50px rgba(0, 0, 0, 0.1);
+	--box-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.07);
 	--container: 1200px;
 }
 
@@ -47,8 +47,15 @@ body {
 	display: flex;
 	flex-direction: column;
 	background:
-		radial-gradient(circle at 86% 2%, rgba(15, 113, 117, 0.08), transparent 28rem),
+		radial-gradient(circle at 86% 2%, rgba(0, 0, 0, 0.035), transparent 28rem),
+		linear-gradient(rgba(17, 17, 17, 0.028) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(17, 17, 17, 0.028) 1px, transparent 1px),
 		var(--bg);
+	background-size:
+		auto,
+		64px 64px,
+		64px 64px,
+		auto;
 	color: var(--text);
 	font-size: 1rem;
 	line-height: 1.7;
@@ -174,7 +181,7 @@ img {
 .button-primary {
 	background: var(--heading);
 	color: #fff;
-	box-shadow: 0 8px 22px rgba(13, 32, 40, 0.16);
+	box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
 }
 
 .button-primary:hover {
@@ -259,7 +266,7 @@ mark {
 .prose a {
 	color: var(--accent-strong);
 	text-decoration: underline;
-	text-decoration-color: rgba(15, 113, 117, 0.35);
+	text-decoration-color: rgba(17, 17, 17, 0.35);
 	text-decoration-thickness: 1px;
 	text-underline-offset: 3px;
 }
@@ -293,7 +300,7 @@ mark {
 	padding: 1.25rem;
 	border: 1px solid var(--bg-code-border);
 	border-radius: 10px;
-	background: #e9eeeb;
+	background: #eeeeee;
 	overflow-x: auto;
 }
 
@@ -378,11 +385,11 @@ input {
 
 ::-webkit-scrollbar-thumb {
 	border-radius: 4px;
-	background: rgba(13, 32, 40, 0.16);
+	background: rgba(17, 17, 17, 0.16);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(13, 32, 40, 0.3);
+	background: rgba(17, 17, 17, 0.3);
 }
 
 .sr-only {

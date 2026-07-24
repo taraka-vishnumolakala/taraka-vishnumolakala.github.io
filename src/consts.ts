@@ -3,4 +3,4 @@
 
 export const SITE_TITLE = 'Taraka Vishnumolakala';
 export const SITE_DESCRIPTION =
-	'Security architecture and research on agentic AI, MCP, application security, cloud security, and threat modeling.';
+	'Security architecture and research across application security, APIs, cloud infrastructure, agentic systems, and threat modeling.';

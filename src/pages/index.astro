@@ -28,12 +28,12 @@ const featuredReadingTime = featured
 		<main class="home-main">
 			<section class="hero" id="about">
 				<div class="hero-copy">
-					<p class="eyebrow">Security architecture · Agentic systems</p>
-					<h1>I secure the systems that build and run AI agents.</h1>
+					<p class="eyebrow">Security architecture · Complex systems</p>
+					<h1>I find where complex systems fail—and turn that into stronger security.</h1>
 					<p class="hero-lede">
-						I’m Taraka Vishnumolakala, a cybersecurity engineer focused on
-						agentic security, protocol threat modeling, and the engineering
-						decisions that become real attack surface.
+						I’m Taraka Vishnumolakala, a cybersecurity engineer working
+						across application and API security, cloud infrastructure,
+						agentic systems, threat modeling, and offensive security.
 					</p>
 					<p class="role">
 						Sr. Cybersecurity Engineer, Security Architecture at
@@ -71,8 +71,8 @@ const featuredReadingTime = featured
 					<div class="profile-note">
 						<span>Current focus</span>
 						<p>
-							Agent identity, MCP and A2A security, and developer-centered
-							security architecture.
+							Application and API security, cloud infrastructure, agentic
+							systems, and developer-centered security architecture.
 						</p>
 					</div>
 				</aside>
@@ -81,23 +81,23 @@ const featuredReadingTime = featured
 			<ul class="expertise-strip" aria-label="Areas of expertise">
 				<li>
 					<span>01</span>
-					<strong>Agentic Security</strong>
-					<p>Identity, permissions, tools, and trust boundaries.</p>
+					<strong>Application & API Security</strong>
+					<p>Product attack surface, secure design, and defensive engineering.</p>
 				</li>
 				<li>
 					<span>02</span>
-					<strong>Protocols</strong>
-					<p>MCP, A2A, A2UI, and agent-building frameworks.</p>
+					<strong>Cloud & Infrastructure</strong>
+					<p>Hardening, identity, trust boundaries, and platform risk.</p>
 				</li>
 				<li>
 					<span>03</span>
-					<strong>Product Security</strong>
-					<p>Application, API, cloud, and offensive security.</p>
+					<strong>Agentic Security</strong>
+					<p>Agent identity, MCP, A2A, A2UI, and AI system controls.</p>
 				</li>
 				<li>
 					<span>04</span>
-					<strong>Security Culture</strong>
-					<p>Champions programs and actionable engineering feedback.</p>
+					<strong>Threat Modeling & Culture</strong>
+					<p>Offensive thinking, champions programs, and durable workflows.</p>
 				</li>
 			</ul>
 
@@ -283,7 +283,7 @@ const featuredReadingTime = featured
 		display: block;
 		width: 100%;
 		aspect-ratio: 4 / 5;
-		border: 1px solid rgba(13, 32, 40, 0.16);
+		border: 1px solid rgba(17, 17, 17, 0.16);
 		border-radius: 10px;
 		object-fit: cover;
 		box-shadow: var(--box-shadow);
@@ -427,8 +427,8 @@ const featuredReadingTime = featured
 		padding: 2rem;
 		border-right: 1px solid var(--border);
 		background:
-			linear-gradient(rgba(15, 113, 117, 0.06) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(15, 113, 117, 0.06) 1px, transparent 1px),
+			linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px),
 			var(--accent-faint);
 		background-size: 28px 28px;
 	}
@@ -437,7 +437,7 @@ const featuredReadingTime = featured
 		content: "";
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(145deg, transparent 45%, rgba(15, 113, 117, 0.08));
+		background: linear-gradient(145deg, transparent 45%, rgba(17, 17, 17, 0.08));
 		pointer-events: none;
 	}
 
@@ -447,6 +447,7 @@ const featuredReadingTime = featured
 		width: 100%;
 		border: 1px solid var(--border);
 		border-radius: 8px;
+		filter: grayscale(1);
 		box-shadow: var(--box-shadow);
 		transition: transform 0.25s ease;
 	}
@@ -652,7 +653,7 @@ const featuredReadingTime = featured
 		}
 
 		.hero-copy h1 {
-			font-size: clamp(3rem, 15vw, 4.5rem);
+			font-size: clamp(2.85rem, 12vw, 3.6rem);
 		}
 
 		.profile-card {

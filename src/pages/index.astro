@@ -1,21 +1,8 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import researchVisual from '../content/blog/mcp-security-server-features/diagrams/trust-boundaries.png';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { getReadingTime } from '../lib/reading-time';
-
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-const featured = posts[0];
-const featuredReadingTime = featured
-	? getReadingTime(featured.body ?? '')
-	: undefined;
 ---
 
 <!doctype html>
@@ -44,8 +31,8 @@ const featuredReadingTime = featured
 						>
 					</p>
 					<div class="hero-actions">
-						<a class="button button-primary" href="#research">
-							Read selected research <span aria-hidden="true">→</span>
+						<a class="button button-primary" href="#experience">
+							View experience <span aria-hidden="true">→</span>
 						</a>
 						<a
 							class="button button-secondary"
@@ -80,17 +67,17 @@ const featuredReadingTime = featured
 
 			<ul class="expertise-strip" aria-label="Areas of expertise">
 				<li>
-					<span>03</span>
+					<span>01</span>
 					<strong>ML & Agentic Security</strong>
 					<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
 				</li>
 				<li>
-					<span>01</span>
+					<span>02</span>
 					<strong>Application & API Security</strong>
 					<p>Product attack surface, secure design, and defensive engineering.</p>
 				</li>
 				<li>
-					<span>02</span>
+					<span>03</span>
 					<strong>Cloud Security</strong>
 					<p>Hardening, identity, trust boundaries, and platform risk.</p>
 				</li>
@@ -101,88 +88,88 @@ const featuredReadingTime = featured
 				</li>
 			</ul>
 
-			{featured && (
-				<section class="research-section" id="research">
-					<div class="section-intro">
-						<div>
-							<p class="eyebrow">Selected research</p>
-							<h2>Security analysis built for practitioners.</h2>
-						</div>
-						<a class="section-link" href="/blog">
-							View all writing <span aria-hidden="true">→</span>
-						</a>
+			<section class="experience-section" id="experience">
+				<div class="section-intro">
+					<div>
+						<p class="eyebrow">Experience</p>
+						<h2>From software engineering to security architecture.</h2>
 					</div>
+					<p>
+						My work spans the design, review, testing, and adoption of
+						security controls across product, cloud, and AI/ML systems.
+					</p>
+				</div>
 
-					<article class="featured-research">
-						<a
-							class="research-visual"
-							href={`/blog/${featured.id}/`}
-							aria-label={`Read ${featured.data.title}`}
-						>
-							<Image
-								src={researchVisual}
-								alt="MCP trust boundaries across users, agents, servers, and upstream services"
-								width={1000}
-							/>
-						</a>
-						<div class="research-copy">
-							<div class="research-meta">
-								<span>{featured.data.series ?? 'Security research'}</span>
-								<span><FormattedDate date={featured.data.pubDate} /></span>
-								{featuredReadingTime && <span>{featuredReadingTime} min read</span>}
-							</div>
-							<h3>
-								<a href={`/blog/${featured.id}/`}>{featured.data.title}</a>
-							</h3>
-							<p>{featured.data.description}</p>
-							<div class="research-footer">
-								<div class="research-tags">
-									{featured.data.tags?.slice(0, 3).map((tag) => (
-										<a class="tag" href={`/tags/${tag}/`}>{tag}</a>
-									))}
-								</div>
-								<a class="read-link" href={`/blog/${featured.id}/`}>
-									Read the field guide <span aria-hidden="true">→</span>
-								</a>
-							</div>
-						</div>
+				<div class="experience-grid">
+					<article>
+						<span>Architecture</span>
+						<h3>Security architecture & system design</h3>
+						<p>
+							Architecture reviews, threat modeling, design guidance, and
+							risk decisions across product, cloud, and enterprise systems.
+						</p>
 					</article>
-				</section>
-			)}
+					<article>
+						<span>Product</span>
+						<h3>Application & product security</h3>
+						<p>
+							Manual code review, white-box testing, Secure SDLC,
+							vulnerability management, and security tooling.
+						</p>
+					</article>
+					<article>
+						<span>AI / ML</span>
+						<h3>ML & agentic security</h3>
+						<p>
+							MLSecOps policy, model lifecycle controls, LLM applications,
+							agentic systems, and AI governance.
+						</p>
+					</article>
+					<article>
+						<span>Organizations</span>
+						<h3>Engineering enablement</h3>
+						<p>
+							Security champions, consultation programs, executive risk
+							reporting, and practices integrated into engineering workflows.
+						</p>
+					</article>
+				</div>
+			</section>
 
 			<section class="approach-section">
 				<div class="approach-heading">
 					<p class="eyebrow">How I work</p>
-					<h2>Security that holds up in real engineering environments.</h2>
+					<h2>A practical approach to security architecture.</h2>
 					<p>
-						My software-engineering background shapes how I assess systems:
-						start with the decisions teams make under pressure, then trace
-						where those decisions can fail.
+						I start with system context, identify credible failure paths, and
+						work with engineering teams on controls that can be implemented
+						and maintained.
 					</p>
 				</div>
 				<div class="approach-grid">
 					<article>
-						<span>01 / Understand the system</span>
-						<h3>Find the actual trust boundaries.</h3>
+						<span>01 / Understand context</span>
+						<h3>Map the system and its trust boundaries.</h3>
 						<p>
-							I map identities, data flows, protocol behavior, and failure
-							modes before reaching for a vulnerability checklist.
+							Review architecture, identities, data flows, dependencies,
+							and operational constraints before assessing risk.
 						</p>
 					</article>
 					<article>
-						<span>02 / Translate the risk</span>
-						<h3>Connect flaws to credible attack paths.</h3>
+						<span>02 / Assess risk</span>
+						<h3>Prioritize credible attack paths.</h3>
 						<p>
-							Threat modeling and offensive thinking turn abstract findings
-							into decisions engineering and leadership can act on.
+							Use threat modeling, code review, and offensive testing to
+							connect design decisions to realistic impact.
 						</p>
 					</article>
 					<article>
-						<span>03 / Make the fix durable</span>
-						<h3>Build security into the workflow.</h3>
+						<span>03 / Define controls</span>
+						<h3>Turn findings into engineering decisions.</h3>
 						<p>
-							The strongest controls become part of design reviews,
-							developer tooling, champions programs, and team feedback.
+							Recommend specific controls, owners, and verification steps,
+							then integrate them into design reviews and development
+							workflows.
 						</p>
 					</article>
 				</div>
@@ -378,139 +365,68 @@ const featuredReadingTime = featured
 		line-height: 1.55;
 	}
 
-	.research-section,
+	.experience-section,
 	.approach-section {
 		padding: 7.5rem 0;
 		border-bottom: 1px solid var(--border);
 	}
 
 	.section-intro {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 0.55fr);
 		align-items: end;
-		justify-content: space-between;
-		gap: 3rem;
-		margin-bottom: 3rem;
+		gap: clamp(3rem, 8vw, 7rem);
+		margin-bottom: 3.5rem;
 	}
 
 	.section-intro > div {
 		max-width: 720px;
 	}
 
-	.section-link,
-	.read-link {
-		flex-shrink: 0;
-		color: var(--accent-strong);
-		font-size: 0.86rem;
-		font-weight: 600;
+	.section-intro > p {
+		max-width: 520px;
+		margin: 0;
+		color: var(--text-secondary);
+		line-height: 1.75;
 	}
 
-	.section-link:hover,
-	.read-link:hover {
-		color: var(--heading);
-		transform: translateX(3px);
-	}
-
-	.featured-research {
+	.experience-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		background: var(--bg-card);
-		box-shadow: var(--box-shadow-soft);
-		overflow: hidden;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		border-top: 1px solid var(--border);
+		border-left: 1px solid var(--border);
 	}
 
-	.research-visual {
-		position: relative;
-		display: grid;
-		place-items: center;
-		min-height: 430px;
-		padding: 2rem;
+	.experience-grid article {
+		min-height: 255px;
+		padding: clamp(1.75rem, 4vw, 2.75rem);
 		border-right: 1px solid var(--border);
-		background:
-			linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-			var(--accent-faint);
-		background-size: 28px 28px;
+		border-bottom: 1px solid var(--border);
+		background: rgba(255, 255, 255, 0.72);
 	}
 
-	.research-visual::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(145deg, transparent 45%, rgba(17, 17, 17, 0.08));
-		pointer-events: none;
-	}
-
-	.research-visual img {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		filter: grayscale(1);
-		box-shadow: var(--box-shadow);
-		transition: transform 0.25s ease;
-	}
-
-	.research-visual:hover img {
-		transform: translateY(-4px);
-	}
-
-	.research-copy {
-		display: flex;
-		flex-direction: column;
-		padding: clamp(2rem, 5vw, 4rem);
-	}
-
-	.research-meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.7rem 1.25rem;
-		margin-bottom: 1.6rem;
-		color: var(--text-faint);
+	.experience-grid span {
+		display: block;
+		margin-bottom: 2.4rem;
+		color: var(--accent-strong);
 		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		letter-spacing: 0.05em;
+		font-size: 0.64rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 	}
 
-	.research-copy h3 {
-		margin-bottom: 1rem;
-		font-family: var(--font-display);
-		font-size: clamp(2rem, 4vw, 3.15rem);
-		letter-spacing: -0.025em;
-		line-height: 1.1;
+	.experience-grid h3 {
+		margin-bottom: 0.75rem;
+		font-size: clamp(1.25rem, 2vw, 1.65rem);
 	}
 
-	.research-copy h3 a:hover {
-		color: var(--accent-strong);
-	}
-
-	.research-copy > p {
-		max-width: 600px;
-		margin: 0 0 2rem;
-		color: var(--text-secondary);
-		line-height: 1.72;
-	}
-
-	.research-footer {
-		margin-top: auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.25rem;
-	}
-
-	.research-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-	}
-
-	.research-tags a:hover {
-		border-color: var(--accent);
-		color: var(--accent-strong);
+	.experience-grid p {
+		max-width: 500px;
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		line-height: 1.7;
 	}
 
 	.approach-section {
@@ -624,16 +540,9 @@ const featuredReadingTime = featured
 			padding-left: 0;
 		}
 
-		.featured-research,
 		.approach-section,
 		.connect-section {
 			grid-template-columns: 1fr;
-		}
-
-		.research-visual {
-			min-height: 360px;
-			border-right: 0;
-			border-bottom: 1px solid var(--border);
 		}
 
 		.connect-section {
@@ -687,29 +596,24 @@ const featuredReadingTime = featured
 			margin-bottom: 0.85rem;
 		}
 
-		.research-section,
+		.experience-section,
 		.approach-section {
 			padding: 5.5rem 0;
 		}
 
 		.section-intro {
+			display: flex;
 			align-items: flex-start;
 			flex-direction: column;
 			gap: 1.5rem;
 		}
 
-		.research-visual {
-			min-height: 250px;
-			padding: 1.25rem;
+		.experience-grid {
+			grid-template-columns: 1fr;
 		}
 
-		.research-copy {
-			padding: 2rem 1.4rem;
-		}
-
-		.research-footer {
-			align-items: flex-start;
-			flex-direction: column;
+		.experience-grid article {
+			min-height: 0;
 		}
 
 		.approach-section {

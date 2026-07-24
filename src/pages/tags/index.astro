@@ -111,8 +111,8 @@ const formatTag = (tag: string) =>
 	}
 
 	.page-hero h1 {
-		font-size: clamp(4rem, 10vw, 8rem);
-		line-height: 0.92;
+		font-size: var(--font-size-page-title);
+		line-height: 1.04;
 	}
 
 	.page-hero > p {
@@ -165,7 +165,7 @@ const formatTag = (tag: string) =>
 
 	.topic-card h2 {
 		margin-bottom: 0.8rem;
-		font-size: clamp(2rem, 4vw, 3rem);
+		font-size: var(--font-size-card-title);
 	}
 
 	.topic-card > p {
@@ -204,10 +204,6 @@ const formatTag = (tag: string) =>
 		.page-hero {
 			gap: 2rem;
 			padding-bottom: 3rem;
-		}
-
-		.page-hero h1 {
-			font-size: clamp(4rem, 23vw, 6rem);
 		}
 
 		.topic-grid {

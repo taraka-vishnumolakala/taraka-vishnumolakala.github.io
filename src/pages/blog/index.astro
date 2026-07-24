@@ -146,8 +146,8 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 	}
 
 	.page-hero h1 {
-		font-size: clamp(4rem, 10vw, 8rem);
-		line-height: 0.92;
+		font-size: var(--font-size-page-title);
+		line-height: 1.04;
 	}
 
 	.page-summary p {
@@ -262,7 +262,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 	}
 
 	.featured-copy h2 {
-		font-size: clamp(2.25rem, 4.5vw, 3.65rem);
+		font-size: var(--font-size-section-title);
 	}
 
 	.featured-copy h2 a:hover,
@@ -332,7 +332,7 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 	}
 
 	.post-card h2 {
-		font-size: 2rem;
+		font-size: var(--font-size-card-title);
 	}
 
 	.post-card > p {
@@ -378,10 +378,6 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort(
 		.page-hero {
 			grid-template-columns: 1fr;
 			padding-bottom: 3rem;
-		}
-
-		.page-hero h1 {
-			font-size: clamp(4rem, 23vw, 6rem);
 		}
 
 		.topic-nav,

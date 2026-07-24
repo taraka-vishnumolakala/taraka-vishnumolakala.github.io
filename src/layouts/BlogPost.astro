@@ -428,9 +428,9 @@ const hasToc = tocSections.length > 0;
 
 	.post-title {
 		margin: 0 0 1.4rem;
-		font-size: clamp(3rem, 6vw, 5rem);
+		font-size: var(--font-size-page-title);
 		font-weight: 600;
-		line-height: 1;
+		line-height: 1.04;
 	}
 
 	.post-dek {
@@ -589,10 +589,6 @@ const hasToc = tocSections.length > 0;
 			width: min(calc(100% - 2rem), 900px);
 			padding-top: 3rem;
 			padding-bottom: 5rem;
-		}
-
-		.post-title {
-			font-size: clamp(2.8rem, 14vw, 4.2rem);
 		}
 
 		.post-dek {

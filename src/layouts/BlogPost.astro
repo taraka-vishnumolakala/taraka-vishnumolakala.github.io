@@ -159,7 +159,7 @@ const hasToc = tocSections.length > 0;
 		<script>
 			const responsiveToc =
 				document.querySelector<HTMLDetailsElement>('[data-responsive-toc]');
-			const compactLayout = window.matchMedia('(max-width: 1020px)');
+			const compactLayout = window.matchMedia('(max-width: 1240px)');
 			if (responsiveToc && compactLayout.matches) {
 				responsiveToc.removeAttribute('open');
 			}
@@ -268,7 +268,8 @@ const hasToc = tocSections.length > 0;
 	}
 
 	main {
-		max-width: 1280px;
+		width: min(calc(100% - 3rem), 1440px);
+		max-width: none;
 		padding-top: 4.5rem;
 		padding-bottom: 7rem;
 	}
@@ -288,13 +289,13 @@ const hasToc = tocSections.length > 0;
 
 	.layout {
 		display: grid;
-		grid-template-columns: 230px minmax(0, 780px) minmax(0, 1fr);
+		grid-template-columns: 230px minmax(0, 900px) minmax(0, 1fr);
 		gap: 3rem;
 		align-items: start;
 	}
 
 	.layout.no-toc {
-		grid-template-columns: minmax(0, 780px);
+		grid-template-columns: minmax(0, 900px);
 		justify-content: center;
 	}
 
@@ -514,9 +515,9 @@ const hasToc = tocSections.length > 0;
 		transform: translateX(3px);
 	}
 
-	@media (max-width: 1020px) {
+	@media (max-width: 1240px) {
 		.layout {
-			grid-template-columns: minmax(0, 780px);
+			grid-template-columns: minmax(0, 900px);
 			justify-content: center;
 			gap: 0;
 		}
@@ -585,6 +586,7 @@ const hasToc = tocSections.length > 0;
 		}
 
 		main {
+			width: min(calc(100% - 2rem), 900px);
 			padding-top: 3rem;
 			padding-bottom: 5rem;
 		}

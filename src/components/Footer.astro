@@ -3,75 +3,144 @@ const today = new Date();
 ---
 
 <footer>
-	<div class="footer-inner">
-		<p>&copy; {today.getFullYear()} Taraka Vishnumolakala</p>
-		<nav aria-label="Footer">
-			<a href="/blog">Writing</a>
-			<a href="/rss.xml">RSS</a>
-			<a
-				href="https://github.com/taraka-vishnumolakala"
-				target="_blank"
-				rel="noopener noreferrer">GitHub</a
-			>
-			<a
-				href="https://www.linkedin.com/in/tvishnumolakala/"
-				target="_blank"
-				rel="noopener noreferrer">LinkedIn</a
-			>
-		</nav>
+	<div class="footer-shell">
+		<div class="footer-top">
+			<div class="footer-intro">
+				<p class="footer-name">Taraka Vishnumolakala</p>
+				<p class="footer-statement">
+					Security architecture and research for the systems that build and
+					run AI agents.
+				</p>
+			</div>
+			<div class="footer-links">
+				<nav aria-label="Explore">
+					<p>Explore</p>
+					<a href="/">Home</a>
+					<a href="/blog">Writing</a>
+					<a href="/tags">Topics</a>
+					<a href="/rss.xml">RSS</a>
+				</nav>
+				<nav aria-label="Elsewhere">
+					<p>Elsewhere</p>
+					<a
+						href="https://github.com/taraka-vishnumolakala"
+						target="_blank"
+						rel="noopener noreferrer">GitHub ↗</a
+					>
+					<a
+						href="https://www.linkedin.com/in/tvishnumolakala/"
+						target="_blank"
+						rel="noopener noreferrer">LinkedIn ↗</a
+					>
+				</nav>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<p>&copy; {today.getFullYear()} Taraka Vishnumolakala</p>
+			<p>Agentic security · Application security · Threat modeling</p>
+		</div>
 	</div>
 </footer>
 
 <style>
 	footer {
-		padding: 2em 1em;
-		font-size: 0.875rem;
-		color: var(--text-muted);
-		border-top: 1px solid var(--border);
-		transition:
-			color 0.2s ease,
-			border-color 0.2s ease;
+		margin-top: auto;
+		background: var(--heading);
+		color: rgba(255, 255, 255, 0.72);
 	}
 
-	.footer-inner {
-		max-width: 1100px;
+	.footer-shell {
+		width: min(calc(100% - 3rem), var(--container));
 		margin: 0 auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1.5rem;
+		padding: 4rem 0 1.75rem;
 	}
 
-	p {
+	.footer-top {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+		gap: 5rem;
+		padding-bottom: 3.5rem;
+	}
+
+	.footer-name {
+		margin: 0 0 0.75rem;
+		color: #fff;
+		font-family: var(--font-display);
+		font-size: 1.65rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+	}
+
+	.footer-statement {
+		max-width: 540px;
 		margin: 0;
+		font-size: clamp(1.2rem, 2vw, 1.6rem);
+		line-height: 1.5;
+	}
+
+	.footer-links {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 2rem;
 	}
 
 	nav {
 		display: flex;
-		align-items: center;
-		gap: 1.25rem;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.55rem;
 	}
 
-	a {
-		color: var(--text-muted);
-		text-decoration: none;
-		transition: color 0.15s ease;
+	nav p {
+		margin: 0 0 0.35rem;
+		color: rgba(255, 255, 255, 0.42);
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 
-	a:hover {
-		color: var(--heading);
+	nav a {
+		color: rgba(255, 255, 255, 0.72);
+		font-size: 0.88rem;
 	}
 
-	@media (max-width: 540px) {
-		.footer-inner {
-			flex-direction: column;
-			gap: 0.75rem;
-			text-align: center;
+	nav a:hover {
+		color: #fff;
+		transform: translateX(2px);
+	}
+
+	.footer-bottom {
+		display: flex;
+		justify-content: space-between;
+		gap: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		color: rgba(255, 255, 255, 0.42);
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.04em;
+	}
+
+	.footer-bottom p {
+		margin: 0;
+	}
+
+	@media (max-width: 760px) {
+		.footer-shell {
+			width: min(calc(100% - 2rem), var(--container));
+			padding-top: 3rem;
 		}
 
-		nav {
-			flex-wrap: wrap;
-			justify-content: center;
+		.footer-top {
+			grid-template-columns: 1fr;
+			gap: 2.75rem;
+			padding-bottom: 2.75rem;
+		}
+
+		.footer-bottom {
+			flex-direction: column;
+			gap: 0.5rem;
 		}
 	}
 </style>

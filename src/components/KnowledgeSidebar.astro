@@ -1,0 +1,244 @@
+---
+import {
+	KNOWLEDGE_CATEGORIES,
+} from '../content/knowledge-taxonomy';
+import type { KnowledgeNote } from '../lib/knowledge';
+
+type Props = {
+	notes: KnowledgeNote[];
+	activeId?: string;
+};
+
+const { notes, activeId } = Astro.props;
+---
+
+<aside class="knowledge-sidebar">
+	<details class="knowledge-nav-details" open>
+		<summary>
+			<span>Knowledge navigation</span>
+			<strong>{notes.length} {notes.length === 1 ? 'note' : 'notes'}</strong>
+		</summary>
+		<nav aria-label="Knowledge base">
+			<a
+				class:list={['overview-link', { active: !activeId }]}
+				href="/knowledge"
+			>
+				<span>00</span>
+				<strong>Overview</strong>
+			</a>
+
+			{
+				KNOWLEDGE_CATEGORIES.map((category, categoryIndex) => {
+					const categoryNotes = notes.filter(
+						(note) => note.data.category === category.id,
+					);
+
+					return (
+						<section class="nav-group">
+							<div class="nav-group-heading">
+								<span>{String(categoryIndex + 1).padStart(2, '0')}</span>
+								<h2>{category.label}</h2>
+							</div>
+							{categoryNotes.length > 0 ? (
+								<ul>
+									{categoryNotes.map((note) => (
+										<li>
+											<a
+												class:list={{ active: note.id === activeId }}
+												href={`/knowledge/${note.id}/`}
+												aria-current={note.id === activeId ? 'page' : undefined}
+											>
+												{note.data.title}
+											</a>
+										</li>
+									))}
+								</ul>
+							) : (
+								<p class="empty-category">Notes coming soon</p>
+							)}
+						</section>
+					);
+				})
+			}
+		</nav>
+	</details>
+</aside>
+
+<style>
+	.knowledge-sidebar {
+		position: sticky;
+		top: 7.5rem;
+		max-height: calc(100vh - 9rem);
+		padding-right: 2rem;
+		border-right: 1px solid var(--border);
+		overflow-y: auto;
+		scrollbar-width: thin;
+	}
+
+	.knowledge-nav-details > summary {
+		display: none;
+	}
+
+	.overview-link {
+		display: grid;
+		grid-template-columns: 28px minmax(0, 1fr);
+		gap: 0.7rem;
+		align-items: baseline;
+		margin-bottom: 2rem;
+		padding: 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		color: var(--text-secondary);
+	}
+
+	.overview-link span,
+	.nav-group-heading > span {
+		color: var(--text-faint);
+		font-family: var(--font-mono);
+		font-size: 0.61rem;
+		letter-spacing: 0.06em;
+	}
+
+	.overview-link strong {
+		font-size: 0.82rem;
+		font-weight: 500;
+	}
+
+	.overview-link:hover,
+	.overview-link.active {
+		border-color: var(--accent);
+		background: var(--accent-faint);
+		color: var(--heading);
+	}
+
+	.nav-group {
+		margin-bottom: 2rem;
+	}
+
+	.nav-group-heading {
+		display: grid;
+		grid-template-columns: 28px minmax(0, 1fr);
+		gap: 0.7rem;
+		align-items: baseline;
+		margin-bottom: 0.65rem;
+		padding: 0 0.75rem;
+	}
+
+	.nav-group-heading h2 {
+		color: var(--heading);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.07em;
+		line-height: 1.45;
+		text-transform: uppercase;
+	}
+
+	.nav-group ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.nav-group li + li {
+		margin-top: 0.15rem;
+	}
+
+	.nav-group li a {
+		display: block;
+		padding: 0.52rem 0.65rem 0.52rem 2.15rem;
+		border-radius: 5px;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		line-height: 1.45;
+	}
+
+	.nav-group li a:hover,
+	.nav-group li a.active {
+		background: var(--accent-faint);
+		color: var(--heading);
+	}
+
+	.nav-group li a.active {
+		font-weight: 600;
+	}
+
+	.empty-category {
+		margin: 0;
+		padding-left: 2.15rem;
+		color: var(--text-faint);
+		font-size: 0.72rem;
+	}
+
+	@media (max-width: 980px) {
+		.knowledge-sidebar {
+			position: relative;
+			top: 0;
+			max-height: none;
+			padding: 0;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.76);
+			overflow: visible;
+		}
+
+		.knowledge-nav-details > summary {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			padding: 0.9rem 1rem;
+			color: var(--heading);
+			font-family: var(--font-mono);
+			font-size: 0.66rem;
+			letter-spacing: 0.06em;
+			list-style: none;
+			text-transform: uppercase;
+			cursor: pointer;
+		}
+
+		.knowledge-nav-details > summary::-webkit-details-marker {
+			display: none;
+		}
+
+		.knowledge-nav-details > summary::before {
+			content: "+";
+			font-size: 1rem;
+			line-height: 1;
+		}
+
+		.knowledge-nav-details[open] > summary::before {
+			content: "−";
+		}
+
+		.knowledge-nav-details > summary strong {
+			margin-left: auto;
+			color: var(--text-faint);
+			font-size: 0.61rem;
+			font-weight: 500;
+		}
+
+		.knowledge-nav-details nav {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.5rem;
+			padding: 1rem;
+			border-top: 1px solid var(--border);
+		}
+
+		.overview-link {
+			grid-column: 1 / -1;
+			margin-bottom: 0;
+		}
+
+		.nav-group {
+			margin-bottom: 0;
+		}
+	}
+
+	@media (max-width: 620px) {
+		.knowledge-nav-details nav {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

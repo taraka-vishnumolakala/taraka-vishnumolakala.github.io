@@ -8,6 +8,14 @@ const TRANSFORMS: Record<string, ComponentTransform> = {
 		`#### ${attrs.title ?? 'Details'}\n\n${children.trim()}\n`,
 };
 
+const SELF_CLOSING_TRANSFORMS: Record<
+	string,
+	(attrs: Record<string, string>) => string
+> = {
+	InteractiveCanvas: (attrs) =>
+		`> Interactive visualization: ${attrs.title ?? 'Concept explorer'}\n`,
+};
+
 export function mdxBodyToMarkdown(body: string): string {
 	let out = body;
 
@@ -19,6 +27,14 @@ export function mdxBodyToMarkdown(body: string): string {
 		out = out.replace(re, (_match, attrString: string, children: string) => {
 			const attrs = parseAttrs(attrString);
 			return transform(attrs, children);
+		});
+	}
+
+	for (const [name, transform] of Object.entries(SELF_CLOSING_TRANSFORMS)) {
+		const re = new RegExp(`<${name}\\s*([^>]*?)\\s*/>`, 'g');
+		out = out.replace(re, (_match, attrString: string) => {
+			const attrs = parseAttrs(attrString);
+			return transform(attrs);
 		});
 	}
 

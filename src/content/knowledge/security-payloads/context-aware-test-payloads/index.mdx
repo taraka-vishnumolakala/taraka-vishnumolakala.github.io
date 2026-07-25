@@ -1,0 +1,65 @@
+---
+title: "Context-Aware Test Payloads"
+description: "A defensive approach to designing inert test inputs that reveal parsing, encoding, reflection, and trust-boundary behavior."
+category: security-payloads
+pubDate: 2026-07-25
+topics:
+  - test design
+  - encoding
+  - canary values
+order: 10
+---
+
+A useful security payload should answer a specific question. Large payload lists are less valuable than a small input designed for the parser, context, and control being tested.
+
+## Begin with an inert canary
+
+Start with a unique value such as:
+
+```text
+TV_TEST_7f3c
+```
+
+Trace where the value appears in responses, logs, storage, downstream requests, and rendered output. A unique marker makes transformations visible without triggering executable behavior.
+
+## Add delimiters for the destination context
+
+After confirming reflection or propagation, add non-executing delimiters that help identify the active grammar:
+
+```text
+TV_TEST_7f3c'"<>()[]{}
+```
+
+Observe which characters are preserved, removed, encoded, decoded, or interpreted. The result helps distinguish HTML text, attributes, JSON strings, URLs, database queries, templates, and command arguments.
+
+## Record transformations, not just responses
+
+A payload can be transformed several times before reaching a sink. Capture the value at each available boundary:
+
+| Boundary | Question |
+| --- | --- |
+| Client | What was sent on the wire? |
+| Edge or gateway | Was the value normalized? |
+| Application | Which parser produced the value? |
+| Storage | Was encoding preserved or changed? |
+| Output | Which context finally interpreted it? |
+
+## Keep verification controlled
+
+- Use systems and data you are authorized to test.
+- Prefer inert markers before behavior-changing inputs.
+- Rate-limit automated checks and avoid destructive actions.
+- Define the expected signal before sending the payload.
+- Preserve enough request and response context to reproduce the observation.
+
+## Payload note template
+
+For each reusable test input, record:
+
+1. **Question:** What behavior should this reveal?
+2. **Context:** Which parser or sink receives it?
+3. **Payload:** What is the smallest safe input?
+4. **Expected signal:** What response, log, or state change confirms the behavior?
+5. **Cleanup:** Does the test leave persistent data?
+
+This turns payloads into repeatable test cases rather than an unstructured collection of strings.

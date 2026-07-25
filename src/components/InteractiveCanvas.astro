@@ -1,0 +1,350 @@
+---
+type Props = {
+	mode?: 'data-split';
+	title: string;
+	description?: string;
+};
+
+const {
+	mode = 'data-split',
+	title,
+	description,
+} = Astro.props;
+---
+
+<figure class="interactive-canvas" data-interactive-canvas data-mode={mode}>
+	<header>
+		<div>
+			<span>Interactive concept</span>
+			<h3>{title}</h3>
+		</div>
+		{description && <p>{description}</p>}
+	</header>
+
+	<div class="canvas-frame">
+		<canvas
+			width="800"
+			height="300"
+			aria-label="Interactive visualization of training, validation, and test dataset proportions"
+		>
+			Your browser does not support canvas. Use the controls below to review
+			the dataset proportions.
+		</canvas>
+	</div>
+
+	<div class="canvas-controls" aria-label="Dataset split controls">
+		<label>
+			<span>Training <output data-train-output>70%</output></span>
+			<input
+				type="range"
+				min="50"
+				max="85"
+				value="70"
+				data-train-control
+			/>
+		</label>
+		<label>
+			<span>Validation <output data-validation-output>15%</output></span>
+			<input
+				type="range"
+				min="5"
+				max="30"
+				value="15"
+				data-validation-control
+			/>
+		</label>
+		<div class="test-output">
+			<span>Held-out test</span>
+			<strong data-test-output>15%</strong>
+		</div>
+	</div>
+
+	<figcaption>
+		The test set remains isolated from model and threshold decisions.
+	</figcaption>
+</figure>
+
+<script>
+	const initializeCanvas = (root: HTMLElement) => {
+		if (root.dataset.canvasReady === 'true') return;
+		root.dataset.canvasReady = 'true';
+
+		const canvas = root.querySelector<HTMLCanvasElement>('canvas');
+		const trainControl =
+			root.querySelector<HTMLInputElement>('[data-train-control]');
+		const validationControl = root.querySelector<HTMLInputElement>(
+			'[data-validation-control]',
+		);
+		const trainOutput =
+			root.querySelector<HTMLOutputElement>('[data-train-output]');
+		const validationOutput = root.querySelector<HTMLOutputElement>(
+			'[data-validation-output]',
+		);
+		const testOutput =
+			root.querySelector<HTMLElement>('[data-test-output]');
+
+		if (
+			!canvas ||
+			!trainControl ||
+			!validationControl ||
+			!trainOutput ||
+			!validationOutput ||
+			!testOutput
+		) {
+			return;
+		}
+
+		const draw = () => {
+			let train = Number(trainControl.value);
+			let validation = Number(validationControl.value);
+
+			if (train + validation > 95) {
+				validation = 95 - train;
+				validationControl.value = String(validation);
+			}
+
+			const test = 100 - train - validation;
+			trainOutput.value = `${train}%`;
+			validationOutput.value = `${validation}%`;
+			testOutput.textContent = `${test}%`;
+
+			const bounds = canvas.getBoundingClientRect();
+			const ratio = Math.min(window.devicePixelRatio || 1, 2);
+			const width = Math.max(320, bounds.width);
+			const height = bounds.height;
+			canvas.width = Math.round(width * ratio);
+			canvas.height = Math.round(height * ratio);
+
+			const context = canvas.getContext('2d');
+			if (!context) return;
+
+			context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			context.clearRect(0, 0, width, height);
+			context.fillStyle = '#ffffff';
+			context.fillRect(0, 0, width, height);
+
+			context.strokeStyle = '#ececec';
+			context.lineWidth = 1;
+			for (let x = 24; x < width; x += 40) {
+				context.beginPath();
+				context.moveTo(x, 0);
+				context.lineTo(x, height);
+				context.stroke();
+			}
+			for (let y = 20; y < height; y += 40) {
+				context.beginPath();
+				context.moveTo(0, y);
+				context.lineTo(width, y);
+				context.stroke();
+			}
+
+			const inset = Math.max(22, width * 0.055);
+			const chartWidth = width - inset * 2;
+			const chartY = height * 0.34;
+			const chartHeight = Math.min(92, height * 0.34);
+			const segments = [
+				{ label: 'TRAIN', value: train, fill: '#111111', text: '#ffffff' },
+				{
+					label: 'VALIDATE',
+					value: validation,
+					fill: '#666666',
+					text: '#ffffff',
+				},
+				{ label: 'TEST', value: test, fill: '#d8d8d8', text: '#111111' },
+			];
+
+			let cursor = inset;
+			context.font =
+				'600 11px ui-monospace, SFMono-Regular, Menlo, monospace';
+			context.textBaseline = 'middle';
+
+			for (const segment of segments) {
+				const segmentWidth = chartWidth * (segment.value / 100);
+				context.fillStyle = segment.fill;
+				context.fillRect(cursor, chartY, segmentWidth, chartHeight);
+
+				if (segmentWidth > 54) {
+					context.fillStyle = segment.text;
+					context.fillText(
+						`${segment.label} ${segment.value}%`,
+						cursor + 12,
+						chartY + chartHeight / 2,
+					);
+				}
+				cursor += segmentWidth;
+			}
+
+			context.strokeStyle = '#111111';
+			context.strokeRect(inset, chartY, chartWidth, chartHeight);
+
+			context.fillStyle = '#111111';
+			context.font =
+				'500 10px ui-monospace, SFMono-Regular, Menlo, monospace';
+			context.fillText('ONE DATASET', inset, chartY - 26);
+			context.textAlign = 'right';
+			context.fillStyle = '#6b6b6b';
+			context.fillText('100% ACCOUNTED FOR', width - inset, chartY - 26);
+			context.textAlign = 'left';
+
+			context.strokeStyle = '#8a8a8a';
+			context.setLineDash([5, 6]);
+			context.beginPath();
+			context.moveTo(
+				inset + chartWidth * ((train + validation) / 100),
+				chartY - 12,
+			);
+			context.lineTo(
+				inset + chartWidth * ((train + validation) / 100),
+				chartY + chartHeight + 34,
+			);
+			context.stroke();
+			context.setLineDash([]);
+
+			context.fillStyle = '#555555';
+			context.font =
+				'500 10px ui-monospace, SFMono-Regular, Menlo, monospace';
+			context.fillText(
+				'KEEP ISOLATED',
+				Math.min(
+					width - inset - 82,
+					inset + chartWidth * ((train + validation) / 100) + 8,
+				),
+				chartY + chartHeight + 24,
+			);
+		};
+
+		trainControl.addEventListener('input', draw);
+		validationControl.addEventListener('input', draw);
+		new ResizeObserver(draw).observe(canvas);
+		draw();
+	};
+
+	document
+		.querySelectorAll<HTMLElement>('[data-interactive-canvas]')
+		.forEach(initializeCanvas);
+</script>
+
+<style>
+	.interactive-canvas {
+		margin: 2.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--bg-card);
+		box-shadow: var(--box-shadow-soft);
+		overflow: hidden;
+	}
+
+	.interactive-canvas > header {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(260px, 1.2fr);
+		gap: 2rem;
+		align-items: end;
+		padding: 1.5rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.interactive-canvas > header span {
+		display: block;
+		margin-bottom: 0.45rem;
+		color: var(--accent-strong);
+		font-family: var(--font-mono);
+		font-size: 0.61rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.interactive-canvas > header h3 {
+		margin: 0;
+		font-size: 1.15rem;
+	}
+
+	.interactive-canvas > header p {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		line-height: 1.6;
+	}
+
+	.canvas-frame {
+		padding: 1.25rem 1.25rem 0;
+		background: var(--accent-faint);
+	}
+
+	canvas {
+		display: block;
+		width: 100%;
+		height: 300px;
+		border: 1px solid var(--border);
+		background: #fff;
+	}
+
+	.canvas-controls {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(120px, 0.6fr);
+		gap: 1.5rem;
+		padding: 1.25rem;
+		background: var(--accent-faint);
+	}
+
+	.canvas-controls label {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.canvas-controls label > span,
+	.test-output > span {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		color: var(--text-secondary);
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.canvas-controls output,
+	.test-output strong {
+		color: var(--heading);
+		font-weight: 600;
+	}
+
+	.canvas-controls input {
+		width: 100%;
+		accent-color: var(--heading);
+	}
+
+	.test-output {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: #fff;
+	}
+
+	.interactive-canvas figcaption {
+		margin: 0;
+		padding: 0.8rem 1.25rem;
+		border-top: 1px solid var(--border);
+		color: var(--text-faint);
+		font-family: var(--font-mono);
+		font-size: 0.61rem;
+		letter-spacing: 0.03em;
+	}
+
+	@media (max-width: 720px) {
+		.interactive-canvas > header,
+		.canvas-controls {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		canvas {
+			height: 240px;
+		}
+	}
+</style>

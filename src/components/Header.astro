@@ -4,8 +4,10 @@ import PageActions from './PageActions.astro';
 import { SITE_TITLE } from '../consts';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '');
-const postMatch = pathname.match(/^\/blog\/(.+)$/);
-const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
+const contentMatch = pathname.match(/^\/(blog|knowledge)\/(.+)$/);
+const markdownPath = contentMatch
+	? `/${contentMatch[1]}/${contentMatch[2]}.md`
+	: undefined;
 ---
 
 <header class="site-header">
@@ -30,6 +32,7 @@ const markdownPath = postMatch ? `/blog/${postMatch[1]}.md` : undefined;
 		</button>
 		<div class="nav-links" id="primary-nav">
 			<HeaderLink href="/">Home</HeaderLink>
+			<HeaderLink href="/knowledge">Knowledge</HeaderLink>
 			<HeaderLink href="/blog">Writing</HeaderLink>
 			<HeaderLink href="/tags">Tags</HeaderLink>
 			<a

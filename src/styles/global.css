@@ -68,7 +68,7 @@ body {
 	text-align: left;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
-	overflow-x: clip;
+	overflow: clip;
 }
 
 body::before,
@@ -117,26 +117,27 @@ body::before {
 body::after {
 	right: auto;
 	left: -210px;
-	bottom: -240px;
+	bottom: 0;
 	width: 540px;
-	height: 540px;
+	height: 300px;
 	border: 1px solid rgba(17, 17, 17, 0.28);
-	border-radius: 50%;
+	border-bottom: 0;
+	border-radius: 270px 270px 0 0;
 	background:
 		radial-gradient(circle, rgba(17, 17, 17, 0.75) 0 4px, transparent 5px)
-			75% 26% / 10px 10px no-repeat,
+			75% 48% / 10px 10px no-repeat,
 		repeating-linear-gradient(
 				90deg,
 				rgba(17, 17, 17, 0.4) 0 6px,
 				transparent 6px 14px
 			)
-			74% 27% / 26% 1px no-repeat,
+			74% 50% / 26% 1px no-repeat,
 		repeating-linear-gradient(
 				0deg,
 				rgba(17, 17, 17, 0.4) 0 6px,
 				transparent 6px 14px
 			)
-			75% 0 / 1px 27% no-repeat;
+			75% 0 / 1px 50% no-repeat;
 	opacity: 0.65;
 }
 
@@ -525,7 +526,7 @@ li > input[type="checkbox"] {
 	body::after {
 		right: auto;
 		left: -250px;
-		bottom: -280px;
+		bottom: 0;
 		opacity: 0.42;
 	}
 }

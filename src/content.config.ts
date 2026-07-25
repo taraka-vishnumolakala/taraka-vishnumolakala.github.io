@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { KNOWLEDGE_CATEGORY_IDS } from './content/knowledge-taxonomy';
 import { BLOG_TAGS } from './content/taxonomy';
 
 const blog = defineCollection({
@@ -22,4 +23,17 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const knowledge = defineCollection({
+	loader: glob({ base: './src/content/knowledge', pattern: '**/*.{md,mdx}' }),
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		category: z.enum(KNOWLEDGE_CATEGORY_IDS),
+		pubDate: z.coerce.date(),
+		updatedDate: z.coerce.date().optional(),
+		topics: z.array(z.string()).default([]),
+		order: z.number().int().nonnegative().default(100),
+	}),
+});
+
+export const collections = { blog, knowledge };

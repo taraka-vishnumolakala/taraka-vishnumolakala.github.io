@@ -156,14 +156,14 @@ const hasToc = tocSections.length > 0;
 
 		<script slot="body-end">
 			const responsiveToc =
-				document.querySelector<HTMLDetailsElement>('[data-responsive-toc]');
+				document.querySelector('[data-responsive-toc]');
 			const compactLayout = window.matchMedia('(max-width: 1240px)');
 			if (responsiveToc && compactLayout.matches) {
 				responsiveToc.removeAttribute('open');
 			}
 
 			const progressBar =
-				document.querySelector<HTMLElement>('.reading-progress span');
+				document.querySelector('.reading-progress span');
 			const updateProgress = () => {
 				if (!progressBar) return;
 				const scrollable =
@@ -178,28 +178,28 @@ const hasToc = tocSections.length > 0;
 			document.addEventListener('scroll', updateProgress, { passive: true });
 
 			const links =
-				document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+				document.querySelectorAll('[data-toc-link]');
 			if (links.length > 0) {
-				const linkBySlug = new Map<string, HTMLAnchorElement>();
-				const sectionBySlug = new Map<string, HTMLElement>();
+				const linkBySlug = new Map();
+				const sectionBySlug = new Map();
 				const allSections = Array.from(
-					document.querySelectorAll<HTMLElement>('[data-toc-section]'),
+					document.querySelectorAll('[data-toc-section]'),
 				);
 
 				links.forEach((link) => {
 					const slug = link.dataset.tocLink;
 					if (!slug) return;
 					linkBySlug.set(slug, link);
-					const section = link.closest<HTMLElement>('[data-toc-section]');
+					const section = link.closest('[data-toc-section]');
 					if (section) sectionBySlug.set(slug, section);
 				});
 
 				const articleHeadings = Array.from(linkBySlug.keys())
 					.map((slug) => document.getElementById(slug))
-					.filter((element): element is HTMLElement => element !== null);
+					.filter((element) => element !== null);
 
-				let activeSlug: string | null = null;
-				const setActive = (slug: string | null) => {
+				let activeSlug = null;
+				const setActive = (slug) => {
 					if (slug === activeSlug) return;
 					if (activeSlug) {
 						linkBySlug.get(activeSlug)?.classList.remove('active');

@@ -1,4 +1,5 @@
 ---
+import ExpertiseIcon from '../components/ExpertiseIcon.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
@@ -63,34 +64,39 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 							fetchpriority="high"
 						/>
 					</div>
-					<div class="profile-note">
-						<span>Current focus</span>
-						<p>
-							Agent and ML Security, including agent identity, model
-							lifecycle controls, system design, and secure integration.
-						</p>
-					</div>
 				</aside>
 			</section>
 
 			<ul class="expertise-strip" aria-label="Areas of expertise">
 				<li>
-					<span>01</span>
+					<div class="expertise-meta">
+						<span class="expertise-number">01</span>
+						<ExpertiseIcon type="agent-ml" />
+					</div>
 					<strong>Agent & ML Security</strong>
 					<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
 				</li>
 				<li>
-					<span>02</span>
+					<div class="expertise-meta">
+						<span class="expertise-number">02</span>
+						<ExpertiseIcon type="application-api" />
+					</div>
 					<strong>Application & API Security</strong>
 					<p>Product attack surface, secure design, and defensive engineering.</p>
 				</li>
 				<li>
-					<span>03</span>
+					<div class="expertise-meta">
+						<span class="expertise-number">03</span>
+						<ExpertiseIcon type="cloud" />
+					</div>
 					<strong>Cloud Security</strong>
 					<p>Hardening, identity, trust boundaries, and platform risk.</p>
 				</li>
 				<li>
-					<span>04</span>
+					<div class="expertise-meta">
+						<span class="expertise-number">04</span>
+						<ExpertiseIcon type="threat-modeling" />
+					</div>
 					<strong>Threat Modeling & Culture</strong>
 					<p>Offensive thinking, champions programs, and durable workflows.</p>
 				</li>
@@ -431,14 +437,16 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		</main>
 		<script slot="body-end">
 			const timelineItems = Array.from(
-				document.querySelectorAll<HTMLElement>('[data-timeline-item]'),
+				document.querySelectorAll('[data-timeline-item]'),
 			);
 			const reducedMotion = window.matchMedia(
 				'(prefers-reduced-motion: reduce)',
 			).matches;
 
 			if ('IntersectionObserver' in window && !reducedMotion) {
-				document.documentElement.classList.add('timeline-reveal-ready');
+				timelineItems.forEach((item) =>
+					item.classList.add('timeline-reveal-pending'),
+				);
 				const observer = new IntersectionObserver(
 					(entries) => {
 						entries.forEach((entry) => {
@@ -447,7 +455,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 							observer.unobserve(entry.target);
 						});
 					},
-					{ rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
+					{ rootMargin: '0px 0px -4% 0px', threshold: 0.01 },
 				);
 
 				timelineItems.forEach((item) => observer.observe(item));
@@ -589,34 +597,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			var(--accent);
 	}
 
-	.profile-note {
-		position: relative;
-		z-index: 3;
-		max-width: 300px;
-		margin: -2.6rem 0 0 -2.25rem;
-		padding: 1.15rem 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.95);
-		box-shadow: var(--box-shadow-soft);
-	}
-
-	.profile-note span {
-		color: var(--accent-strong);
-		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-	}
-
-	.profile-note p {
-		margin: 0.35rem 0 0;
-		color: var(--text-secondary);
-		font-size: 0.8rem;
-		line-height: 1.55;
-	}
-
 	.expertise-strip {
 		margin: 0;
 		padding: 0;
@@ -642,9 +622,15 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		border-right: 0;
 	}
 
-	.expertise-strip span {
-		display: block;
-		margin-bottom: 1.7rem;
+	.expertise-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 1.4rem;
+	}
+
+	.expertise-number {
 		color: var(--accent);
 		font-family: var(--font-mono);
 		font-size: 0.66rem;
@@ -792,7 +778,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		line-height: 1.7;
 	}
 
-	:global(html.timeline-reveal-ready) .timeline-item {
+	.timeline-item.timeline-reveal-pending {
 		opacity: 0;
 		transform: translateY(24px);
 		transition:
@@ -800,7 +786,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			transform 0.55s ease;
 	}
 
-	:global(html.timeline-reveal-ready) .timeline-item.is-visible {
+	.timeline-item.timeline-reveal-pending.is-visible {
 		opacity: 1;
 		transform: translateY(0);
 	}
@@ -942,33 +928,21 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 	}
 
 	.speaking-card {
-		background: var(--heading);
-		color: #fff;
-	}
-
-	.speaking-card .background-card-header {
-		border-color: rgba(255, 255, 255, 0.16);
-	}
-
-	.speaking-card .background-card-header span {
-		color: rgba(255, 255, 255, 0.76);
-	}
-
-	.speaking-card .background-card-header span:last-child {
-		color: rgba(255, 255, 255, 0.42);
+		background: rgba(255, 255, 255, 0.82);
+		color: var(--text);
 	}
 
 	.speaking-link {
 		min-height: 225px;
 		display: flex;
 		flex-direction: column;
-		color: #fff;
+		color: var(--heading);
 	}
 
 	.speaking-event {
 		display: block;
 		margin-bottom: 1rem;
-		color: rgba(255, 255, 255, 0.56);
+		color: var(--text-faint);
 		font-family: var(--font-mono);
 		font-size: 0.7rem;
 		letter-spacing: 0.08em;
@@ -978,20 +952,20 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 	.speaking-link h3 {
 		max-width: 520px;
 		margin-bottom: 0.8rem;
-		color: #fff;
+		color: var(--heading);
 		font-size: clamp(1.4rem, 2.4vw, 2rem);
 		line-height: 1.25;
 	}
 
 	.speaking-link p {
 		margin: 0;
-		color: rgba(255, 255, 255, 0.62);
+		color: var(--text-muted);
 		font-size: 0.82rem;
 	}
 
 	.speaking-link strong {
 		margin-top: auto;
-		color: #fff;
+		color: var(--accent-strong);
 		font-size: 0.8rem;
 	}
 
@@ -1138,10 +1112,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			justify-self: center;
 		}
 
-		.profile-note {
-			margin-left: -1rem;
-		}
-
 		.expertise-strip {
 			grid-template-columns: 1fr;
 		}
@@ -1159,7 +1129,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			border-bottom: 0;
 		}
 
-		.expertise-strip span {
+		.expertise-meta {
 			margin-bottom: 0.85rem;
 		}
 

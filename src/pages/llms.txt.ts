@@ -2,6 +2,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { APIContext } from 'astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getBlogEntries } from '../lib/blog';
+import { getKnowledgeEntries } from '../lib/knowledge';
 
 const FALLBACK_GROUP = 'Posts';
 
@@ -9,6 +10,7 @@ export async function GET(context: APIContext): Promise<Response> {
 	const posts = (await getBlogEntries()).sort(
 		(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
 	);
+	const knowledgeNotes = await getKnowledgeEntries();
 
 	const groups = new Map<string, CollectionEntry<'blog'>[]>();
 	for (const post of posts) {
@@ -31,6 +33,15 @@ export async function GET(context: APIContext): Promise<Response> {
 		for (const post of entries) {
 			const url = new URL(`/blog/${post.id}.md`, context.site).toString();
 			lines.push(`- [${post.data.title}](${url}): ${post.data.description}`);
+		}
+		lines.push('');
+	}
+
+	if (knowledgeNotes.length > 0) {
+		lines.push('## Knowledge Base', '');
+		for (const note of knowledgeNotes) {
+			const url = new URL(`/knowledge/${note.id}.md`, context.site).toString();
+			lines.push(`- [${note.data.title}](${url}): ${note.data.description}`);
 		}
 		lines.push('');
 	}

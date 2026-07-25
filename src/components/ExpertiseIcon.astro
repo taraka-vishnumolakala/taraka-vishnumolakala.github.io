@@ -1,0 +1,59 @@
+---
+type Props = {
+	type: 'agent-ml' | 'application-api' | 'cloud' | 'threat-modeling';
+};
+
+const { type } = Astro.props;
+
+const labels = {
+	'agent-ml': ['ML', 'AI'],
+	'application-api': ['</>', 'API'],
+	cloud: ['☁', 'IAM'],
+	'threat-modeling': ['◎', 'TM'],
+};
+---
+
+<span class:list={['expertise-icons', `expertise-icons--${type}`]} aria-hidden="true">
+	<span>{labels[type][0]}</span>
+	<span>{labels[type][1]}</span>
+</span>
+
+<style>
+	.expertise-icons {
+		display: inline-flex;
+		gap: 0.35rem;
+	}
+
+	.expertise-icons > span {
+		min-width: 28px;
+		height: 28px;
+		display: inline-grid;
+		place-items: center;
+		padding: 0 0.35rem;
+		border: 1px solid var(--border);
+		border-radius: 5px;
+		background: rgba(255, 255, 255, 0.72);
+		color: var(--heading);
+		font-family: var(--font-mono);
+		font-size: 0.58rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+
+	.expertise-icons > span:first-child {
+		border-color: var(--heading);
+		background: var(--heading);
+		color: #fff;
+	}
+
+	.expertise-icons--application-api > span:first-child {
+		font-size: 0.5rem;
+	}
+
+	.expertise-icons--cloud > span:first-child,
+	.expertise-icons--threat-modeling > span:first-child {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+	}
+</style>

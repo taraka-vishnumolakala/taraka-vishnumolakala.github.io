@@ -11,7 +11,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 					<p class="eyebrow">Software engineering · Security engineering</p>
 					<h1>Software engineer turned security engineer.</h1>
 					<p class="hero-lede">
-						I’m Taraka Vishnumolakala. I currently focus on Agent and ML
+						I’m Taraka Vishnumolakala. I currently focus on Agentic and ML
 						Security, with broader experience in security system design,
 						application and API security, cloud security, threat modeling,
 						and offensive security.
@@ -67,23 +67,31 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 				<ul class="expertise-strip">
 					<li>
 						<span class="expertise-number">01</span>
-						<strong>Agent & ML Security</strong>
-						<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
+						<strong>Agentic & ML Security</strong>
+						<p>
+							Securing products built with AI and agentic capabilities,
+							managing ML model risks, and implementing enterprise controls
+							across agent identity, MCP, A2A, and A2UI.
+						</p>
 					</li>
 					<li>
 						<span class="expertise-number">02</span>
 						<strong>Application & API Security</strong>
-						<p>Product attack surface, secure design, and defensive engineering.</p>
+						<p>Product attack surfaces, secure design, and defense-in-depth.</p>
 					</li>
 					<li>
 						<span class="expertise-number">03</span>
 						<strong>Cloud Security</strong>
-						<p>Hardening, identity, trust boundaries, and platform risk.</p>
+						<p>Secure cloud architecture, identity, trust boundaries, and platform risk.</p>
 					</li>
 					<li>
 						<span class="expertise-number">04</span>
 						<strong>Threat Modeling & Culture</strong>
-						<p>Offensive thinking, champions programs, and durable workflows.</p>
+						<p>
+							Collaborative threat modeling with engineers, leading Security
+							Champions programs, and communicating security progress and risk
+							to leadership.
+						</p>
 					</li>
 				</ul>
 			</section>
@@ -101,7 +109,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 				</div>
 
 				<ol class="career-timeline" aria-label="Professional experience">
-						<li class="timeline-item" data-timeline-item>
+						<li class="timeline-item is-current" data-timeline-item>
 							<div class="timeline-period">
 								<time datetime="2023-09">Sep 2023 — Present</time>
 								<span class="timeline-location"
@@ -654,8 +662,16 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		justify-self: center;
 		border: 2px solid var(--bg-card);
 		border-radius: 50%;
+		background: var(--bg-card);
+		box-shadow: 0 0 0 1px var(--text-faint);
+	}
+
+	.timeline-item.is-current .timeline-marker {
 		background: var(--heading);
-		box-shadow: 0 0 0 1px var(--heading);
+		box-shadow:
+			0 0 0 1px var(--heading),
+			0 0 0 4px rgb(17 17 17 / 8%),
+			0 4px 10px rgb(17 17 17 / 18%);
 	}
 
 	.timeline-entry {

@@ -1,0 +1,30 @@
+---
+import FaviconMark from './FaviconMark.astro';
+
+interface Props {
+	href: string;
+	prefix: string;
+	suffix?: string;
+}
+
+const { href, prefix, suffix = '.' } = Astro.props;
+---
+
+<span class="practice-link">
+	<FaviconMark
+		src="/assets/neetcode-logo.png"
+		fallback=""
+		size="compact"
+		renderMode="background"
+	/>
+	<span class="practice-copy"><span>{prefix}</span> <a href={href}><slot /></a>{suffix}</span>
+</span>
+
+<style>
+	.practice-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		vertical-align: middle;
+	}
+</style>

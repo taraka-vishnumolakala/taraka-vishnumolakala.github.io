@@ -17,7 +17,7 @@ const { mode, title, description } = Astro.props;
 
 const canvasLabels: Record<MathLabMode, string> = {
 	'linear-forward':
-		'Interactive graph of a linear prediction changing with input, weight, and bias',
+		'Interactive graph estimating investigation hours from the number of affected endpoints',
 	'linear-training':
 		'Interactive graph showing a prediction line moving toward observed data',
 	'gradient-descent':
@@ -28,6 +28,21 @@ const canvasLabels: Record<MathLabMode, string> = {
 		'Interactive probability bars calculated from three scores and a temperature',
 	'cross-entropy':
 		'Interactive curve showing cross-entropy loss as correct-answer probability changes',
+};
+
+const captions: Record<MathLabMode, string> = {
+	'linear-forward':
+		'Move a control and watch the prediction and line update together.',
+	'linear-training':
+		'Take a training step and watch the prediction line move toward the observed data.',
+	'gradient-descent':
+		'Change the starting value or learning rate, then follow each update on the loss curve.',
+	activations:
+		'Choose a function, move the input, and watch that function transform the same raw score.',
+	softmax:
+		'Change the scores or temperature and watch the probability shares update together.',
+	'cross-entropy':
+		'Change the model’s belief in the correct answer and watch its penalty respond.',
 };
 ---
 
@@ -48,49 +63,63 @@ const canvasLabels: Record<MathLabMode, string> = {
 	</div>
 
 	{mode === 'linear-forward' && (
-		<div class="lab-controls three-controls" aria-label="Prediction controls">
+		<div
+			class="lab-controls three-controls"
+			aria-label="Investigation estimate controls"
+		>
 			<label>
-				<span>Input x <output data-output="x">24</output></span>
+				<span>
+					Affected endpoints (x) <output data-output="x">8</output>
+				</span>
 				<input
 					data-control="x"
 					type="range"
 					min="0"
-					max="40"
+					max="20"
 					step="1"
-					value="24"
+					value="8"
 				/>
 			</label>
 			<label>
-				<span>Weight w <output data-output="w">2.5</output></span>
+				<span>
+					Analyst-hours per endpoint (w) <output data-output="w">1.5</output>
+				</span>
 				<input
 					data-control="w"
 					type="range"
 					min="0"
-					max="5"
+					max="3"
 					step="0.1"
-					value="2.5"
+					value="1.5"
 				/>
 			</label>
 			<label>
-				<span>Bias b <output data-output="b">10</output></span>
+				<span>
+					Baseline analyst-hours (b) <output data-output="b">2.0</output>
+				</span>
 				<input
 					data-control="b"
 					type="range"
 					min="0"
-					max="30"
-					step="1"
-					value="10"
+					max="10"
+					step="0.5"
+					value="2"
 				/>
 			</label>
 			<div class="lab-result wide-result" aria-live="polite">
-				<span>Prediction</span>
-				<strong data-result="prediction">2.5 × 24 + 10 = 70</strong>
+				<span>Estimated effort</span>
+				<strong data-result="prediction">
+					1.5 × 8 + 2.0 = 14.0 analyst-hours
+				</strong>
 			</div>
 		</div>
 	)}
 
 	{mode === 'linear-training' && (
-		<div class="lab-controls training-controls" aria-label="Training controls">
+		<div
+			class="lab-controls training-controls"
+			aria-label="Linear regression training controls"
+		>
 			<label>
 				<span>
 					Learning rate
@@ -106,23 +135,23 @@ const canvasLabels: Record<MathLabMode, string> = {
 				/>
 			</label>
 			<div class="button-group">
-				<button type="button" data-action="step">Take one step</button>
-				<button type="button" data-action="run">Run 12 steps</button>
+				<button type="button" data-action="step">Take one update</button>
+				<button type="button" data-action="run">Run 12 updates</button>
 				<button type="button" class="quiet-button" data-action="reset">
 					Reset
 				</button>
 			</div>
 			<div class="metric-grid" aria-live="polite">
 				<div>
-					<span>Step</span>
+					<span>Updates completed</span>
 					<strong data-result="step">0</strong>
 				</div>
 				<div>
 					<span>Mean squared error</span>
-					<strong data-result="mse">48.62</strong>
+					<strong data-result="mse">40.262</strong>
 				</div>
 				<div>
-					<span>Current line</span>
+					<span>Current model</span>
 					<strong data-result="equation">ŷ = 0.00x + 0.00</strong>
 				</div>
 			</div>
@@ -197,7 +226,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 				/>
 			</label>
 			<fieldset class="segmented-control">
-				<legend>Emphasize</legend>
+				<legend>Function to graph</legend>
 				<label>
 					<input
 						type="radio"
@@ -221,15 +250,15 @@ const canvasLabels: Record<MathLabMode, string> = {
 			<div class="metric-grid" aria-live="polite">
 				<div>
 					<span>Sigmoid output</span>
-					<strong data-result="sigmoid">0.500</strong>
+					<strong data-result="sigmoid">0.5000</strong>
 				</div>
 				<div>
 					<span>ReLU output</span>
 					<strong data-result="relu">0.000</strong>
 				</div>
 				<div>
-					<span>Interpretation</span>
-					<strong data-result="activation-note">Half on</strong>
+					<span>Selected function</span>
+					<strong data-result="activation-note">At the midpoint</strong>
 				</div>
 			</div>
 		</div>
@@ -238,7 +267,9 @@ const canvasLabels: Record<MathLabMode, string> = {
 	{mode === 'softmax' && (
 		<div class="lab-controls softmax-controls" aria-label="Softmax controls">
 			<label>
-				<span>Cat score <output data-output="cat">2.1</output></span>
+				<span>
+					Credential abuse score <output data-output="cat">2.1</output>
+				</span>
 				<input
 					data-control="cat"
 					type="range"
@@ -249,7 +280,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 				/>
 			</label>
 			<label>
-				<span>Dog score <output data-output="dog">0.3</output></span>
+				<span>Malware score <output data-output="dog">0.3</output></span>
 				<input
 					data-control="dog"
 					type="range"
@@ -260,7 +291,9 @@ const canvasLabels: Record<MathLabMode, string> = {
 				/>
 			</label>
 			<label>
-				<span>Fish score <output data-output="fish">−1.0</output></span>
+				<span>
+					Misconfiguration score <output data-output="fish">−1.0</output>
+				</span>
 				<input
 					data-control="fish"
 					type="range"
@@ -286,16 +319,16 @@ const canvasLabels: Record<MathLabMode, string> = {
 			</label>
 			<div class="metric-grid" aria-live="polite">
 				<div>
-					<span>Cat probability</span>
-					<strong data-result="cat-probability">82.3%</strong>
+					<span>Credential abuse</span>
+					<strong data-result="cat-probability">82.6%</strong>
 				</div>
 				<div>
-					<span>Dog probability</span>
-					<strong data-result="dog-probability">13.6%</strong>
+					<span>Malware</span>
+					<strong data-result="dog-probability">13.7%</strong>
 				</div>
 				<div>
-					<span>Fish probability</span>
-					<strong data-result="fish-probability">4.1%</strong>
+					<span>Misconfiguration</span>
+					<strong data-result="fish-probability">3.7%</strong>
 				</div>
 			</div>
 		</div>
@@ -305,7 +338,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 		<div class="lab-controls entropy-controls" aria-label="Cross-entropy controls">
 			<label>
 				<span>
-					Belief in the correct answer
+					Probability given to the correct class
 					<output data-output="probability">80%</output>
 				</span>
 				<input
@@ -318,30 +351,30 @@ const canvasLabels: Record<MathLabMode, string> = {
 				/>
 			</label>
 			<div class="preset-group" aria-label="Probability examples">
-				<button type="button" data-probability="95">95% sure</button>
-				<button type="button" data-probability="50">50% sure</button>
-				<button type="button" data-probability="10">10% sure</button>
-				<button type="button" data-probability="1">1% sure</button>
+				<button type="button" data-probability="95">95% to correct class</button>
+				<button type="button" data-probability="50">50% to correct class</button>
+				<button type="button" data-probability="10">10% to correct class</button>
+				<button type="button" data-probability="1">1% to correct class</button>
 			</div>
 			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Correct-class probability</span>
+					<strong data-result="probability-display">80%</strong>
+				</div>
 				<div>
 					<span>Cross-entropy loss</span>
 					<strong data-result="loss">0.223</strong>
 				</div>
 				<div>
-					<span>Perplexity</span>
-					<strong data-result="perplexity">1.250</strong>
-				</div>
-				<div>
-					<span>Meaning</span>
-					<strong data-result="surprise">Low surprise</strong>
+					<span>Penalty size</span>
+					<strong data-result="surprise">Small penalty</strong>
 				</div>
 			</div>
 		</div>
 	)}
 
 	<figcaption data-caption>
-		Move a control and watch the calculation and drawing update together.
+		{captions[mode]}
 	</figcaption>
 </figure>
 
@@ -360,6 +393,9 @@ const canvasLabels: Record<MathLabMode, string> = {
 		paper: '#ffffff',
 		soft: '#d8d8d8',
 		mid: '#737373',
+		steelDark: '#33434b',
+		steelMid: '#71828a',
+		steelPale: '#dee4e6',
 	};
 
 	const numberFrom = (root: HTMLElement, name: string) =>
@@ -473,11 +509,11 @@ const canvasLabels: Record<MathLabMode, string> = {
 
 		outputTo(root, 'x', x.toFixed(0));
 		outputTo(root, 'w', weight.toFixed(1));
-		outputTo(root, 'b', bias.toFixed(0));
+		outputTo(root, 'b', bias.toFixed(1));
 		resultTo(
 			root,
 			'prediction',
-			`${weight.toFixed(1)} × ${x.toFixed(0)} + ${bias.toFixed(0)} = ${prediction.toFixed(1)}`,
+			`${weight.toFixed(1)} × ${x.toFixed(0)} + ${bias.toFixed(1)} = ${prediction.toFixed(1)} analyst-hours`,
 		);
 
 		const setup = setupCanvas(canvas);
@@ -487,8 +523,8 @@ const canvasLabels: Record<MathLabMode, string> = {
 		const area = plotArea(width, height);
 		drawAxes(context, area);
 
-		const maxY = Math.max(120, weight * 40 + bias + 15);
-		const px = (value: number) => scale(value, 0, 40, area.left, area.right);
+		const maxY = Math.max(40, weight * 20 + bias + 5);
+		const px = (value: number) => scale(value, 0, 20, area.left, area.right);
 		const py = (value: number) =>
 			scale(value, 0, maxY, area.bottom, area.top);
 
@@ -496,7 +532,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 		context.lineWidth = 2.5;
 		context.beginPath();
 		context.moveTo(px(0), py(bias));
-		context.lineTo(px(40), py(weight * 40 + bias));
+		context.lineTo(px(20), py(weight * 20 + bias));
 		context.stroke();
 
 		context.setLineDash([5, 6]);
@@ -514,8 +550,14 @@ const canvasLabels: Record<MathLabMode, string> = {
 		context.arc(px(x), py(prediction), 6, 0, Math.PI * 2);
 		context.fill();
 
-		drawLabel(context, 'input x', area.right, area.bottom + 24, 'right');
-		drawLabel(context, 'prediction ŷ', area.left, area.top - 14);
+		drawLabel(
+			context,
+			'affected endpoints (x)',
+			area.right,
+			area.bottom + 24,
+			'right',
+		);
+		drawLabel(context, 'estimated analyst-hours (ŷ)', area.left, area.top - 14);
 		drawLabel(
 			context,
 			`(${x.toFixed(0)}, ${prediction.toFixed(1)})`,
@@ -525,12 +567,12 @@ const canvasLabels: Record<MathLabMode, string> = {
 	};
 
 	const trainingData = [
-		[0, 1.1],
-		[1, 3.2],
-		[2, 4.8],
-		[3, 7.2],
-		[4, 8.9],
-		[5, 11.1],
+		[0, 2.2],
+		[1, 3.4],
+		[2, 5.1],
+		[3, 6.6],
+		[4, 8.2],
+		[5, 9.4],
 	] as const;
 
 	const initializeLinearTraining = (
@@ -582,7 +624,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 			const py = (value: number) =>
 				scale(value, -2, 13, area.bottom, area.top);
 
-			context.strokeStyle = palette.ink;
+			context.strokeStyle = palette.steelDark;
 			context.lineWidth = 2.5;
 			context.beginPath();
 			context.moveTo(px(0), py(bias));
@@ -599,9 +641,25 @@ const canvasLabels: Record<MathLabMode, string> = {
 				context.stroke();
 			}
 
-			drawLabel(context, 'temperature x', area.right, area.bottom + 24, 'right');
-			drawLabel(context, 'cups sold y', area.left, area.top - 14);
-			drawLabel(context, `step ${step} · mse ${mse.toFixed(2)}`, area.left, area.bottom + 24);
+			drawLabel(
+				context,
+				'affected endpoints (x)',
+				area.right,
+				area.bottom + 24,
+				'right',
+			);
+			drawLabel(
+				context,
+				'actual / estimated analyst-hours',
+				area.left,
+				area.top - 14,
+			);
+			drawLabel(
+				context,
+				`update ${step} · mse ${mse.toFixed(2)}`,
+				area.left,
+				area.bottom + 24,
+			);
 		};
 
 		const takeStep = () => {
@@ -680,8 +738,8 @@ const canvasLabels: Record<MathLabMode, string> = {
 			}
 			context.stroke();
 
-			context.strokeStyle = palette.mid;
-			context.lineWidth = 1.5;
+			context.strokeStyle = palette.steelMid;
+			context.lineWidth = 2;
 			context.beginPath();
 			path.forEach((value, index) => {
 				const x = px(value);
@@ -692,15 +750,16 @@ const canvasLabels: Record<MathLabMode, string> = {
 			context.stroke();
 
 			path.forEach((value, index) => {
+				const isCurrent = index === path.length - 1;
 				context.fillStyle =
-					index === path.length - 1 ? palette.ink : palette.paper;
-				context.strokeStyle = palette.ink;
-				context.lineWidth = 1.5;
+					isCurrent ? palette.steelDark : palette.steelPale;
+				context.strokeStyle = palette.steelDark;
+				context.lineWidth = isCurrent ? 2 : 1.5;
 				context.beginPath();
 				context.arc(
 					px(value),
 					py((value - 2) ** 2),
-					index === path.length - 1 ? 6 : 4,
+					isCurrent ? 6 : 4,
 					0,
 					Math.PI * 2,
 				);
@@ -753,24 +812,31 @@ const canvasLabels: Record<MathLabMode, string> = {
 			root.querySelector<HTMLInputElement>(
 				'[data-control="activation"]:checked',
 			)?.value ?? 'sigmoid';
+		const isSigmoid = selected === 'sigmoid';
 		const sigmoid = 1 / (1 + Math.exp(-input));
 		const relu = Math.max(0, input);
 
 		outputTo(root, 'x', input.toFixed(1));
-		resultTo(root, 'sigmoid', sigmoid.toFixed(3));
+		resultTo(root, 'sigmoid', sigmoid.toFixed(4));
 		resultTo(root, 'relu', relu.toFixed(3));
 		resultTo(
 			root,
 			'activation-note',
-			selected === 'sigmoid'
-				? sigmoid < 0.1
-					? 'Nearly off'
-					: sigmoid > 0.9
-						? 'Nearly on'
-						: 'Responsive range'
-				: input <= 0
-					? 'Blocked at zero'
-					: 'Passed through',
+			isSigmoid
+				? input <= -5
+					? 'Close to 0'
+					: input < 0
+						? 'Below the midpoint'
+						: input === 0
+							? 'At the midpoint'
+							: input < 5
+								? 'Above the midpoint'
+								: 'Close to 1'
+				: input < 0
+					? 'Negative input becomes 0'
+					: input === 0
+						? 'At the corner'
+						: 'Positive input passes through',
 		);
 
 		const setup = setupCanvas(canvas);
@@ -781,37 +847,31 @@ const canvasLabels: Record<MathLabMode, string> = {
 		drawAxes(context, area);
 		const px = (value: number) =>
 			scale(value, -8, 8, area.left, area.right);
+		const outputMax = isSigmoid ? 1 : 8;
 		const py = (value: number) =>
-			scale(value, 0, 8, area.bottom, area.top);
+			scale(value, 0, outputMax, area.bottom, area.top);
+		const activeFunction = isSigmoid
+			? (value: number) => 1 / (1 + Math.exp(-value))
+			: (value: number) => Math.max(0, value);
+		const activeValue = isSigmoid ? sigmoid : relu;
 
-		const drawCurve = (
-			fn: (value: number) => number,
-			active: boolean,
-		) => {
-			context.strokeStyle = active ? palette.ink : palette.faint;
-			context.lineWidth = active ? 3 : 1.5;
-			context.beginPath();
-			for (let sample = -8; sample <= 8; sample += 0.08) {
-				const x = px(sample);
-				const y = py(fn(sample));
-				if (sample === -8) context.moveTo(x, y);
-				else context.lineTo(x, y);
-			}
-			context.stroke();
-		};
+		context.strokeStyle = palette.ink;
+		context.lineWidth = 3;
+		context.beginPath();
+		for (let sample = -8; sample <= 8; sample += 0.08) {
+			const x = px(sample);
+			const y = py(activeFunction(sample));
+			if (sample === -8) context.moveTo(x, y);
+			else context.lineTo(x, y);
+		}
+		context.stroke();
 
-		drawCurve(
-			(value) => 1 / (1 + Math.exp(-value)),
-			selected === 'sigmoid',
-		);
-		drawCurve((value) => Math.max(0, value), selected === 'relu');
-
-		const activeValue = selected === 'sigmoid' ? sigmoid : relu;
 		context.setLineDash([5, 6]);
 		context.strokeStyle = palette.mid;
 		context.beginPath();
 		context.moveTo(px(input), area.bottom);
 		context.lineTo(px(input), py(activeValue));
+		context.lineTo(area.left, py(activeValue));
 		context.stroke();
 		context.setLineDash([]);
 		context.fillStyle = palette.ink;
@@ -819,14 +879,36 @@ const canvasLabels: Record<MathLabMode, string> = {
 		context.arc(px(input), py(activeValue), 6, 0, Math.PI * 2);
 		context.fill();
 
-		drawLabel(context, 'input x', area.right, area.bottom + 24, 'right');
-		drawLabel(context, 'output', area.left, area.top - 14);
-		drawLabel(context, 'sigmoid', area.right - 8, py(1) - 10, 'right');
-		drawLabel(context, 'relu', area.right - 8, py(8) + 12, 'right');
+		drawLabel(
+			context,
+			isSigmoid
+				? 'sigmoid selected · output 0 to 1'
+				: 'relu selected · output 0 to 8',
+			area.left,
+			area.top - 14,
+		);
+		drawLabel(context, '−8', px(-8), area.bottom + 14, 'center');
+		drawLabel(context, '0', px(0), area.bottom + 14, 'center');
+		drawLabel(context, '8', px(8), area.bottom + 14, 'center');
+		drawLabel(
+			context,
+			outputMax.toFixed(isSigmoid ? 1 : 0),
+			area.left - 8,
+			area.top,
+			'right',
+		);
+		drawLabel(context, '0', area.left - 8, area.bottom, 'right');
+		drawLabel(
+			context,
+			`x ${input.toFixed(1)} · output ${activeValue.toFixed(isSigmoid ? 4 : 3)}`,
+			Math.min(area.right - 8, Math.max(area.left + 8, px(input) + 12)),
+			Math.max(area.top + 18, py(activeValue) - 16),
+		);
 	};
 
 	const drawSoftmax = (root: HTMLElement, canvas: HTMLCanvasElement) => {
 		const names = ['cat', 'dog', 'fish'] as const;
+		const displayNames = ['credential', 'malware', 'misconfig'] as const;
 		const scores = names.map((name) => numberFrom(root, name));
 		const temperature = numberFrom(root, 'temperature');
 		const adjusted = scores.map((score) => score / temperature);
@@ -834,6 +916,7 @@ const canvasLabels: Record<MathLabMode, string> = {
 		const exponentials = adjusted.map((score) => Math.exp(score - stableMax));
 		const total = exponentials.reduce((sum, value) => sum + value, 0);
 		const probabilities = exponentials.map((value) => value / total);
+		const leadingProbability = Math.max(...probabilities);
 
 		names.forEach((name, index) => {
 			const score = scores[index];
@@ -861,22 +944,31 @@ const canvasLabels: Record<MathLabMode, string> = {
 		probabilities.forEach((probability, index) => {
 			const x = area.left + index * (barWidth + barGap);
 			const barHeight = (area.bottom - area.top) * probability;
-			context.fillStyle = index === 0 ? palette.ink : palette.soft;
+			const barTop = area.bottom - barHeight;
+			const isLeader =
+				Math.abs(probability - leadingProbability) < Number.EPSILON * 10;
+			context.fillStyle = isLeader ? palette.steelDark : palette.soft;
 			context.fillRect(x, area.bottom - barHeight, barWidth, barHeight);
-			context.strokeStyle = palette.ink;
-			context.lineWidth = 1;
+			context.strokeStyle = isLeader ? palette.steelDark : palette.ink;
+			context.lineWidth = isLeader ? 2 : 1;
 			context.strokeRect(x, area.bottom - barHeight, barWidth, barHeight);
+			const probabilityLabelY = Math.max(
+				area.top + 12,
+				barTop - 14,
+			);
 			drawLabel(
 				context,
 				`${(probability * 100).toFixed(1)}%`,
 				x + barWidth / 2,
-				Math.max(area.top + 12, area.bottom - barHeight - 14),
+				probabilityLabelY,
 				'center',
-				palette.ink,
+				isLeader && probabilityLabelY >= barTop
+					? palette.paper
+					: palette.ink,
 			);
 			drawLabel(
 				context,
-				names[index],
+				displayNames[index],
 				x + barWidth / 2,
 				area.bottom + 24,
 				'center',
@@ -897,20 +989,23 @@ const canvasLabels: Record<MathLabMode, string> = {
 		const probabilityPercent = numberFrom(root, 'probability');
 		const probability = probabilityPercent / 100;
 		const loss = -Math.log(probability);
-		const perplexity = Math.exp(loss);
 		outputTo(root, 'probability', `${probabilityPercent.toFixed(0)}%`);
+		resultTo(
+			root,
+			'probability-display',
+			`${probabilityPercent.toFixed(0)}%`,
+		);
 		resultTo(root, 'loss', loss.toFixed(3));
-		resultTo(root, 'perplexity', perplexity.toFixed(3));
 		resultTo(
 			root,
 			'surprise',
 			probability >= 0.75
-				? 'Low surprise'
+				? 'Small penalty'
 				: probability >= 0.35
-					? 'Moderate surprise'
+					? 'Moderate penalty'
 					: probability >= 0.1
-						? 'High surprise'
-						: 'Extreme surprise',
+						? 'Large penalty'
+						: 'Very large penalty',
 		);
 
 		const setup = setupCanvas(canvas);
@@ -951,12 +1046,12 @@ const canvasLabels: Record<MathLabMode, string> = {
 
 		drawLabel(
 			context,
-			'belief in correct answer',
+			'probability given to correct class',
 			area.right,
 			area.bottom + 24,
 			'right',
 		);
-		drawLabel(context, 'surprise penalty', area.left, area.top - 14);
+		drawLabel(context, 'cross-entropy loss', area.left, area.top - 14);
 		drawLabel(
 			context,
 			`p ${probability.toFixed(2)} · loss ${loss.toFixed(2)}`,

@@ -1,0 +1,284 @@
+---
+title: "Cross-Entropy Loss"
+description: "Learn how classification training penalizes a model for giving too little probability to the correct answer."
+category: ml-engineering
+section: math-foundations
+pubDate: 2026-07-25
+topics:
+  - classification
+  - loss functions
+  - probability
+  - model training
+order: 40
+---
+
+Suppose an incident has already been investigated. The response team confirmed
+that its primary cause was **credential abuse**.
+
+Before seeing that answer, a model assigned these probability shares:
+
+| Class | Model probability |
+| --- | ---: |
+| Credential abuse | `82.6%` |
+| Malware | `13.7%` |
+| Misconfiguration | `3.7%` |
+
+The correct class received the largest share, so the model chose the right
+answer. But training needs more than a right-or-wrong result. It needs a number
+that measures how good the complete prediction was.
+
+That measurement is called **loss**. A smaller loss means the prediction fits
+the known answer more closely.
+
+For classification, a common measurement is **cross-entropy loss**.
+
+## Grade the probability given to the correct class
+
+For one example with one correct class, cross-entropy asks a focused question:
+
+> How much probability did the model give the answer that turned out to be
+> correct?
+
+It uses this rule:
+
+`loss = −ln(probability given to the correct class)`
+
+The letters `ln` mean **natural logarithm**. A logarithm is a mathematical
+function that produces the penalty shape we want here: the penalty is small
+near probability `1` and grows rapidly as the probability approaches `0`.
+
+You do not need to calculate logarithms by hand to follow the idea:
+
+| Probability given to correct class | Cross-entropy loss |
+| ---: | ---: |
+| `95%` | `0.051` |
+| `80%` | `0.223` |
+| `50%` | `0.693` |
+| `10%` | `2.303` |
+| `1%` | `4.605` |
+
+The minus sign keeps the loss positive. The natural logarithm of a number
+between `0` and `1` is negative, so placing a minus sign in front turns it into
+a positive penalty.
+
+## Compare two correct predictions
+
+Consider two models that both choose credential abuse:
+
+- Model A gives credential abuse `55%`.
+- Model B gives credential abuse `95%`.
+
+Both models are correct if the system chooses the class with the largest share.
+Cross-entropy still prefers Model B:
+
+`Model A loss = −ln(0.55) ≈ 0.598`
+
+`Model B loss = −ln(0.95) ≈ 0.051`
+
+This gives training more information than accuracy alone. It can distinguish a
+weak correct prediction from a strong correct prediction.
+
+<MathConceptLab
+	mode="cross-entropy"
+	title="Grade an alert classification"
+	description="The investigation has confirmed the correct class. Change the probability that the model assigned to that class and watch the training penalty respond."
+/>
+
+Use the preset buttons to compare the curve at `95%`, `50%`, `10%`, and `1%`.
+The loss rises slowly near the right side, where the model gave substantial
+probability to the truth. It rises sharply near the left side, where the model
+was confident in the wrong classes.
+
+This behavior is often summarized as:
+
+> Cross-entropy gives a large penalty to a confidently wrong prediction.
+
+## Why the other probabilities still matter
+
+The formula appears to read only the correct class’s probability. The wrong
+classes still matter indirectly.
+
+[Softmax](/knowledge/ml-engineering/math-foundations/softmax/) makes all class
+probabilities share one fixed total of `100%`. Giving more probability to a
+wrong class leaves less for the correct class, which increases the loss.
+
+For our original alert:
+
+`loss = −ln(0.826) ≈ 0.191`
+
+If the real cause had been malware instead, the correct-class probability would
+have been `0.137`:
+
+`loss = −ln(0.137) ≈ 1.988`
+
+If the real cause had been misconfiguration, the loss would have been even
+larger:
+
+`loss = −ln(0.037) ≈ 3.297`
+
+The same prediction receives a different grade because the known answer tells
+us which probability to examine.
+
+## From one alert to a training set
+
+A useful model trains on many labeled examples. The training system calculates
+the cross-entropy loss for each example and usually takes the average across a
+group of examples called a **batch**.
+
+That average gives the model one summary number for the batch. Training then
+uses gradients to determine how each model parameter contributed to the loss.
+[Gradient Descent](/knowledge/ml-engineering/math-foundations/gradient-descent/)
+updates the parameters in the direction that should reduce future loss.
+
+The cycle is:
+
+1. The model produces raw class scores.
+2. Softmax turns the scores into probability shares.
+3. Cross-entropy compares those shares with the known class.
+4. The training system calculates gradients.
+5. Gradient descent updates the model parameters.
+6. The process repeats with more examples.
+
+## Implement the calculation in Python
+
+This small function calculates the loss from a probability list and the
+position of the correct class:
+
+```python
+import math
+
+
+def cross_entropy(probabilities, correct_index):
+    """Measure how much probability the model gave the correct class."""
+    correct_probability = probabilities[correct_index]
+
+    # Avoid taking the logarithm of zero.
+    safe_probability = max(correct_probability, 1e-15)
+    return -math.log(safe_probability)
+
+
+probabilities = [0.826, 0.137, 0.037]
+class_names = [
+    "credential abuse",
+    "malware",
+    "misconfiguration",
+]
+
+for correct_index, class_name in enumerate(class_names):
+    loss = cross_entropy(probabilities, correct_index)
+    print(f"correct class: {class_name:20} loss: {loss:.3f}")
+```
+
+Running it produces:
+
+```text
+correct class: credential abuse     loss: 0.191
+correct class: malware              loss: 1.988
+correct class: misconfiguration     loss: 3.297
+```
+
+The value `1e-15` means a very small positive number. Without that lower limit,
+a probability of exactly zero would ask Python to calculate `ln(0)`, which is
+not a finite number.
+
+This separated implementation is useful for learning. Production
+machine-learning libraries usually accept the raw logits and the correct class,
+then combine softmax and cross-entropy in one numerically stable operation.
+
+## Loss and accuracy answer different questions
+
+**Accuracy** asks whether the top-scoring class was correct. **Cross-entropy**
+also considers how much probability the model gave that class.
+
+This means:
+
+- Two models can have the same accuracy but different average losses.
+- A model’s loss can improve even when its number of correct answers has not
+  changed yet.
+- A small average loss does not guarantee acceptable security performance.
+
+Security teams still need measures that reflect the decision’s consequences,
+such as the rate of missed attacks, the rate of harmless activity incorrectly
+blocked, and performance for each important class.
+
+## What high-loss examples can tell us
+
+An example receives a high loss when the model gave very little probability to
+its recorded label. That can happen for several reasons:
+
+- The example represents a pattern the model has not learned.
+- The input is unusual or comes from a changed environment.
+- The recorded label is wrong.
+- Poisoned training data deliberately pairs an input with a misleading label.
+
+High-loss examples deserve investigation, but they should not be removed
+automatically. A genuinely new attack may look unusual for exactly the same
+reason as a bad record. Engineers need context to tell the difference.
+
+## Why security engineers should care
+
+- **An average can hide a weak class.** A low overall loss may coexist with poor
+  performance on a rare but important attack category.
+- **Labels control what the model learns.** Incorrect or poisoned labels create
+  penalties that push training toward the wrong answer.
+- **Lower loss does not choose an operating threshold.** Deployment still
+  requires a reviewed decision policy based on the cost of false negatives and
+  false positives.
+- **Confidence is not evidence.** Cross-entropy trains probability-shaped
+  outputs, but the resulting model must still be tested for calibration,
+  distribution shifts, and adversarial inputs.
+
+## Common wrong ideas
+
+- **“Cross-entropy is another name for accuracy.”** Accuracy records whether the
+  top answer was correct. Cross-entropy also grades the probability assigned to
+  the correct answer.
+- **“The loss only cares about one class.”** The formula directly selects the
+  correct class, but softmax makes all the classes compete for the same 100%.
+- **“A loss of zero is required before deployment.”** Real data contains noise
+  and uncertainty. Chasing nearly zero training loss can encourage
+  memorization without improving new examples.
+- **“The example with the highest loss must be bad data.”** It could be
+  mislabeled, but it could also represent an important pattern the model
+  currently misses.
+
+## Check your understanding
+
+<Collapsible title="1. Which probability does cross-entropy use for one labeled example?">
+
+It uses the probability assigned to the class that the label identifies as
+correct.
+
+</Collapsible>
+
+<Collapsible title="2. Which receives the larger loss: 90% or 10% on the correct class?">
+
+`10%` receives the larger loss. The model placed most of its probability on
+wrong classes.
+
+</Collapsible>
+
+<Collapsible title="3. How can two models have the same accuracy but different loss?">
+
+They may choose the same top class for every example while assigning different
+probabilities to those choices. Cross-entropy distinguishes between tentative
+and strong predictions.
+
+</Collapsible>
+
+<Collapsible title="4. Why should engineers inspect high-loss training examples?">
+
+They can reveal unlearned patterns, changed environments, labeling mistakes, or
+poisoned data. The loss identifies a disagreement but does not explain its
+cause.
+
+</Collapsible>
+
+## Keep this mental model
+
+> Cross-entropy looks at the probability given to the correct class. A large
+> probability earns a small penalty; a small probability earns a large one.
+
+## Additional practice
+
+<PracticeLink href="https://neetcode.io/problems/cross-entropy-loss/question" prefix="Implement the loss in">NeetCode’s Cross-Entropy Loss problem</PracticeLink>

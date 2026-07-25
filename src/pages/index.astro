@@ -1,5 +1,6 @@
 ---
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import FaviconMark from '../components/FaviconMark.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
@@ -16,16 +17,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 						and offensive security.
 					</p>
 					<div class="role-lockup">
-						<span class="company-mark" data-fallback="W" aria-hidden="true">
-							<img
-								src="https://www.workday.com/favicon.ico"
-								alt=""
-								width="24"
-								height="24"
-								referrerpolicy="no-referrer"
-								onerror="this.remove()"
-							/>
-						</span>
+						<FaviconMark
+							src="https://www.workday.com/favicon.ico"
+							fallback="W"
+							loading="eager"
+						/>
 						<p class="role">
 							Sr. Cybersecurity Engineer, Security Architecture at
 							<a
@@ -66,28 +62,31 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 				</aside>
 			</section>
 
-			<ul class="expertise-strip" aria-label="Areas of expertise">
-				<li>
-					<span class="expertise-number">01</span>
-					<strong>Agent & ML Security</strong>
-					<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
-				</li>
-				<li>
-					<span class="expertise-number">02</span>
-					<strong>Application & API Security</strong>
-					<p>Product attack surface, secure design, and defensive engineering.</p>
-				</li>
-				<li>
-					<span class="expertise-number">03</span>
-					<strong>Cloud Security</strong>
-					<p>Hardening, identity, trust boundaries, and platform risk.</p>
-				</li>
-				<li>
-					<span class="expertise-number">04</span>
-					<strong>Threat Modeling & Culture</strong>
-					<p>Offensive thinking, champions programs, and durable workflows.</p>
-				</li>
-			</ul>
+			<section class="expertise-section" aria-labelledby="expertise-heading">
+				<h2 id="expertise-heading">Areas of expertise</h2>
+				<ul class="expertise-strip">
+					<li>
+						<span class="expertise-number">01</span>
+						<strong>Agent & ML Security</strong>
+						<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
+					</li>
+					<li>
+						<span class="expertise-number">02</span>
+						<strong>Application & API Security</strong>
+						<p>Product attack surface, secure design, and defensive engineering.</p>
+					</li>
+					<li>
+						<span class="expertise-number">03</span>
+						<strong>Cloud Security</strong>
+						<p>Hardening, identity, trust boundaries, and platform risk.</p>
+					</li>
+					<li>
+						<span class="expertise-number">04</span>
+						<strong>Threat Modeling & Culture</strong>
+						<p>Offensive thinking, champions programs, and durable workflows.</p>
+					</li>
+				</ul>
+			</section>
 
 			<section class="experience-section" id="experience">
 				<div class="section-intro">
@@ -117,17 +116,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="company-mark" data-fallback="W" aria-hidden="true">
-										<img
-											src="https://www.workday.com/favicon.ico"
-											alt=""
-											width="24"
-											height="24"
-											loading="lazy"
-											referrerpolicy="no-referrer"
-											onerror="this.remove()"
-										/>
-									</span>
+									<FaviconMark
+										src="https://www.workday.com/favicon.ico"
+										fallback="W"
+										size="compact"
+									/>
 									<span>Workday, Inc.</span>
 								</a>
 								<h3>Senior Cybersecurity Engineer, Security Architecture</h3>
@@ -152,17 +145,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="company-mark" data-fallback="G" aria-hidden="true">
-										<img
-											src="https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fwww.goodleap.com%2F&sz=128"
-											alt=""
-											width="24"
-											height="24"
-											loading="lazy"
-											referrerpolicy="no-referrer"
-											onerror="this.remove()"
-										/>
-									</span>
+									<FaviconMark
+										src="https://www.google.com/s2/favicons?domain_url=https%3A%2F%2Fwww.goodleap.com%2F&sz=128"
+										fallback="G"
+										size="compact"
+									/>
 									<span>GoodLeap, LLC</span>
 								</a>
 								<h3>Application Security Engineer</h3>
@@ -186,17 +173,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="company-mark" data-fallback="E" aria-hidden="true">
-										<img
-											src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
-											alt=""
-											width="24"
-											height="24"
-											loading="lazy"
-											referrerpolicy="no-referrer"
-											onerror="this.remove()"
-										/>
-									</span>
+									<FaviconMark
+										src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
+										fallback="E"
+										size="compact"
+									/>
 									<span>Election Systems & Software</span>
 								</a>
 								<h3>Application Security Engineer</h3>
@@ -220,17 +201,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="company-mark" data-fallback="E" aria-hidden="true">
-										<img
-											src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
-											alt=""
-											width="24"
-											height="24"
-											loading="lazy"
-											referrerpolicy="no-referrer"
-											onerror="this.remove()"
-										/>
-									</span>
+									<FaviconMark
+										src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
+										fallback="E"
+										size="compact"
+									/>
 									<span>Election Systems & Software</span>
 								</a>
 								<h3>Software Engineer, Security</h3>
@@ -253,17 +228,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="company-mark" data-fallback="E" aria-hidden="true">
-										<img
-											src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
-											alt=""
-											width="24"
-											height="24"
-											loading="lazy"
-											referrerpolicy="no-referrer"
-											onerror="this.remove()"
-										/>
-									</span>
+									<FaviconMark
+										src="https://www.essvote.com/storage/2018/10/cropped-favicon-192x192.png"
+										fallback="E"
+										size="compact"
+									/>
 									<span>Election Systems & Software</span>
 								</a>
 								<h3>Software Engineer Intern</h3>
@@ -514,38 +483,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		font-size: 0.78rem;
 	}
 
-	.company-mark {
-		position: relative;
-		width: 32px;
-		height: 32px;
-		display: inline-grid;
-		flex: 0 0 32px;
-		place-items: center;
-		overflow: hidden;
-		border: 1px solid var(--border);
-		border-radius: 7px;
-		background: var(--bg-card);
-		color: var(--text-muted);
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		font-weight: 600;
-		line-height: 1;
-		text-transform: none;
-	}
-
-	.company-mark::before {
-		content: attr(data-fallback);
-	}
-
-	.company-mark img {
-		position: absolute;
-		inset: 4px;
-		width: calc(100% - 8px);
-		height: calc(100% - 8px);
-		object-fit: contain;
-		background: var(--bg-card);
-	}
-
 	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
@@ -586,6 +523,10 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		background:
 			linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
 			var(--accent);
+	}
+
+	.expertise-section h2 {
+		margin-bottom: 1.75rem;
 	}
 
 	.expertise-strip {
@@ -742,12 +683,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 
 	.timeline-company:hover {
 		color: var(--heading);
-	}
-
-	.timeline-company .company-mark {
-		width: 30px;
-		height: 30px;
-		flex-basis: 30px;
 	}
 
 	.timeline-entry h3 {

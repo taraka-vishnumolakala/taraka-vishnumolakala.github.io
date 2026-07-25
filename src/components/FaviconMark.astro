@@ -1,0 +1,89 @@
+---
+interface Props {
+	src: string;
+	fallback: string;
+	size?: 'regular' | 'compact';
+	loading?: 'eager' | 'lazy';
+	renderMode?: 'image' | 'background';
+}
+
+const {
+	src,
+	fallback,
+	size = 'regular',
+	loading = 'lazy',
+	renderMode = 'image',
+} = Astro.props;
+---
+
+<span
+	class:list={[
+		'favicon-mark',
+		{
+			'favicon-mark--compact': size === 'compact',
+		},
+	]}
+	data-fallback={fallback}
+	style={
+		renderMode === 'background'
+			? `background-color: var(--bg-card); background-image: url("${src}"); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 8px) calc(100% - 8px);`
+			: undefined
+	}
+	aria-hidden="true"
+>
+	{
+		renderMode === 'image' && (
+			<img
+				src={src}
+				alt=""
+				width="24"
+				height="24"
+				loading={loading}
+				decoding="async"
+				referrerpolicy="no-referrer"
+				onerror="this.remove()"
+			/>
+		)
+	}
+</span>
+
+<style>
+	.favicon-mark {
+		position: relative;
+		display: inline-grid;
+		width: 32px;
+		height: 32px;
+		flex: 0 0 32px;
+		place-items: center;
+		overflow: hidden;
+		border: 1px solid var(--border);
+		border-radius: 7px;
+		background: var(--bg-card);
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		font-weight: 600;
+		line-height: 1;
+		text-transform: none;
+	}
+
+	.favicon-mark--compact {
+		width: 30px;
+		height: 30px;
+		flex-basis: 30px;
+	}
+
+	.favicon-mark::before {
+		content: attr(data-fallback);
+	}
+
+	.favicon-mark img {
+		position: absolute;
+		inset: 4px;
+		z-index: 1;
+		width: calc(100% - 8px);
+		height: calc(100% - 8px);
+		object-fit: contain;
+		background: var(--bg-card);
+	}
+</style>

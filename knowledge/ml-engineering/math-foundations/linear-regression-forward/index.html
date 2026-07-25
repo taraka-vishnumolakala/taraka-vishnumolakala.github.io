@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="en"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Taraka Vishnumolakala" href="https://taraka-vishnumolakala.github.io/rss.xml"><meta name="generator" content="Astro v5.17.3"><meta name="theme-color" content="#111111"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><!-- Canonical URL --><link rel="canonical" href="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-forward/"><!-- Primary Meta Tags --><title>Linear Regression (Forward Pass) — Knowledge Base — Taraka Vishnumolakala</title><meta name="title" content="Linear Regression (Forward Pass) — Knowledge Base — Taraka Vishnumolakala"><meta name="description" content="Follow a linear model from one input through multiplication and addition to a numerical prediction."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-forward/"><meta property="og:title" content="Linear Regression (Forward Pass) — Knowledge Base — Taraka Vishnumolakala"><meta property="og:description" content="Follow a linear model from one input through multiplication and addition to a numerical prediction."><meta property="og:image" content="https://taraka-vishnumolakala.github.io/og.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-forward/"><meta property="twitter:title" content="Linear Regression (Forward Pass) — Knowledge Base — Taraka Vishnumolakala"><meta property="twitter:description" content="Follow a linear model from one input through multiplication and addition to a numerical prediction."><meta property="twitter:image" content="https://taraka-vishnumolakala.github.io/og.png"><link rel="stylesheet" href="/_astro/_slug_.eRbihVQg.css">
+<style>.favicon-mark[data-astro-cid-n453gl5e]{position:relative;display:inline-grid;width:32px;height:32px;flex:0 0 32px;place-items:center;overflow:hidden;border:1px solid var(--border);border-radius:7px;background:var(--bg-card);color:var(--text-muted);font-family:var(--font-mono);font-size:.72rem;font-weight:600;line-height:1;text-transform:none}.favicon-mark--compact[data-astro-cid-n453gl5e]{width:30px;height:30px;flex-basis:30px}.favicon-mark[data-astro-cid-n453gl5e]:before{content:attr(data-fallback)}.favicon-mark[data-astro-cid-n453gl5e] img[data-astro-cid-n453gl5e]{position:absolute;inset:4px;z-index:1;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain;background:var(--bg-card)}
+.page-toc[data-astro-cid-lhkl6hl6]{position:sticky;top:7.5rem;width:230px;max-height:calc(100vh - 9rem);overflow-y:auto;scrollbar-width:thin}.page-toc-label[data-astro-cid-lhkl6hl6]{margin:0 0 .9rem 1.25rem;color:var(--accent-strong);font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:none}.page-toc[data-astro-cid-lhkl6hl6] ul[data-astro-cid-lhkl6hl6]{margin:0;padding:0;list-style:none}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{display:flex;align-items:flex-start;gap:.65rem;padding:.38rem 0;color:var(--text-muted);font-size:.75rem;line-height:1.45}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:before{content:"";width:8px;height:1px;margin-top:.55rem;flex-shrink:0;background:var(--border);transition:width .15s ease,background .15s ease}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:hover,.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{color:var(--heading)}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{font-weight:600}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:16px;background:var(--accent)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .2s ease}.page-toc-section[data-astro-cid-lhkl6hl6].expanded>.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{padding-left:1rem;color:var(--text-faint);font-size:.71rem}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:10px}@media(max-width:1340px){.page-toc[data-astro-cid-lhkl6hl6]{position:relative;top:0;width:auto;max-height:none;padding:.85rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--accent-faint);overflow:visible}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:flex;align-items:center;gap:.55rem;padding:.2rem 0;color:var(--accent-strong);font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;list-style:none;text-transform:uppercase;cursor:pointer}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]::-webkit-details-marker{display:none}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]:before{content:"+";font-size:1rem;line-height:1}.page-toc-details[data-astro-cid-lhkl6hl6][open]>summary[data-astro-cid-lhkl6hl6]:before{content:"−"}.page-toc-label[data-astro-cid-lhkl6hl6]{display:none}.page-toc-list[data-astro-cid-lhkl6hl6]{margin-top:.8rem!important;padding-top:.65rem!important;border-top:1px solid var(--border)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}}
+</style>
+<link rel="stylesheet" href="/_astro/_slug_.DQij-Xgb.css">
+<link rel="stylesheet" href="/_astro/_slug_.DeHMcmab.css"></head> <body>  <header class="site-header" data-astro-cid-3ef6ksr2> <nav class="nav-shell" aria-label="Primary" data-astro-cid-3ef6ksr2> <a href="/" class="brand" aria-label="Taraka Vishnumolakala, home" data-astro-cid-3ef6ksr2> <span class="brand-mark" aria-hidden="true" data-astro-cid-3ef6ksr2>TV</span> <span class="brand-copy" data-astro-cid-3ef6ksr2> <strong data-astro-cid-3ef6ksr2>Taraka Vishnumolakala</strong> <span data-astro-cid-3ef6ksr2>Security Architecture</span> </span> </a> <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav" data-astro-cid-3ef6ksr2> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> </button> <div class="nav-links" id="primary-nav" data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Home </a>  <a href="/knowledge" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Knowledge </a>  <a href="/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Writing </a>  <a href="/tags" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Tags </a>  <a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer" data-astro-cid-3ef6ksr2>
+GitHub <span aria-hidden="true" data-astro-cid-3ef6ksr2>↗</span> </a> </div> </nav> </header> <div class="page-actions" data-page-actions data-astro-cid-jjhxq4hj> <button type="button" class="page-actions-toggle" aria-label="Page actions" aria-haspopup="true" aria-expanded="false" data-page-actions-toggle data-astro-cid-jjhxq4hj> <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="label" data-astro-cid-jjhxq4hj>Copy page</span> <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <polyline points="6 9 12 15 18 9" data-astro-cid-jjhxq4hj></polyline> </svg> </button> <div class="page-actions-menu" role="menu" hidden data-page-actions-menu data-astro-cid-jjhxq4hj> <button type="button" class="action-item" role="menuitem" data-action="copy" data-md-path="/knowledge/ml-engineering/math-foundations/linear-regression-forward.md" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-copy-label data-astro-cid-jjhxq4hj>Copy page</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Copy page as Markdown for LLMs</span> </span> </button> <a class="action-item" role="menuitem" href="/knowledge/ml-engineering/math-foundations/linear-regression-forward.md" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" data-astro-cid-jjhxq4hj></path> <polyline points="14 2 14 8 20 8" data-astro-cid-jjhxq4hj></polyline> <line x1="9" y1="13" x2="15" y2="13" data-astro-cid-jjhxq4hj></line> <line x1="9" y1="17" x2="15" y2="17" data-astro-cid-jjhxq4hj></line> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>View as Markdown</span> <span class="subtitle" data-astro-cid-jjhxq4hj>View this page as plain text</span> </span> </a> <a class="action-item" role="menuitem" href="/llms.txt" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>llms.txt</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Open llms.txt for this site</span> </span> </a> </div> </div> <script type="module">const c=document.querySelector("[data-page-actions]"),i=document.querySelector("[data-page-actions-toggle]"),o=document.querySelector("[data-page-actions-menu]");if(c&&i&&o){const d=()=>{o.hidden=!1,i.setAttribute("aria-expanded","true"),c.classList.add("open")},a=()=>{o.hidden=!0,i.setAttribute("aria-expanded","false"),c.classList.remove("open")};i.addEventListener("click",()=>{o.hidden?d():a()}),document.addEventListener("click",t=>{c.contains(t.target)||a()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&a()});const n=o.querySelector('[data-action="copy"]');if(n){const t=n.querySelector("[data-copy-label]"),r=t?.textContent??"Copy page";n.addEventListener("click",async()=>{const s=n.dataset.mdPath;if(!(!s||!t))try{const e=await fetch(s);if(!e.ok)throw new Error(`fetch failed: ${e.status}`);const l=await e.text();await navigator.clipboard.writeText(l),t.textContent="Copied!",setTimeout(()=>{t.textContent=r,a()},900)}catch(e){console.error("Copy failed",e),t.textContent="Copy failed",setTimeout(()=>{t.textContent=r},1500)}})}}</script>  <script type="module">const t=document.querySelector(".nav-toggle"),s=document.getElementById("primary-nav"),a=document.querySelector(".site-header");if(t&&s&&a){const n=()=>{s.classList.remove("open"),t.classList.remove("open"),t.setAttribute("aria-expanded","false")};t.addEventListener("click",()=>{const e=s.classList.toggle("open");t.classList.toggle("open",e),t.setAttribute("aria-expanded",String(e))}),s.addEventListener("click",e=>{e.target.closest("a")&&n()}),document.addEventListener("click",e=>{a.contains(e.target)||n()}),document.addEventListener("keydown",e=>{e.key==="Escape"&&n()}),window.matchMedia("(min-width: 769px)").addEventListener("change",e=>{e.matches&&n()})}</script>   <main class="knowledge-shell has-toc" data-astro-cid-sibu3b5v> <div class="knowledge-navigation" data-astro-cid-sibu3b5v> <aside class="knowledge-sidebar" data-astro-cid-24d5mdw3> <details class="knowledge-nav-details" open data-astro-cid-24d5mdw3> <summary data-astro-cid-24d5mdw3> <span data-astro-cid-24d5mdw3>Knowledge navigation</span> <strong data-astro-cid-24d5mdw3>10 notes</strong> </summary> <nav aria-label="Knowledge base" data-astro-cid-24d5mdw3> <a class="knowledge-overview-link" href="/knowledge" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Overview</strong> </a> <section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>ML Engineering</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/data-splits-and-leakage/" data-astro-cid-24d5mdw3> Dataset Splits and Leakage </a> </li> </ul> <div class="knowledge-subsection" data-astro-cid-24d5mdw3> <a class="knowledge-subsection-link" href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Math Foundations</strong> </a> <ul class="knowledge-subsection-list" data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/gradient-descent/" data-astro-cid-24d5mdw3> Gradient Descent </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/sigmoid-and-relu/" data-astro-cid-24d5mdw3> Sigmoid &amp; ReLU </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/softmax/" data-astro-cid-24d5mdw3> Softmax </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss/" data-astro-cid-24d5mdw3> Cross-Entropy Loss </a> </li><li data-astro-cid-24d5mdw3> <a class="active" href="/knowledge/ml-engineering/math-foundations/linear-regression-forward/" aria-current="page" data-astro-cid-24d5mdw3> Linear Regression (Forward Pass) </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-training/" data-astro-cid-24d5mdw3> Linear Regression (Training) </a> </li> </ul> </div>  </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Web Application Security</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/web-application-security/request-trust-boundaries/" data-astro-cid-24d5mdw3> Request Trust Boundaries </a> </li> </ul>   </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Security Payloads</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/security-payloads/context-aware-test-payloads/" data-astro-cid-24d5mdw3> Context-Aware Test Payloads </a> </li> </ul>   </section> </nav> </details> </aside>  </div> <div class="knowledge-toc" data-astro-cid-sibu3b5v> <aside class="page-toc" aria-label="Table of contents" data-page-toc data-astro-cid-lhkl6hl6> <details class="page-toc-details" open data-astro-cid-lhkl6hl6> <summary data-astro-cid-lhkl6hl6>On this page</summary> <p class="page-toc-label" data-astro-cid-lhkl6hl6>On this page</p> <ul class="page-toc-list" data-astro-cid-lhkl6hl6> <li class="page-toc-section" data-toc-section="read-the-linear-regression-formula" data-astro-cid-lhkl6hl6> <a href="#read-the-linear-regression-formula" data-toc-link="read-the-linear-regression-formula" data-astro-cid-lhkl6hl6> Read the linear regression formula </a>  </li><li class="page-toc-section" data-toc-section="why-this-is-called-linear-regression" data-astro-cid-lhkl6hl6> <a href="#why-this-is-called-linear-regression" data-toc-link="why-this-is-called-linear-regression" data-astro-cid-lhkl6hl6> Why this is called linear regression </a>  </li><li class="page-toc-section" data-toc-section="follow-another-prediction" data-astro-cid-lhkl6hl6> <a href="#follow-another-prediction" data-toc-link="follow-another-prediction" data-astro-cid-lhkl6hl6> Follow another prediction </a>  </li><li class="page-toc-section" data-toc-section="keep-track-of-the-units" data-astro-cid-lhkl6hl6> <a href="#keep-track-of-the-units" data-toc-link="keep-track-of-the-units" data-astro-cid-lhkl6hl6> Keep track of the units </a>  </li><li class="page-toc-section" data-toc-section="add-more-than-one-input" data-astro-cid-lhkl6hl6> <a href="#add-more-than-one-input" data-toc-link="add-more-than-one-input" data-astro-cid-lhkl6hl6> Add more than one input </a>  </li><li class="page-toc-section" data-toc-section="implement-the-forward-pass-in-python" data-astro-cid-lhkl6hl6> <a href="#implement-the-forward-pass-in-python" data-toc-link="implement-the-forward-pass-in-python" data-astro-cid-lhkl6hl6> Implement the forward pass in Python </a>  </li><li class="page-toc-section" data-toc-section="where-do-the-weight-and-bias-come-from" data-astro-cid-lhkl6hl6> <a href="#where-do-the-weight-and-bias-come-from" data-toc-link="where-do-the-weight-and-bias-come-from" data-astro-cid-lhkl6hl6> Where do the weight and bias come from? </a>  </li><li class="page-toc-section" data-toc-section="a-straight-line-is-an-assumption" data-astro-cid-lhkl6hl6> <a href="#a-straight-line-is-an-assumption" data-toc-link="a-straight-line-is-an-assumption" data-astro-cid-lhkl6hl6> A straight line is an assumption </a>  </li><li class="page-toc-section" data-toc-section="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> <a href="#why-security-engineers-should-care" data-toc-link="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> Why security engineers should care </a>  </li><li class="page-toc-section" data-toc-section="common-wrong-ideas" data-astro-cid-lhkl6hl6> <a href="#common-wrong-ideas" data-toc-link="common-wrong-ideas" data-astro-cid-lhkl6hl6> Common wrong ideas </a>  </li><li class="page-toc-section" data-toc-section="check-your-understanding" data-astro-cid-lhkl6hl6> <a href="#check-your-understanding" data-toc-link="check-your-understanding" data-astro-cid-lhkl6hl6> Check your understanding </a>  </li><li class="page-toc-section" data-toc-section="keep-this-mental-model" data-astro-cid-lhkl6hl6> <a href="#keep-this-mental-model" data-toc-link="keep-this-mental-model" data-astro-cid-lhkl6hl6> Keep this mental model </a>  </li><li class="page-toc-section" data-toc-section="additional-practice" data-astro-cid-lhkl6hl6> <a href="#additional-practice" data-toc-link="additional-practice" data-astro-cid-lhkl6hl6> Additional practice </a>  </li> </ul> </details> </aside> <script type="module">const h=window.matchMedia("(max-width: 1340px)");document.querySelectorAll("[data-page-toc]").forEach(r=>{const a=r.querySelector(".page-toc-details");a&&h.matches&&a.removeAttribute("open");const s=r.querySelectorAll("[data-toc-link]");if(s.length===0)return;const c=new Map,l=new Map,f=Array.from(r.querySelectorAll("[data-toc-section]"));s.forEach(t=>{const o=t.dataset.tocLink;if(!o)return;c.set(o,t);const e=t.closest("[data-toc-section]");e&&l.set(o,e)});const d=Array.from(c.keys()).map(t=>document.getElementById(t)).filter(t=>t!==null);let i=null;const g=t=>{if(t===i)return;i&&c.get(i)?.classList.remove("active"),t&&c.get(t)?.classList.add("active"),i=t;const o=t?l.get(t):null;f.forEach(e=>{e.classList.toggle("expanded",e===o)})},u=new IntersectionObserver(t=>{const o=t.filter(n=>n.isIntersecting).sort((n,p)=>n.boundingClientRect.top-p.boundingClientRect.top);if(o.length>0){g(o[0].target.id);return}const e=d.filter(n=>n.getBoundingClientRect().top<110);e.length>0&&g(e[e.length-1].id)},{rootMargin:"-110px 0px -70% 0px",threshold:0});d.forEach(t=>u.observe(t))});</script>  </div> <article class="knowledge-content" data-astro-cid-sibu3b5v> <header class="knowledge-header" data-astro-cid-sibu3b5v> <p class="breadcrumb" data-astro-cid-sibu3b5v> <a href="/" data-astro-cid-sibu3b5v>Home</a> <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge" data-astro-cid-sibu3b5v>Knowledge Base</a>  <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <span data-astro-cid-sibu3b5v>ML Engineering</span>   <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-sibu3b5v> Math Foundations </a>  </p> <p class="eyebrow" data-astro-cid-sibu3b5v> Math Foundations </p> <h1 data-astro-cid-sibu3b5v>Linear Regression (Forward Pass)</h1> <p class="knowledge-dek" data-astro-cid-sibu3b5v>Follow a linear model from one input through multiplication and addition to a numerical prediction.</p> <div class="knowledge-meta" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v> Added  <time datetime="2026-07-25T00:00:00.000Z"> Jul 25, 2026 </time> </span> <span data-astro-cid-sibu3b5v>7 min read</span>  </div> <div class="knowledge-topics" aria-label="Topics" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v>linear regression</span><span data-astro-cid-sibu3b5v>forward pass</span><span data-astro-cid-sibu3b5v>model parameters</span><span data-astro-cid-sibu3b5v>prediction</span> </div> </header> <div class="knowledge-body" data-astro-cid-sibu3b5v>  <div class="prose"> <p>Imagine that your security operations team wants to estimate how much
+investigation effort an alert may require. One useful input is the number of
+endpoints affected by the alert.</p>
+<p>We will measure effort in <strong>analyst-hours</strong>. One analyst-hour means one hour of
+work by one analyst.</p>
+<p>We will build the smallest possible model:</p>
+<p><code>estimated analyst-hours = analyst-hours per endpoint × affected endpoints + baseline analyst-hours</code></p>
+<p>Suppose the model currently uses:</p>
+<ul>
+<li><code>1.5</code> analyst-hours for each affected endpoint, and</li>
+<li><code>2</code> baseline analyst-hours for initial triage, coordination, and reporting.</li>
+</ul>
+<p>For an alert affecting <code>8</code> endpoints, the estimate is:</p>
+<p><code>1.5 × 8 + 2 = 14 analyst-hours</code></p>
+<p>That multiply-and-add calculation is a <strong>forward pass</strong>. The input moves forward
+through the model and produces a prediction.</p>
+<p>Nothing learns during this calculation. The model does not compare its answer
+with the real investigation time or change any of its internal values. It only
+uses the values it already has to produce an answer.</p>
+<h2 id="read-the-linear-regression-formula">Read the linear regression formula</h2>
+<p>The same model is usually written as:</p>
+<p><code>ŷ = wx + b</code></p>
+<p>Each symbol has a specific job:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Symbol</th><th>Name</th><th>Meaning in this example</th></tr></thead><tbody><tr><td><code>x</code></td><td>Input</td><td>Number of affected endpoints</td></tr><tr><td><code>w</code></td><td>Weight</td><td>Estimated analyst-hours added for each endpoint</td></tr><tr><td><code>b</code></td><td>Bias</td><td>Baseline analyst-hours added to every estimate</td></tr><tr><td><code>ŷ</code></td><td>Prediction</td><td>Estimated investigation effort in analyst-hours</td></tr></tbody></table>
+<p>The mark above <code>y</code> is read as “y hat.” It reminds us that <code>ŷ</code> is an estimate,
+not the actual observed value.</p>
+<p>The weight and bias are the model’s <strong>parameters</strong>. A parameter is an adjustable
+number inside the model. Training tries to find parameter values that make
+useful predictions. A forward pass simply uses the current parameters.</p>
+<h2 id="why-this-is-called-linear-regression">Why this is called linear regression</h2>
+<p><strong>Regression</strong> means that the model predicts a numerical amount, such as hours,
+cost, or volume. It is different from classification, where a model chooses a
+class such as malware or misconfiguration.</p>
+<p><strong>Linear</strong> means the relationship draws a straight line:</p>
+<p><code>ŷ = 1.5x + 2</code></p>
+<p>The weight controls the line’s slope. A weight of <code>1.5</code> means the estimate rises
+by <code>1.5</code> analyst-hours whenever the endpoint count rises by one.</p>
+<p>The bias controls the line’s starting height. When <code>x = 0</code>, the model still
+returns <code>2</code> baseline analyst-hours:</p>
+<p><code>1.5 × 0 + 2 = 2</code></p>
+<p>In this example, that effort represents work that does not depend on the number
+of endpoints. The mathematical term <strong>bias</strong> means this fixed offset. It does
+not mean unfairness or social bias.</p>
+<figure class="math-lab" data-math-lab data-mode="linear-forward" data-astro-cid-rlobe7kc> <header class="lab-header" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Interactive concept</span> <h3 data-astro-cid-rlobe7kc>Estimate investigation effort</h3> </div> <p data-astro-cid-rlobe7kc>Change the endpoint count, analyst-hours per endpoint, or baseline effort. The dot shows the model’s current prediction on the line.</p> </header> <div class="lab-canvas-frame" data-astro-cid-rlobe7kc> <canvas width="900" height="340" aria-label="Interactive graph estimating investigation hours from the number of affected endpoints" data-astro-cid-rlobe7kc>
+Your browser does not support canvas. The live values below still
+			show the result of each control.
+</canvas> </div> <div class="lab-controls three-controls" aria-label="Investigation estimate controls" data-astro-cid-rlobe7kc> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Affected endpoints (x) <output data-output="x" data-astro-cid-rlobe7kc>8</output> </span> <input data-control="x" type="range" min="0" max="20" step="1" value="8" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Analyst-hours per endpoint (w) <output data-output="w" data-astro-cid-rlobe7kc>1.5</output> </span> <input data-control="w" type="range" min="0" max="3" step="0.1" value="1.5" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Baseline analyst-hours (b) <output data-output="b" data-astro-cid-rlobe7kc>2.0</output> </span> <input data-control="b" type="range" min="0" max="10" step="0.5" value="2" data-astro-cid-rlobe7kc> </label> <div class="lab-result wide-result" aria-live="polite" data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Estimated effort</span> <strong data-result="prediction" data-astro-cid-rlobe7kc>
+1.5 × 8 + 2.0 = 14.0 analyst-hours
+</strong> </div> </div>      <figcaption data-caption data-astro-cid-rlobe7kc> Move a control and watch the prediction and line update together. </figcaption> </figure> <script type="module" src="/_astro/MathConceptLab.astro_astro_type_script_index_0_lang.BE_Iq2AY.js"></script> 
+<p>Start with <code>8</code> endpoints, a weight of <code>1.5</code>, and a bias of <code>2</code>. The graph shows
+the same <code>14</code>-hour calculation we followed above.</p>
+<p>Now change one control at a time:</p>
+<ol>
+<li>Raise the affected endpoint count. The dot moves along the existing line.</li>
+<li>Raise the weight. The line becomes steeper because every endpoint adds more
+analyst-hours.</li>
+<li>Raise the bias. The entire line moves upward because the same baseline is
+added to every prediction.</li>
+</ol>
+<p>The controls change different parts of the calculation. The input chooses a
+position on the line, while the parameters determine the line’s shape and
+starting point.</p>
+<h2 id="follow-another-prediction">Follow another prediction</h2>
+<p>Suppose the next alert affects <code>12</code> endpoints. The model parameters stay the
+same:</p>
+<p><code>x = 12</code></p>
+<p><code>w = 1.5</code></p>
+<p><code>b = 2</code></p>
+<p>First multiply the input by the weight:</p>
+<p><code>1.5 × 12 = 18</code></p>
+<p>Then add the bias:</p>
+<p><code>18 + 2 = 20</code></p>
+<p>The forward pass returns:</p>
+<p><code>ŷ = 20 analyst-hours</code></p>
+<p>This result is a prediction. We would need the completed investigation’s actual
+effort before we could measure how wrong the prediction was.</p>
+<h2 id="keep-track-of-the-units">Keep track of the units</h2>
+<p>The units provide a useful correctness check:</p>
+<p><code>analyst-hours per endpoint × endpoints = analyst-hours</code></p>
+<p>Then the model adds the baseline effort:</p>
+<p><code>analyst-hours + analyst-hours = analyst-hours</code></p>
+<p>The units match, so the final answer is expressed in analyst-hours. If a
+calculation tried to add an endpoint count directly to a number of
+analyst-hours, that would signal a modeling or implementation mistake.</p>
+<h2 id="add-more-than-one-input">Add more than one input</h2>
+<p>Real investigations depend on more than the endpoint count. A model might also
+use the number of affected accounts, cloud services, or security controls.</p>
+<p>Each input used by a model is called a <strong>feature</strong>. A linear model gives every
+feature its own weight:</p>
+<p><code>ŷ = w₁x₁ + w₂x₂ + ... + b</code></p>
+<p>For example:</p>
+<ul>
+<li><code>x₁ = 8</code> affected endpoints with <code>w₁ = 1.5</code> analyst-hours per endpoint,</li>
+<li><code>x₂ = 2</code> affected accounts with <code>w₂ = 0.75</code> analyst-hours per account, and</li>
+<li><code>b = 2</code> baseline analyst-hours.</li>
+</ul>
+<p>The forward pass becomes:</p>
+<p><code>ŷ = 1.5 × 8 + 0.75 × 2 + 2</code></p>
+<p><code>ŷ = 12 + 1.5 + 2 = 15.5 analyst-hours</code></p>
+<p>The pattern has not changed. Multiply each feature by its weight, add the
+results, and add the bias. This multiply-and-add operation is often called a
+<strong>dot product</strong>.</p>
+<h2 id="implement-the-forward-pass-in-python">Implement the forward pass in Python</h2>
+<p>The following function performs the same calculation as the interactive graph:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> predict_investigation_effort</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    affected_endpoints,</span></span>
+<span class="line"><span style="color:#E1E4E8">    analyst_hours_per_endpoint</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1.5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    baseline_analyst_hours</span><span style="color:#F97583">=</span><span style="color:#79B8FF">2.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;&quot;&quot;Estimate investigation effort with a linear model.&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">        analyst_hours_per_endpoint </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> affected_endpoints</span></span>
+<span class="line"><span style="color:#F97583">        +</span><span style="color:#E1E4E8"> baseline_analyst_hours</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> endpoint_count </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">8</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">12</span><span style="color:#E1E4E8">]:</span></span>
+<span class="line"><span style="color:#E1E4E8">    prediction </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> predict_investigation_effort(endpoint_count)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#F97583">        f</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">endpoint_count</span><span style="color:#F97583">:2</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF"> endpoints -&gt; &quot;</span></span>
+<span class="line"><span style="color:#F97583">        f</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">prediction</span><span style="color:#F97583">:4.1f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF"> estimated analyst-hours&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span></code></pre>
+<p>Running it produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span> 0 endpoints -&gt;  2.0 estimated analyst-hours</span></span>
+<span class="line"><span> 4 endpoints -&gt;  8.0 estimated analyst-hours</span></span>
+<span class="line"><span> 8 endpoints -&gt; 14.0 estimated analyst-hours</span></span>
+<span class="line"><span>12 endpoints -&gt; 20.0 estimated analyst-hours</span></span></code></pre>
+<p>There is no training framework hidden in this example. The function accepts an
+input, multiplies it by the current weight, adds the current bias, and returns
+the prediction.</p>
+<h2 id="where-do-the-weight-and-bias-come-from">Where do the weight and bias come from?</h2>
+<p>We selected <code>1.5</code> and <code>2</code> so the calculation would be easy to follow. A real
+linear regression model learns its parameters from completed examples.</p>
+<p>Training might begin with poor values, run many forward passes, compare the
+predictions with the actual investigation times, and measure the errors with a
+loss function. An optimization method such as
+<a href="/knowledge/ml-engineering/math-foundations/gradient-descent/">Gradient Descent</a>
+then updates the parameters.</p>
+<p>The stages are related but distinct:</p>
+<ul>
+<li><strong>Forward pass:</strong> use the current parameters to make predictions.</li>
+<li><strong>Loss calculation:</strong> measure how far those predictions are from the known
+answers.</li>
+<li><strong>Training update:</strong> adjust the parameters in an attempt to reduce future
+loss.</li>
+</ul>
+<p>Keeping these stages separate makes model code and debugging much easier to
+reason about.</p>
+<h2 id="a-straight-line-is-an-assumption">A straight line is an assumption</h2>
+<p>This model assumes that every additional endpoint adds the same amount of work.
+Real incidents may not behave that way.</p>
+<p>Ten similar endpoints may be easier to handle together than ten unrelated
+systems. A privileged account or a critical server may add far more effort than
+an ordinary workstation. Large incidents may require coordination that grows
+faster than the endpoint count.</p>
+<p>Linear regression is still useful when a straight-line approximation is good
+enough. Engineers should check that assumption against completed incidents and
+be cautious when using the model far beyond the range of its training data.</p>
+<p>Making a prediction for <code>500</code> endpoints after training only on incidents with
+<code>1</code> to <code>20</code> endpoints is called <strong>extrapolation</strong>. The formula will return a
+number, but the data may not support trusting it.</p>
+<h2 id="why-security-engineers-should-care">Why security engineers should care</h2>
+<ul>
+<li><strong>Inputs need clear definitions.</strong> “Affected endpoint” must mean the same
+thing during training and deployment.</li>
+<li><strong>Telemetry can be incomplete or manipulated.</strong> A missing endpoint count
+changes the prediction even though the real incident has not become smaller.</li>
+<li><strong>A prediction is not an authorization decision.</strong> An estimated effort should
+support planning, not automatically suppress or close an alert.</li>
+<li><strong>Simple models can still leak behavior.</strong> Detailed query responses may allow
+someone to infer the weight and bias, so model outputs and access should match
+the sensitivity of the system.</li>
+<li><strong>Extrapolation needs review.</strong> A valid calculation outside the observed data
+range is not automatically a reliable estimate.</li>
+</ul>
+<h2 id="common-wrong-ideas">Common wrong ideas</h2>
+<ul>
+<li><strong>“The weight tells us how important a feature is in every situation.”</strong> It
+describes the model’s constant numerical relationship, not universal
+importance or causation.</li>
+<li><strong>“Bias means the model is unfair.”</strong> In this equation, bias is the fixed
+amount added to every prediction.</li>
+<li><strong>“A forward pass trains the model.”</strong> It only calculates an output with the
+current parameters.</li>
+<li><strong>“The predicted value is the real value.”</strong> <code>ŷ</code> is an estimate that must be
+checked against observed outcomes.</li>
+<li><strong>“The formula returned a number, so the estimate is valid.”</strong> The input may
+be outside the model’s useful range or may violate its straight-line
+assumption.</li>
+</ul>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>1. What does the forward pass do?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>It uses the current inputs and parameters to calculate a prediction. It does
+not measure the error or update the model.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>2. What happens when the bias increases by 3?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Every prediction increases by <code>3</code>, regardless of the input. On the graph, the
+whole line moves upward by <code>3</code>.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>3. What happens when the weight increases?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The line becomes steeper. Each additional endpoint changes the predicted
+analyst-hours by a larger amount.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>4. Why is the prediction written as y hat instead of y?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The mark distinguishes the model’s estimate, <code>ŷ</code>, from the actual observed
+value, <code>y</code>.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>5. What stays the same when the model gains more features?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The core operation stays the same: multiply every feature by its weight, add
+those products, and add the bias.</p> </div> </details> 
+<h2 id="keep-this-mental-model">Keep this mental model</h2>
+<blockquote>
+<p>A linear-regression forward pass multiplies each input by its current weight,
+adds the bias, and returns a numerical prediction. It answers with the model
+as it exists now; it does not teach the model.</p>
+</blockquote>
+<h2 id="additional-practice">Additional practice</h2>
+<span class="practice-link" data-astro-cid-6qortkoi> <span class="favicon-mark favicon-mark--compact" data-fallback style="background-color: var(--bg-card); background-image: url(&#34;/assets/neetcode-logo.png&#34;); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 8px) calc(100% - 8px);" aria-hidden="true" data-astro-cid-n453gl5e>  </span>  <span class="practice-copy" data-astro-cid-6qortkoi><span data-astro-cid-6qortkoi>Implement the forward pass in</span> <a href="https://neetcode.io/problems/linear-regression-forward/question" data-astro-cid-6qortkoi>NeetCode’s Linear Regression (Forward) problem</a>.</span> </span>  </div>  </div> </article> </main>  <footer data-astro-cid-sz7xmlte> <div class="footer-shell" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>&copy; 2026 Taraka Vishnumolakala</p> </div> </footer>   </body></html> 

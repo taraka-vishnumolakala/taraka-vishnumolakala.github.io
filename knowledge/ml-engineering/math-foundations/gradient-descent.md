@@ -294,3 +294,7 @@ unstable.
 
 > Measure the prediction error, use its local slope to choose a direction, take
 > a controlled step, and repeat.
+
+## Additional practice
+
+NeetCode’s Gradient Descent problem

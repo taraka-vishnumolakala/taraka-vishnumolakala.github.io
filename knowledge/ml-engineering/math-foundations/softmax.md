@@ -1,0 +1,283 @@
+---
+title: "Softmax"
+description: "Learn how a model turns several competing scores into probability shares that add up to 100%."
+category: ml-engineering
+section: math-foundations
+pubDate: 2026-07-25
+topics:
+  - classification
+  - probability
+  - logits
+  - temperature
+---
+
+Imagine that a model is helping your incident-response team identify the primary
+cause of a security alert. It must choose one of three classes:
+
+- credential abuse,
+- malware, or
+- misconfiguration.
+
+The model does not begin with percentages. Its final layer produces one raw
+score for each class:
+
+| Class | Raw score |
+| --- | ---: |
+| Credential abuse | `2.1` |
+| Malware | `0.3` |
+| Misconfiguration | `−1.0` |
+
+These scores only tell us how the classes compare. A larger score means the
+model favors that class more, but `2.1` does not mean `2.1%` or `210%`.
+
+A raw class score is often called a **logit**. A logit can be positive,
+negative, or zero. We need another function to turn the three logits into
+shares that are easier to compare.
+
+That function is **softmax**.
+
+## Turn competing scores into shares
+
+Softmax transforms the complete list of scores at once. It returns one value
+for each class, and the returned values have two useful properties:
+
+1. Every value is between `0` and `1`.
+2. All the values add up to `1`, or `100%`.
+
+For the alert scores above, softmax produces:
+
+| Class | Softmax output |
+| --- | ---: |
+| Credential abuse | `82.6%` |
+| Malware | `13.7%` |
+| Misconfiguration | `3.7%` |
+| **Total** | **`100.0%`** |
+
+The model still favors credential abuse, but the other classes keep smaller
+shares. This is the “soft” part of softmax. A hard choice would give the winner
+everything and the other classes nothing.
+
+## Follow the calculation
+
+Softmax performs two main steps.
+
+First, it raises the mathematical constant `e` to the power of each score. The
+number `e` is roughly `2.718`.
+
+| Class | Score | Positive weight |
+| --- | ---: | ---: |
+| Credential abuse | `2.1` | `e²·¹ ≈ 8.166` |
+| Malware | `0.3` | `e⁰·³ ≈ 1.350` |
+| Misconfiguration | `−1.0` | `e⁻¹ ≈ 0.368` |
+
+This step makes every weight positive and gives a larger advantage to higher
+scores.
+
+Next, softmax adds the weights:
+
+`8.166 + 1.350 + 0.368 = 9.884`
+
+It divides each weight by that total:
+
+`credential abuse share = 8.166 / 9.884 ≈ 0.826`
+
+The formula writes the same process more compactly:
+
+`softmax(scoreᵢ) = eˢᶜᵒʳᵉⁱ / sum of every eˢᶜᵒʳᵉ`
+
+The small `i` means “the class we are calculating now.” The denominator is the
+same total for every class, which is why all the answers add up to `1`.
+
+
+
+Try changing one score at a time. Notice that raising one class’s score
+increases its share and reduces the shares available to the other classes.
+Softmax creates a competition; it does not calculate each class independently.
+
+Also try giving all three classes the same score. Softmax returns one-third for
+each class because none of them has an advantage.
+
+## Only the gaps between scores matter
+
+Suppose the scores are:
+
+`2, 1, 0`
+
+Now add `10` to every score:
+
+`12, 11, 10`
+
+The softmax shares do not change. The gap between the first and second score is
+still `1`, and the gap between the second and third is still `1`.
+
+This tells us something important: a logit has no useful meaning by itself.
+Softmax interprets each score relative to the other scores in the same list.
+
+## Temperature changes how strongly the leader wins
+
+The interactive graph includes a setting called **temperature**. Before applying
+softmax, it divides every score by this positive number.
+
+- A temperature below `1` makes score gaps feel larger. More of the probability
+  moves to the leading class.
+- A temperature above `1` makes score gaps feel smaller. The probability
+  spreads more evenly across the classes.
+- A temperature of `1` applies ordinary softmax without changing the scores.
+
+Set the temperature to `0.2`, then move it to `2.5`. The order of the classes
+does not change, but the size of their shares changes substantially.
+
+Temperature does not make the underlying model more knowledgeable or accurate.
+It only reshapes the output distribution. In systems that sample an answer,
+such as language models, this reshaping affects how often lower-scoring choices
+are selected.
+
+## Use softmax only when the classes compete
+
+Softmax is a good fit when exactly one class should be correct. Our example
+defines the task as choosing the alert’s **primary cause**, so the three causes
+compete for one answer.
+
+That assumption does not fit every security task. An alert could involve both
+credential abuse and malware. If the model needs to mark every applicable
+label, the classes should not be forced to share one fixed 100%. That is a
+**multi-label** task, and independent sigmoid outputs are often a better fit.
+
+The choice between softmax and sigmoid therefore depends on the question:
+
+- **Which one class is the answer?** Softmax can represent the competition.
+- **Which of these labels apply?** Separate sigmoid outputs can represent
+  overlapping answers.
+
+## Implement softmax in Python
+
+The following function performs the same calculation as the interactive graph:
+
+```python
+import math
+
+
+def softmax(scores, temperature=1.0):
+    """Turn a list of class scores into shares that add up to 1."""
+    adjusted_scores = [score / temperature for score in scores]
+
+    # Subtracting the largest score keeps the exponentials manageable.
+    largest = max(adjusted_scores)
+    weights = [
+        math.exp(score - largest)
+        for score in adjusted_scores
+    ]
+
+    total = sum(weights)
+    return [weight / total for weight in weights]
+
+
+scores = [2.1, 0.3, -1.0]
+probabilities = softmax(scores)
+
+for name, probability in zip(
+    ["credential abuse", "malware", "misconfiguration"],
+    probabilities,
+):
+    print(f"{name:22} {probability:.1%}")
+
+print(f"{'total':22} {sum(probabilities):.1%}")
+```
+
+Running it produces:
+
+```text
+credential abuse       82.6%
+malware                13.7%
+misconfiguration        3.7%
+total                  100.0%
+```
+
+The code subtracts the largest adjusted score before calculating the
+exponentials. Subtracting the same number from every score does not change their
+softmax shares, but it prevents very large scores from creating numbers that
+the computer cannot represent safely. This is called **numerical stability**.
+
+## Softmax does not verify the prediction
+
+Softmax always returns a clean 100% distribution, even when every available
+class is wrong.
+
+If a new kind of attack does not belong to any of the three configured classes,
+the model must still distribute all of its probability among credential abuse,
+malware, and misconfiguration. A leading share of `82.6%` only means that one
+configured class beat the others. It does not prove that the class describes
+the alert correctly.
+
+Teams should test for unknown or out-of-distribution inputs, validate probability
+quality, and give human reviewers the evidence behind high-impact decisions.
+
+## How softmax connects to training
+
+During training, a labeled example tells us which class was actually correct.
+We compare that label with the softmax distribution using a loss function.
+
+[Cross-Entropy Loss](/knowledge/ml-engineering/math-foundations/cross-entropy-loss/)
+is commonly used for this job. It gives a small penalty when the correct class
+received a large share and a large penalty when it received a small share.
+[Gradient Descent](/knowledge/ml-engineering/math-foundations/gradient-descent/)
+then uses that penalty to improve the model’s parameters.
+
+## Why security engineers should care
+
+- **A probability distribution is not a verdict.** Security controls should not
+  treat the largest softmax share as verified truth.
+- **The class design creates a blind spot.** If the correct class is missing,
+  softmax still makes one of the available classes look like the winner.
+- **Temperature is security-relevant configuration.** Changing it can alter
+  which lower-scoring outputs are selected by a system that samples from the
+  distribution.
+- **Detailed scores expose model behavior.** Returning every class probability
+  can help legitimate debugging, but it can also give an attacker richer
+  feedback for probing the model.
+
+## Common wrong ideas
+
+- **“Softmax turns one score into a probability.”** It needs the entire list
+  because every class’s share depends on all the other scores.
+- **“The largest share proves that the class is correct.”** It only identifies
+  the leader among the classes the model was allowed to consider.
+- **“Softmax picks the final answer.”** It creates the shares. Another step
+  chooses the largest class or samples a class from the distribution.
+- **“Higher temperature means a smarter model.”** Temperature changes the
+  distribution’s shape, not what the model learned.
+
+## Check your understanding
+
+#### 1. What two guarantees does softmax give us?
+
+Every output is between `0` and `1`, and all outputs in the list add up to `1`.
+
+
+#### 2. What happens when all three class scores are equal?
+
+Each class receives the same share. With three classes, each receives about
+`33.3%`.
+
+
+#### 3. Why can’t we interpret a logit by itself?
+
+Softmax uses the gaps between all the scores. A logit of `2` may receive a large
+or small share depending on the other logits beside it.
+
+
+#### 4. Why might softmax be wrong for overlapping security labels?
+
+Softmax forces the labels to compete for one fixed 100%. If several labels can
+be true at the same time, independent outputs are usually more appropriate.
+
+
+## Keep this mental model
+
+> Softmax takes a list of competing scores and divides one fixed 100% among
+> them. A higher score receives a larger share, but the largest share is still
+> only a model prediction.
+
+## Additional practice
+
+NeetCode’s Softmax problem

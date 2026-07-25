@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="en"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Taraka Vishnumolakala" href="https://taraka-vishnumolakala.github.io/rss.xml"><meta name="generator" content="Astro v5.17.3"><meta name="theme-color" content="#111111"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><!-- Canonical URL --><link rel="canonical" href="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/softmax/"><!-- Primary Meta Tags --><title>Softmax — Knowledge Base — Taraka Vishnumolakala</title><meta name="title" content="Softmax — Knowledge Base — Taraka Vishnumolakala"><meta name="description" content="Learn how a model turns several competing scores into probability shares that add up to 100%."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/softmax/"><meta property="og:title" content="Softmax — Knowledge Base — Taraka Vishnumolakala"><meta property="og:description" content="Learn how a model turns several competing scores into probability shares that add up to 100%."><meta property="og:image" content="https://taraka-vishnumolakala.github.io/og.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/softmax/"><meta property="twitter:title" content="Softmax — Knowledge Base — Taraka Vishnumolakala"><meta property="twitter:description" content="Learn how a model turns several competing scores into probability shares that add up to 100%."><meta property="twitter:image" content="https://taraka-vishnumolakala.github.io/og.png"><link rel="stylesheet" href="/_astro/_slug_.eRbihVQg.css">
+<style>.favicon-mark[data-astro-cid-n453gl5e]{position:relative;display:inline-grid;width:32px;height:32px;flex:0 0 32px;place-items:center;overflow:hidden;border:1px solid var(--border);border-radius:7px;background:var(--bg-card);color:var(--text-muted);font-family:var(--font-mono);font-size:.72rem;font-weight:600;line-height:1;text-transform:none}.favicon-mark--compact[data-astro-cid-n453gl5e]{width:30px;height:30px;flex-basis:30px}.favicon-mark[data-astro-cid-n453gl5e]:before{content:attr(data-fallback)}.favicon-mark[data-astro-cid-n453gl5e] img[data-astro-cid-n453gl5e]{position:absolute;inset:4px;z-index:1;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain;background:var(--bg-card)}
+.page-toc[data-astro-cid-lhkl6hl6]{position:sticky;top:7.5rem;width:230px;max-height:calc(100vh - 9rem);overflow-y:auto;scrollbar-width:thin}.page-toc-label[data-astro-cid-lhkl6hl6]{margin:0 0 .9rem 1.25rem;color:var(--accent-strong);font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:none}.page-toc[data-astro-cid-lhkl6hl6] ul[data-astro-cid-lhkl6hl6]{margin:0;padding:0;list-style:none}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{display:flex;align-items:flex-start;gap:.65rem;padding:.38rem 0;color:var(--text-muted);font-size:.75rem;line-height:1.45}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:before{content:"";width:8px;height:1px;margin-top:.55rem;flex-shrink:0;background:var(--border);transition:width .15s ease,background .15s ease}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:hover,.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{color:var(--heading)}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{font-weight:600}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:16px;background:var(--accent)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .2s ease}.page-toc-section[data-astro-cid-lhkl6hl6].expanded>.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{padding-left:1rem;color:var(--text-faint);font-size:.71rem}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:10px}@media(max-width:1340px){.page-toc[data-astro-cid-lhkl6hl6]{position:relative;top:0;width:auto;max-height:none;padding:.85rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--accent-faint);overflow:visible}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:flex;align-items:center;gap:.55rem;padding:.2rem 0;color:var(--accent-strong);font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;list-style:none;text-transform:uppercase;cursor:pointer}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]::-webkit-details-marker{display:none}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]:before{content:"+";font-size:1rem;line-height:1}.page-toc-details[data-astro-cid-lhkl6hl6][open]>summary[data-astro-cid-lhkl6hl6]:before{content:"−"}.page-toc-label[data-astro-cid-lhkl6hl6]{display:none}.page-toc-list[data-astro-cid-lhkl6hl6]{margin-top:.8rem!important;padding-top:.65rem!important;border-top:1px solid var(--border)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}}
+</style>
+<link rel="stylesheet" href="/_astro/_slug_.DQij-Xgb.css">
+<link rel="stylesheet" href="/_astro/_slug_.DeHMcmab.css"></head> <body>  <header class="site-header" data-astro-cid-3ef6ksr2> <nav class="nav-shell" aria-label="Primary" data-astro-cid-3ef6ksr2> <a href="/" class="brand" aria-label="Taraka Vishnumolakala, home" data-astro-cid-3ef6ksr2> <span class="brand-mark" aria-hidden="true" data-astro-cid-3ef6ksr2>TV</span> <span class="brand-copy" data-astro-cid-3ef6ksr2> <strong data-astro-cid-3ef6ksr2>Taraka Vishnumolakala</strong> <span data-astro-cid-3ef6ksr2>Security Architecture</span> </span> </a> <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav" data-astro-cid-3ef6ksr2> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> </button> <div class="nav-links" id="primary-nav" data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Home </a>  <a href="/knowledge" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Knowledge </a>  <a href="/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Writing </a>  <a href="/tags" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Tags </a>  <a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer" data-astro-cid-3ef6ksr2>
+GitHub <span aria-hidden="true" data-astro-cid-3ef6ksr2>↗</span> </a> </div> </nav> </header> <div class="page-actions" data-page-actions data-astro-cid-jjhxq4hj> <button type="button" class="page-actions-toggle" aria-label="Page actions" aria-haspopup="true" aria-expanded="false" data-page-actions-toggle data-astro-cid-jjhxq4hj> <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="label" data-astro-cid-jjhxq4hj>Copy page</span> <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <polyline points="6 9 12 15 18 9" data-astro-cid-jjhxq4hj></polyline> </svg> </button> <div class="page-actions-menu" role="menu" hidden data-page-actions-menu data-astro-cid-jjhxq4hj> <button type="button" class="action-item" role="menuitem" data-action="copy" data-md-path="/knowledge/ml-engineering/math-foundations/softmax.md" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-copy-label data-astro-cid-jjhxq4hj>Copy page</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Copy page as Markdown for LLMs</span> </span> </button> <a class="action-item" role="menuitem" href="/knowledge/ml-engineering/math-foundations/softmax.md" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" data-astro-cid-jjhxq4hj></path> <polyline points="14 2 14 8 20 8" data-astro-cid-jjhxq4hj></polyline> <line x1="9" y1="13" x2="15" y2="13" data-astro-cid-jjhxq4hj></line> <line x1="9" y1="17" x2="15" y2="17" data-astro-cid-jjhxq4hj></line> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>View as Markdown</span> <span class="subtitle" data-astro-cid-jjhxq4hj>View this page as plain text</span> </span> </a> <a class="action-item" role="menuitem" href="/llms.txt" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>llms.txt</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Open llms.txt for this site</span> </span> </a> </div> </div> <script type="module">const c=document.querySelector("[data-page-actions]"),i=document.querySelector("[data-page-actions-toggle]"),o=document.querySelector("[data-page-actions-menu]");if(c&&i&&o){const d=()=>{o.hidden=!1,i.setAttribute("aria-expanded","true"),c.classList.add("open")},a=()=>{o.hidden=!0,i.setAttribute("aria-expanded","false"),c.classList.remove("open")};i.addEventListener("click",()=>{o.hidden?d():a()}),document.addEventListener("click",t=>{c.contains(t.target)||a()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&a()});const n=o.querySelector('[data-action="copy"]');if(n){const t=n.querySelector("[data-copy-label]"),r=t?.textContent??"Copy page";n.addEventListener("click",async()=>{const s=n.dataset.mdPath;if(!(!s||!t))try{const e=await fetch(s);if(!e.ok)throw new Error(`fetch failed: ${e.status}`);const l=await e.text();await navigator.clipboard.writeText(l),t.textContent="Copied!",setTimeout(()=>{t.textContent=r,a()},900)}catch(e){console.error("Copy failed",e),t.textContent="Copy failed",setTimeout(()=>{t.textContent=r},1500)}})}}</script>  <script type="module">const t=document.querySelector(".nav-toggle"),s=document.getElementById("primary-nav"),a=document.querySelector(".site-header");if(t&&s&&a){const n=()=>{s.classList.remove("open"),t.classList.remove("open"),t.setAttribute("aria-expanded","false")};t.addEventListener("click",()=>{const e=s.classList.toggle("open");t.classList.toggle("open",e),t.setAttribute("aria-expanded",String(e))}),s.addEventListener("click",e=>{e.target.closest("a")&&n()}),document.addEventListener("click",e=>{a.contains(e.target)||n()}),document.addEventListener("keydown",e=>{e.key==="Escape"&&n()}),window.matchMedia("(min-width: 769px)").addEventListener("change",e=>{e.matches&&n()})}</script>   <main class="knowledge-shell has-toc" data-astro-cid-sibu3b5v> <div class="knowledge-navigation" data-astro-cid-sibu3b5v> <aside class="knowledge-sidebar" data-astro-cid-24d5mdw3> <details class="knowledge-nav-details" open data-astro-cid-24d5mdw3> <summary data-astro-cid-24d5mdw3> <span data-astro-cid-24d5mdw3>Knowledge navigation</span> <strong data-astro-cid-24d5mdw3>10 notes</strong> </summary> <nav aria-label="Knowledge base" data-astro-cid-24d5mdw3> <a class="knowledge-overview-link" href="/knowledge" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Overview</strong> </a> <section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>ML Engineering</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/data-splits-and-leakage/" data-astro-cid-24d5mdw3> Dataset Splits and Leakage </a> </li> </ul> <div class="knowledge-subsection" data-astro-cid-24d5mdw3> <a class="knowledge-subsection-link" href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Math Foundations</strong> </a> <ul class="knowledge-subsection-list" data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/gradient-descent/" data-astro-cid-24d5mdw3> Gradient Descent </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/sigmoid-and-relu/" data-astro-cid-24d5mdw3> Sigmoid &amp; ReLU </a> </li><li data-astro-cid-24d5mdw3> <a class="active" href="/knowledge/ml-engineering/math-foundations/softmax/" aria-current="page" data-astro-cid-24d5mdw3> Softmax </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss/" data-astro-cid-24d5mdw3> Cross-Entropy Loss </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-forward/" data-astro-cid-24d5mdw3> Linear Regression (Forward Pass) </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-training/" data-astro-cid-24d5mdw3> Linear Regression (Training) </a> </li> </ul> </div>  </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Web Application Security</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/web-application-security/request-trust-boundaries/" data-astro-cid-24d5mdw3> Request Trust Boundaries </a> </li> </ul>   </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Security Payloads</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/security-payloads/context-aware-test-payloads/" data-astro-cid-24d5mdw3> Context-Aware Test Payloads </a> </li> </ul>   </section> </nav> </details> </aside>  </div> <div class="knowledge-toc" data-astro-cid-sibu3b5v> <aside class="page-toc" aria-label="Table of contents" data-page-toc data-astro-cid-lhkl6hl6> <details class="page-toc-details" open data-astro-cid-lhkl6hl6> <summary data-astro-cid-lhkl6hl6>On this page</summary> <p class="page-toc-label" data-astro-cid-lhkl6hl6>On this page</p> <ul class="page-toc-list" data-astro-cid-lhkl6hl6> <li class="page-toc-section" data-toc-section="turn-competing-scores-into-shares" data-astro-cid-lhkl6hl6> <a href="#turn-competing-scores-into-shares" data-toc-link="turn-competing-scores-into-shares" data-astro-cid-lhkl6hl6> Turn competing scores into shares </a>  </li><li class="page-toc-section" data-toc-section="follow-the-calculation" data-astro-cid-lhkl6hl6> <a href="#follow-the-calculation" data-toc-link="follow-the-calculation" data-astro-cid-lhkl6hl6> Follow the calculation </a>  </li><li class="page-toc-section" data-toc-section="only-the-gaps-between-scores-matter" data-astro-cid-lhkl6hl6> <a href="#only-the-gaps-between-scores-matter" data-toc-link="only-the-gaps-between-scores-matter" data-astro-cid-lhkl6hl6> Only the gaps between scores matter </a>  </li><li class="page-toc-section" data-toc-section="temperature-changes-how-strongly-the-leader-wins" data-astro-cid-lhkl6hl6> <a href="#temperature-changes-how-strongly-the-leader-wins" data-toc-link="temperature-changes-how-strongly-the-leader-wins" data-astro-cid-lhkl6hl6> Temperature changes how strongly the leader wins </a>  </li><li class="page-toc-section" data-toc-section="use-softmax-only-when-the-classes-compete" data-astro-cid-lhkl6hl6> <a href="#use-softmax-only-when-the-classes-compete" data-toc-link="use-softmax-only-when-the-classes-compete" data-astro-cid-lhkl6hl6> Use softmax only when the classes compete </a>  </li><li class="page-toc-section" data-toc-section="implement-softmax-in-python" data-astro-cid-lhkl6hl6> <a href="#implement-softmax-in-python" data-toc-link="implement-softmax-in-python" data-astro-cid-lhkl6hl6> Implement softmax in Python </a>  </li><li class="page-toc-section" data-toc-section="softmax-does-not-verify-the-prediction" data-astro-cid-lhkl6hl6> <a href="#softmax-does-not-verify-the-prediction" data-toc-link="softmax-does-not-verify-the-prediction" data-astro-cid-lhkl6hl6> Softmax does not verify the prediction </a>  </li><li class="page-toc-section" data-toc-section="how-softmax-connects-to-training" data-astro-cid-lhkl6hl6> <a href="#how-softmax-connects-to-training" data-toc-link="how-softmax-connects-to-training" data-astro-cid-lhkl6hl6> How softmax connects to training </a>  </li><li class="page-toc-section" data-toc-section="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> <a href="#why-security-engineers-should-care" data-toc-link="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> Why security engineers should care </a>  </li><li class="page-toc-section" data-toc-section="common-wrong-ideas" data-astro-cid-lhkl6hl6> <a href="#common-wrong-ideas" data-toc-link="common-wrong-ideas" data-astro-cid-lhkl6hl6> Common wrong ideas </a>  </li><li class="page-toc-section" data-toc-section="check-your-understanding" data-astro-cid-lhkl6hl6> <a href="#check-your-understanding" data-toc-link="check-your-understanding" data-astro-cid-lhkl6hl6> Check your understanding </a>  </li><li class="page-toc-section" data-toc-section="keep-this-mental-model" data-astro-cid-lhkl6hl6> <a href="#keep-this-mental-model" data-toc-link="keep-this-mental-model" data-astro-cid-lhkl6hl6> Keep this mental model </a>  </li><li class="page-toc-section" data-toc-section="additional-practice" data-astro-cid-lhkl6hl6> <a href="#additional-practice" data-toc-link="additional-practice" data-astro-cid-lhkl6hl6> Additional practice </a>  </li> </ul> </details> </aside> <script type="module">const h=window.matchMedia("(max-width: 1340px)");document.querySelectorAll("[data-page-toc]").forEach(r=>{const a=r.querySelector(".page-toc-details");a&&h.matches&&a.removeAttribute("open");const s=r.querySelectorAll("[data-toc-link]");if(s.length===0)return;const c=new Map,l=new Map,f=Array.from(r.querySelectorAll("[data-toc-section]"));s.forEach(t=>{const o=t.dataset.tocLink;if(!o)return;c.set(o,t);const e=t.closest("[data-toc-section]");e&&l.set(o,e)});const d=Array.from(c.keys()).map(t=>document.getElementById(t)).filter(t=>t!==null);let i=null;const g=t=>{if(t===i)return;i&&c.get(i)?.classList.remove("active"),t&&c.get(t)?.classList.add("active"),i=t;const o=t?l.get(t):null;f.forEach(e=>{e.classList.toggle("expanded",e===o)})},u=new IntersectionObserver(t=>{const o=t.filter(n=>n.isIntersecting).sort((n,p)=>n.boundingClientRect.top-p.boundingClientRect.top);if(o.length>0){g(o[0].target.id);return}const e=d.filter(n=>n.getBoundingClientRect().top<110);e.length>0&&g(e[e.length-1].id)},{rootMargin:"-110px 0px -70% 0px",threshold:0});d.forEach(t=>u.observe(t))});</script>  </div> <article class="knowledge-content" data-astro-cid-sibu3b5v> <header class="knowledge-header" data-astro-cid-sibu3b5v> <p class="breadcrumb" data-astro-cid-sibu3b5v> <a href="/" data-astro-cid-sibu3b5v>Home</a> <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge" data-astro-cid-sibu3b5v>Knowledge Base</a>  <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <span data-astro-cid-sibu3b5v>ML Engineering</span>   <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-sibu3b5v> Math Foundations </a>  </p> <p class="eyebrow" data-astro-cid-sibu3b5v> Math Foundations </p> <h1 data-astro-cid-sibu3b5v>Softmax</h1> <p class="knowledge-dek" data-astro-cid-sibu3b5v>Learn how a model turns several competing scores into probability shares that add up to 100%.</p> <div class="knowledge-meta" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v> Added  <time datetime="2026-07-25T00:00:00.000Z"> Jul 25, 2026 </time> </span> <span data-astro-cid-sibu3b5v>6 min read</span>  </div> <div class="knowledge-topics" aria-label="Topics" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v>classification</span><span data-astro-cid-sibu3b5v>probability</span><span data-astro-cid-sibu3b5v>logits</span><span data-astro-cid-sibu3b5v>temperature</span> </div> </header> <div class="knowledge-body" data-astro-cid-sibu3b5v>  <div class="prose"> <p>Imagine that a model is helping your incident-response team identify the primary
+cause of a security alert. It must choose one of three classes:</p>
+<ul>
+<li>credential abuse,</li>
+<li>malware, or</li>
+<li>misconfiguration.</li>
+</ul>
+<p>The model does not begin with percentages. Its final layer produces one raw
+score for each class:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Class</th><th style="text-align:right">Raw score</th></tr></thead><tbody><tr><td>Credential abuse</td><td style="text-align:right"><code>2.1</code></td></tr><tr><td>Malware</td><td style="text-align:right"><code>0.3</code></td></tr><tr><td>Misconfiguration</td><td style="text-align:right"><code>−1.0</code></td></tr></tbody></table>
+<p>These scores only tell us how the classes compare. A larger score means the
+model favors that class more, but <code>2.1</code> does not mean <code>2.1%</code> or <code>210%</code>.</p>
+<p>A raw class score is often called a <strong>logit</strong>. A logit can be positive,
+negative, or zero. We need another function to turn the three logits into
+shares that are easier to compare.</p>
+<p>That function is <strong>softmax</strong>.</p>
+<h2 id="turn-competing-scores-into-shares">Turn competing scores into shares</h2>
+<p>Softmax transforms the complete list of scores at once. It returns one value
+for each class, and the returned values have two useful properties:</p>
+<ol>
+<li>Every value is between <code>0</code> and <code>1</code>.</li>
+<li>All the values add up to <code>1</code>, or <code>100%</code>.</li>
+</ol>
+<p>For the alert scores above, softmax produces:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Class</th><th style="text-align:right">Softmax output</th></tr></thead><tbody><tr><td>Credential abuse</td><td style="text-align:right"><code>82.6%</code></td></tr><tr><td>Malware</td><td style="text-align:right"><code>13.7%</code></td></tr><tr><td>Misconfiguration</td><td style="text-align:right"><code>3.7%</code></td></tr><tr><td><strong>Total</strong></td><td style="text-align:right"><strong><code>100.0%</code></strong></td></tr></tbody></table>
+<p>The model still favors credential abuse, but the other classes keep smaller
+shares. This is the “soft” part of softmax. A hard choice would give the winner
+everything and the other classes nothing.</p>
+<h2 id="follow-the-calculation">Follow the calculation</h2>
+<p>Softmax performs two main steps.</p>
+<p>First, it raises the mathematical constant <code>e</code> to the power of each score. The
+number <code>e</code> is roughly <code>2.718</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Class</th><th style="text-align:right">Score</th><th style="text-align:right">Positive weight</th></tr></thead><tbody><tr><td>Credential abuse</td><td style="text-align:right"><code>2.1</code></td><td style="text-align:right"><code>e²·¹ ≈ 8.166</code></td></tr><tr><td>Malware</td><td style="text-align:right"><code>0.3</code></td><td style="text-align:right"><code>e⁰·³ ≈ 1.350</code></td></tr><tr><td>Misconfiguration</td><td style="text-align:right"><code>−1.0</code></td><td style="text-align:right"><code>e⁻¹ ≈ 0.368</code></td></tr></tbody></table>
+<p>This step makes every weight positive and gives a larger advantage to higher
+scores.</p>
+<p>Next, softmax adds the weights:</p>
+<p><code>8.166 + 1.350 + 0.368 = 9.884</code></p>
+<p>It divides each weight by that total:</p>
+<p><code>credential abuse share = 8.166 / 9.884 ≈ 0.826</code></p>
+<p>The formula writes the same process more compactly:</p>
+<p><code>softmax(scoreᵢ) = eˢᶜᵒʳᵉⁱ / sum of every eˢᶜᵒʳᵉ</code></p>
+<p>The small <code>i</code> means “the class we are calculating now.” The denominator is the
+same total for every class, which is why all the answers add up to <code>1</code>.</p>
+<figure class="math-lab" data-math-lab data-mode="softmax" data-astro-cid-rlobe7kc> <header class="lab-header" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Interactive concept</span> <h3 data-astro-cid-rlobe7kc>Turn alert scores into probability shares</h3> </div> <p data-astro-cid-rlobe7kc>Adjust the three class scores and watch softmax redistribute a fixed 100% among them. The model is choosing one primary cause for the alert.</p> </header> <div class="lab-canvas-frame" data-astro-cid-rlobe7kc> <canvas width="900" height="340" aria-label="Interactive probability bars calculated from three scores and a temperature" data-astro-cid-rlobe7kc>
+Your browser does not support canvas. The live values below still
+			show the result of each control.
+</canvas> </div>     <div class="lab-controls softmax-controls" aria-label="Softmax controls" data-astro-cid-rlobe7kc> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Credential abuse score <output data-output="cat" data-astro-cid-rlobe7kc>2.1</output> </span> <input data-control="cat" type="range" min="-4" max="4" step="0.1" value="2.1" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Malware score <output data-output="dog" data-astro-cid-rlobe7kc>0.3</output></span> <input data-control="dog" type="range" min="-4" max="4" step="0.1" value="0.3" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Misconfiguration score <output data-output="fish" data-astro-cid-rlobe7kc>−1.0</output> </span> <input data-control="fish" type="range" min="-4" max="4" step="0.1" value="-1" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Temperature
+<output data-output="temperature" data-astro-cid-rlobe7kc>1.0</output> </span> <input data-control="temperature" type="range" min="0.2" max="2.5" step="0.1" value="1" data-astro-cid-rlobe7kc> </label> <div class="metric-grid" aria-live="polite" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Credential abuse</span> <strong data-result="cat-probability" data-astro-cid-rlobe7kc>82.6%</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Malware</span> <strong data-result="dog-probability" data-astro-cid-rlobe7kc>13.7%</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Misconfiguration</span> <strong data-result="fish-probability" data-astro-cid-rlobe7kc>3.7%</strong> </div> </div> </div>  <figcaption data-caption data-astro-cid-rlobe7kc> Change the scores or temperature and watch the probability shares update together. </figcaption> </figure> <script type="module" src="/_astro/MathConceptLab.astro_astro_type_script_index_0_lang.BE_Iq2AY.js"></script> 
+<p>Try changing one score at a time. Notice that raising one class’s score
+increases its share and reduces the shares available to the other classes.
+Softmax creates a competition; it does not calculate each class independently.</p>
+<p>Also try giving all three classes the same score. Softmax returns one-third for
+each class because none of them has an advantage.</p>
+<h2 id="only-the-gaps-between-scores-matter">Only the gaps between scores matter</h2>
+<p>Suppose the scores are:</p>
+<p><code>2, 1, 0</code></p>
+<p>Now add <code>10</code> to every score:</p>
+<p><code>12, 11, 10</code></p>
+<p>The softmax shares do not change. The gap between the first and second score is
+still <code>1</code>, and the gap between the second and third is still <code>1</code>.</p>
+<p>This tells us something important: a logit has no useful meaning by itself.
+Softmax interprets each score relative to the other scores in the same list.</p>
+<h2 id="temperature-changes-how-strongly-the-leader-wins">Temperature changes how strongly the leader wins</h2>
+<p>The interactive graph includes a setting called <strong>temperature</strong>. Before applying
+softmax, it divides every score by this positive number.</p>
+<ul>
+<li>A temperature below <code>1</code> makes score gaps feel larger. More of the probability
+moves to the leading class.</li>
+<li>A temperature above <code>1</code> makes score gaps feel smaller. The probability
+spreads more evenly across the classes.</li>
+<li>A temperature of <code>1</code> applies ordinary softmax without changing the scores.</li>
+</ul>
+<p>Set the temperature to <code>0.2</code>, then move it to <code>2.5</code>. The order of the classes
+does not change, but the size of their shares changes substantially.</p>
+<p>Temperature does not make the underlying model more knowledgeable or accurate.
+It only reshapes the output distribution. In systems that sample an answer,
+such as language models, this reshaping affects how often lower-scoring choices
+are selected.</p>
+<h2 id="use-softmax-only-when-the-classes-compete">Use softmax only when the classes compete</h2>
+<p>Softmax is a good fit when exactly one class should be correct. Our example
+defines the task as choosing the alert’s <strong>primary cause</strong>, so the three causes
+compete for one answer.</p>
+<p>That assumption does not fit every security task. An alert could involve both
+credential abuse and malware. If the model needs to mark every applicable
+label, the classes should not be forced to share one fixed 100%. That is a
+<strong>multi-label</strong> task, and independent sigmoid outputs are often a better fit.</p>
+<p>The choice between softmax and sigmoid therefore depends on the question:</p>
+<ul>
+<li><strong>Which one class is the answer?</strong> Softmax can represent the competition.</li>
+<li><strong>Which of these labels apply?</strong> Separate sigmoid outputs can represent
+overlapping answers.</li>
+</ul>
+<h2 id="implement-softmax-in-python">Implement softmax in Python</h2>
+<p>The following function performs the same calculation as the interactive graph:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> math</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> softmax</span><span style="color:#E1E4E8">(scores, temperature</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1.0</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;&quot;&quot;Turn a list of class scores into shares that add up to 1.&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    adjusted_scores </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [score </span><span style="color:#F97583">/</span><span style="color:#E1E4E8"> temperature </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> score </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> scores]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Subtracting the largest score keeps the exponentials manageable.</span></span>
+<span class="line"><span style="color:#E1E4E8">    largest </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> max</span><span style="color:#E1E4E8">(adjusted_scores)</span></span>
+<span class="line"><span style="color:#E1E4E8">    weights </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        math.exp(score </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> largest)</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> score </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> adjusted_scores</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    total </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sum</span><span style="color:#E1E4E8">(weights)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> [weight </span><span style="color:#F97583">/</span><span style="color:#E1E4E8"> total </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> weight </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> weights]</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">scores </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">2.1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.3</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">-</span><span style="color:#79B8FF">1.0</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">probabilities </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> softmax(scores)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> name, probability </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> zip</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span><span style="color:#9ECBFF">&quot;credential abuse&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;malware&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;misconfiguration&quot;</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">    probabilities,</span></span>
+<span class="line"><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">name</span><span style="color:#F97583">:22</span><span style="color:#79B8FF">}</span><span style="color:#79B8FF"> {</span><span style="color:#E1E4E8">probability</span><span style="color:#F97583">:.1%</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">&quot;</span><span style="color:#79B8FF">{</span><span style="color:#9ECBFF">&#39;total&#39;</span><span style="color:#F97583">:22</span><span style="color:#79B8FF">}</span><span style="color:#79B8FF"> {sum</span><span style="color:#E1E4E8">(probabilities)</span><span style="color:#F97583">:.1%</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>Running it produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>credential abuse       82.6%</span></span>
+<span class="line"><span>malware                13.7%</span></span>
+<span class="line"><span>misconfiguration        3.7%</span></span>
+<span class="line"><span>total                  100.0%</span></span></code></pre>
+<p>The code subtracts the largest adjusted score before calculating the
+exponentials. Subtracting the same number from every score does not change their
+softmax shares, but it prevents very large scores from creating numbers that
+the computer cannot represent safely. This is called <strong>numerical stability</strong>.</p>
+<h2 id="softmax-does-not-verify-the-prediction">Softmax does not verify the prediction</h2>
+<p>Softmax always returns a clean 100% distribution, even when every available
+class is wrong.</p>
+<p>If a new kind of attack does not belong to any of the three configured classes,
+the model must still distribute all of its probability among credential abuse,
+malware, and misconfiguration. A leading share of <code>82.6%</code> only means that one
+configured class beat the others. It does not prove that the class describes
+the alert correctly.</p>
+<p>Teams should test for unknown or out-of-distribution inputs, validate probability
+quality, and give human reviewers the evidence behind high-impact decisions.</p>
+<h2 id="how-softmax-connects-to-training">How softmax connects to training</h2>
+<p>During training, a labeled example tells us which class was actually correct.
+We compare that label with the softmax distribution using a loss function.</p>
+<p><a href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss/">Cross-Entropy Loss</a>
+is commonly used for this job. It gives a small penalty when the correct class
+received a large share and a large penalty when it received a small share.
+<a href="/knowledge/ml-engineering/math-foundations/gradient-descent/">Gradient Descent</a>
+then uses that penalty to improve the model’s parameters.</p>
+<h2 id="why-security-engineers-should-care">Why security engineers should care</h2>
+<ul>
+<li><strong>A probability distribution is not a verdict.</strong> Security controls should not
+treat the largest softmax share as verified truth.</li>
+<li><strong>The class design creates a blind spot.</strong> If the correct class is missing,
+softmax still makes one of the available classes look like the winner.</li>
+<li><strong>Temperature is security-relevant configuration.</strong> Changing it can alter
+which lower-scoring outputs are selected by a system that samples from the
+distribution.</li>
+<li><strong>Detailed scores expose model behavior.</strong> Returning every class probability
+can help legitimate debugging, but it can also give an attacker richer
+feedback for probing the model.</li>
+</ul>
+<h2 id="common-wrong-ideas">Common wrong ideas</h2>
+<ul>
+<li><strong>“Softmax turns one score into a probability.”</strong> It needs the entire list
+because every class’s share depends on all the other scores.</li>
+<li><strong>“The largest share proves that the class is correct.”</strong> It only identifies
+the leader among the classes the model was allowed to consider.</li>
+<li><strong>“Softmax picks the final answer.”</strong> It creates the shares. Another step
+chooses the largest class or samples a class from the distribution.</li>
+<li><strong>“Higher temperature means a smarter model.”</strong> Temperature changes the
+distribution’s shape, not what the model learned.</li>
+</ul>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>1. What two guarantees does softmax give us?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Every output is between <code>0</code> and <code>1</code>, and all outputs in the list add up to <code>1</code>.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>2. What happens when all three class scores are equal?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Each class receives the same share. With three classes, each receives about
+<code>33.3%</code>.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>3. Why can’t we interpret a logit by itself?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Softmax uses the gaps between all the scores. A logit of <code>2</code> may receive a large
+or small share depending on the other logits beside it.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>4. Why might softmax be wrong for overlapping security labels?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Softmax forces the labels to compete for one fixed 100%. If several labels can
+be true at the same time, independent outputs are usually more appropriate.</p> </div> </details> 
+<h2 id="keep-this-mental-model">Keep this mental model</h2>
+<blockquote>
+<p>Softmax takes a list of competing scores and divides one fixed 100% among
+them. A higher score receives a larger share, but the largest share is still
+only a model prediction.</p>
+</blockquote>
+<h2 id="additional-practice">Additional practice</h2>
+<span class="practice-link" data-astro-cid-6qortkoi> <span class="favicon-mark favicon-mark--compact" data-fallback style="background-color: var(--bg-card); background-image: url(&#34;/assets/neetcode-logo.png&#34;); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 8px) calc(100% - 8px);" aria-hidden="true" data-astro-cid-n453gl5e>  </span>  <span class="practice-copy" data-astro-cid-6qortkoi><span data-astro-cid-6qortkoi>Implement the calculation in</span> <a href="https://neetcode.io/problems/softmax/question" data-astro-cid-6qortkoi>NeetCode’s Softmax problem</a>.</span> </span>  </div>  </div> </article> </main>  <footer data-astro-cid-sz7xmlte> <div class="footer-shell" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>&copy; 2026 Taraka Vishnumolakala</p> </div> </footer>   </body></html> 

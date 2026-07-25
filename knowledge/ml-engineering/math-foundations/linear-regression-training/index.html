@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="en"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Taraka Vishnumolakala" href="https://taraka-vishnumolakala.github.io/rss.xml"><meta name="generator" content="Astro v5.17.3"><meta name="theme-color" content="#111111"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><!-- Canonical URL --><link rel="canonical" href="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-training/"><!-- Primary Meta Tags --><title>Linear Regression (Training) — Knowledge Base — Taraka Vishnumolakala</title><meta name="title" content="Linear Regression (Training) — Knowledge Base — Taraka Vishnumolakala"><meta name="description" content="See how a linear model learns its weight and bias by measuring prediction errors and repeatedly reducing them."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-training/"><meta property="og:title" content="Linear Regression (Training) — Knowledge Base — Taraka Vishnumolakala"><meta property="og:description" content="See how a linear model learns its weight and bias by measuring prediction errors and repeatedly reducing them."><meta property="og:image" content="https://taraka-vishnumolakala.github.io/og.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/linear-regression-training/"><meta property="twitter:title" content="Linear Regression (Training) — Knowledge Base — Taraka Vishnumolakala"><meta property="twitter:description" content="See how a linear model learns its weight and bias by measuring prediction errors and repeatedly reducing them."><meta property="twitter:image" content="https://taraka-vishnumolakala.github.io/og.png"><link rel="stylesheet" href="/_astro/_slug_.eRbihVQg.css">
+<style>.favicon-mark[data-astro-cid-n453gl5e]{position:relative;display:inline-grid;width:32px;height:32px;flex:0 0 32px;place-items:center;overflow:hidden;border:1px solid var(--border);border-radius:7px;background:var(--bg-card);color:var(--text-muted);font-family:var(--font-mono);font-size:.72rem;font-weight:600;line-height:1;text-transform:none}.favicon-mark--compact[data-astro-cid-n453gl5e]{width:30px;height:30px;flex-basis:30px}.favicon-mark[data-astro-cid-n453gl5e]:before{content:attr(data-fallback)}.favicon-mark[data-astro-cid-n453gl5e] img[data-astro-cid-n453gl5e]{position:absolute;inset:4px;z-index:1;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain;background:var(--bg-card)}
+.page-toc[data-astro-cid-lhkl6hl6]{position:sticky;top:7.5rem;width:230px;max-height:calc(100vh - 9rem);overflow-y:auto;scrollbar-width:thin}.page-toc-label[data-astro-cid-lhkl6hl6]{margin:0 0 .9rem 1.25rem;color:var(--accent-strong);font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:none}.page-toc[data-astro-cid-lhkl6hl6] ul[data-astro-cid-lhkl6hl6]{margin:0;padding:0;list-style:none}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{display:flex;align-items:flex-start;gap:.65rem;padding:.38rem 0;color:var(--text-muted);font-size:.75rem;line-height:1.45}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:before{content:"";width:8px;height:1px;margin-top:.55rem;flex-shrink:0;background:var(--border);transition:width .15s ease,background .15s ease}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:hover,.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{color:var(--heading)}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{font-weight:600}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:16px;background:var(--accent)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .2s ease}.page-toc-section[data-astro-cid-lhkl6hl6].expanded>.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{padding-left:1rem;color:var(--text-faint);font-size:.71rem}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:10px}@media(max-width:1340px){.page-toc[data-astro-cid-lhkl6hl6]{position:relative;top:0;width:auto;max-height:none;padding:.85rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--accent-faint);overflow:visible}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:flex;align-items:center;gap:.55rem;padding:.2rem 0;color:var(--accent-strong);font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;list-style:none;text-transform:uppercase;cursor:pointer}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]::-webkit-details-marker{display:none}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]:before{content:"+";font-size:1rem;line-height:1}.page-toc-details[data-astro-cid-lhkl6hl6][open]>summary[data-astro-cid-lhkl6hl6]:before{content:"−"}.page-toc-label[data-astro-cid-lhkl6hl6]{display:none}.page-toc-list[data-astro-cid-lhkl6hl6]{margin-top:.8rem!important;padding-top:.65rem!important;border-top:1px solid var(--border)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}}
+</style>
+<link rel="stylesheet" href="/_astro/_slug_.DQij-Xgb.css">
+<link rel="stylesheet" href="/_astro/_slug_.DeHMcmab.css"></head> <body>  <header class="site-header" data-astro-cid-3ef6ksr2> <nav class="nav-shell" aria-label="Primary" data-astro-cid-3ef6ksr2> <a href="/" class="brand" aria-label="Taraka Vishnumolakala, home" data-astro-cid-3ef6ksr2> <span class="brand-mark" aria-hidden="true" data-astro-cid-3ef6ksr2>TV</span> <span class="brand-copy" data-astro-cid-3ef6ksr2> <strong data-astro-cid-3ef6ksr2>Taraka Vishnumolakala</strong> <span data-astro-cid-3ef6ksr2>Security Architecture</span> </span> </a> <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav" data-astro-cid-3ef6ksr2> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> </button> <div class="nav-links" id="primary-nav" data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Home </a>  <a href="/knowledge" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Knowledge </a>  <a href="/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Writing </a>  <a href="/tags" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Tags </a>  <a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer" data-astro-cid-3ef6ksr2>
+GitHub <span aria-hidden="true" data-astro-cid-3ef6ksr2>↗</span> </a> </div> </nav> </header> <div class="page-actions" data-page-actions data-astro-cid-jjhxq4hj> <button type="button" class="page-actions-toggle" aria-label="Page actions" aria-haspopup="true" aria-expanded="false" data-page-actions-toggle data-astro-cid-jjhxq4hj> <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="label" data-astro-cid-jjhxq4hj>Copy page</span> <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <polyline points="6 9 12 15 18 9" data-astro-cid-jjhxq4hj></polyline> </svg> </button> <div class="page-actions-menu" role="menu" hidden data-page-actions-menu data-astro-cid-jjhxq4hj> <button type="button" class="action-item" role="menuitem" data-action="copy" data-md-path="/knowledge/ml-engineering/math-foundations/linear-regression-training.md" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-copy-label data-astro-cid-jjhxq4hj>Copy page</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Copy page as Markdown for LLMs</span> </span> </button> <a class="action-item" role="menuitem" href="/knowledge/ml-engineering/math-foundations/linear-regression-training.md" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" data-astro-cid-jjhxq4hj></path> <polyline points="14 2 14 8 20 8" data-astro-cid-jjhxq4hj></polyline> <line x1="9" y1="13" x2="15" y2="13" data-astro-cid-jjhxq4hj></line> <line x1="9" y1="17" x2="15" y2="17" data-astro-cid-jjhxq4hj></line> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>View as Markdown</span> <span class="subtitle" data-astro-cid-jjhxq4hj>View this page as plain text</span> </span> </a> <a class="action-item" role="menuitem" href="/llms.txt" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>llms.txt</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Open llms.txt for this site</span> </span> </a> </div> </div> <script type="module">const c=document.querySelector("[data-page-actions]"),i=document.querySelector("[data-page-actions-toggle]"),o=document.querySelector("[data-page-actions-menu]");if(c&&i&&o){const d=()=>{o.hidden=!1,i.setAttribute("aria-expanded","true"),c.classList.add("open")},a=()=>{o.hidden=!0,i.setAttribute("aria-expanded","false"),c.classList.remove("open")};i.addEventListener("click",()=>{o.hidden?d():a()}),document.addEventListener("click",t=>{c.contains(t.target)||a()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&a()});const n=o.querySelector('[data-action="copy"]');if(n){const t=n.querySelector("[data-copy-label]"),r=t?.textContent??"Copy page";n.addEventListener("click",async()=>{const s=n.dataset.mdPath;if(!(!s||!t))try{const e=await fetch(s);if(!e.ok)throw new Error(`fetch failed: ${e.status}`);const l=await e.text();await navigator.clipboard.writeText(l),t.textContent="Copied!",setTimeout(()=>{t.textContent=r,a()},900)}catch(e){console.error("Copy failed",e),t.textContent="Copy failed",setTimeout(()=>{t.textContent=r},1500)}})}}</script>  <script type="module">const t=document.querySelector(".nav-toggle"),s=document.getElementById("primary-nav"),a=document.querySelector(".site-header");if(t&&s&&a){const n=()=>{s.classList.remove("open"),t.classList.remove("open"),t.setAttribute("aria-expanded","false")};t.addEventListener("click",()=>{const e=s.classList.toggle("open");t.classList.toggle("open",e),t.setAttribute("aria-expanded",String(e))}),s.addEventListener("click",e=>{e.target.closest("a")&&n()}),document.addEventListener("click",e=>{a.contains(e.target)||n()}),document.addEventListener("keydown",e=>{e.key==="Escape"&&n()}),window.matchMedia("(min-width: 769px)").addEventListener("change",e=>{e.matches&&n()})}</script>   <main class="knowledge-shell has-toc" data-astro-cid-sibu3b5v> <div class="knowledge-navigation" data-astro-cid-sibu3b5v> <aside class="knowledge-sidebar" data-astro-cid-24d5mdw3> <details class="knowledge-nav-details" open data-astro-cid-24d5mdw3> <summary data-astro-cid-24d5mdw3> <span data-astro-cid-24d5mdw3>Knowledge navigation</span> <strong data-astro-cid-24d5mdw3>10 notes</strong> </summary> <nav aria-label="Knowledge base" data-astro-cid-24d5mdw3> <a class="knowledge-overview-link" href="/knowledge" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Overview</strong> </a> <section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>ML Engineering</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/data-splits-and-leakage/" data-astro-cid-24d5mdw3> Dataset Splits and Leakage </a> </li> </ul> <div class="knowledge-subsection" data-astro-cid-24d5mdw3> <a class="knowledge-subsection-link" href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Math Foundations</strong> </a> <ul class="knowledge-subsection-list" data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/gradient-descent/" data-astro-cid-24d5mdw3> Gradient Descent </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/sigmoid-and-relu/" data-astro-cid-24d5mdw3> Sigmoid &amp; ReLU </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/softmax/" data-astro-cid-24d5mdw3> Softmax </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss/" data-astro-cid-24d5mdw3> Cross-Entropy Loss </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-forward/" data-astro-cid-24d5mdw3> Linear Regression (Forward Pass) </a> </li><li data-astro-cid-24d5mdw3> <a class="active" href="/knowledge/ml-engineering/math-foundations/linear-regression-training/" aria-current="page" data-astro-cid-24d5mdw3> Linear Regression (Training) </a> </li> </ul> </div>  </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Web Application Security</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/web-application-security/request-trust-boundaries/" data-astro-cid-24d5mdw3> Request Trust Boundaries </a> </li> </ul>   </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Security Payloads</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/security-payloads/context-aware-test-payloads/" data-astro-cid-24d5mdw3> Context-Aware Test Payloads </a> </li> </ul>   </section> </nav> </details> </aside>  </div> <div class="knowledge-toc" data-astro-cid-sibu3b5v> <aside class="page-toc" aria-label="Table of contents" data-page-toc data-astro-cid-lhkl6hl6> <details class="page-toc-details" open data-astro-cid-lhkl6hl6> <summary data-astro-cid-lhkl6hl6>On this page</summary> <p class="page-toc-label" data-astro-cid-lhkl6hl6>On this page</p> <ul class="page-toc-list" data-astro-cid-lhkl6hl6> <li class="page-toc-section" data-toc-section="start-with-completed-investigations" data-astro-cid-lhkl6hl6> <a href="#start-with-completed-investigations" data-toc-link="start-with-completed-investigations" data-astro-cid-lhkl6hl6> Start with completed investigations </a>  </li><li class="page-toc-section" data-toc-section="follow-the-training-loop" data-astro-cid-lhkl6hl6> <a href="#follow-the-training-loop" data-toc-link="follow-the-training-loop" data-astro-cid-lhkl6hl6> Follow the training loop </a>  </li><li class="page-toc-section" data-toc-section="measure-the-line-with-mean-squared-error" data-astro-cid-lhkl6hl6> <a href="#measure-the-line-with-mean-squared-error" data-toc-link="measure-the-line-with-mean-squared-error" data-astro-cid-lhkl6hl6> Measure the line with mean squared error </a>  </li><li class="page-toc-section" data-toc-section="use-gradients-to-adjust-both-parameters" data-astro-cid-lhkl6hl6> <a href="#use-gradients-to-adjust-both-parameters" data-toc-link="use-gradients-to-adjust-both-parameters" data-astro-cid-lhkl6hl6> Use gradients to adjust both parameters </a>  </li><li class="page-toc-section" data-toc-section="the-learning-rate-controls-the-update-size" data-astro-cid-lhkl6hl6> <a href="#the-learning-rate-controls-the-update-size" data-toc-link="the-learning-rate-controls-the-update-size" data-astro-cid-lhkl6hl6> The learning rate controls the update size </a>  </li><li class="page-toc-section" data-toc-section="what-counts-as-one-pass-through-the-data" data-astro-cid-lhkl6hl6> <a href="#what-counts-as-one-pass-through-the-data" data-toc-link="what-counts-as-one-pass-through-the-data" data-astro-cid-lhkl6hl6> What counts as one pass through the data? </a>  </li><li class="page-toc-section" data-toc-section="implement-the-full-loop-in-python" data-astro-cid-lhkl6hl6> <a href="#implement-the-full-loop-in-python" data-toc-link="implement-the-full-loop-in-python" data-astro-cid-lhkl6hl6> Implement the full loop in Python </a>  </li><li class="page-toc-section" data-toc-section="training-loss-is-not-the-final-test" data-astro-cid-lhkl6hl6> <a href="#training-loss-is-not-the-final-test" data-toc-link="training-loss-is-not-the-final-test" data-astro-cid-lhkl6hl6> Training loss is not the final test </a>  </li><li class="page-toc-section" data-toc-section="the-training-data-defines-what-the-model-learns" data-astro-cid-lhkl6hl6> <a href="#the-training-data-defines-what-the-model-learns" data-toc-link="the-training-data-defines-what-the-model-learns" data-astro-cid-lhkl6hl6> The training data defines what the model learns </a>  </li><li class="page-toc-section" data-toc-section="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> <a href="#why-security-engineers-should-care" data-toc-link="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> Why security engineers should care </a>  </li><li class="page-toc-section" data-toc-section="common-wrong-ideas" data-astro-cid-lhkl6hl6> <a href="#common-wrong-ideas" data-toc-link="common-wrong-ideas" data-astro-cid-lhkl6hl6> Common wrong ideas </a>  </li><li class="page-toc-section" data-toc-section="check-your-understanding" data-astro-cid-lhkl6hl6> <a href="#check-your-understanding" data-toc-link="check-your-understanding" data-astro-cid-lhkl6hl6> Check your understanding </a>  </li><li class="page-toc-section" data-toc-section="keep-this-mental-model" data-astro-cid-lhkl6hl6> <a href="#keep-this-mental-model" data-toc-link="keep-this-mental-model" data-astro-cid-lhkl6hl6> Keep this mental model </a>  </li><li class="page-toc-section" data-toc-section="additional-practice" data-astro-cid-lhkl6hl6> <a href="#additional-practice" data-toc-link="additional-practice" data-astro-cid-lhkl6hl6> Additional practice </a>  </li> </ul> </details> </aside> <script type="module">const h=window.matchMedia("(max-width: 1340px)");document.querySelectorAll("[data-page-toc]").forEach(r=>{const a=r.querySelector(".page-toc-details");a&&h.matches&&a.removeAttribute("open");const s=r.querySelectorAll("[data-toc-link]");if(s.length===0)return;const c=new Map,l=new Map,f=Array.from(r.querySelectorAll("[data-toc-section]"));s.forEach(t=>{const o=t.dataset.tocLink;if(!o)return;c.set(o,t);const e=t.closest("[data-toc-section]");e&&l.set(o,e)});const d=Array.from(c.keys()).map(t=>document.getElementById(t)).filter(t=>t!==null);let i=null;const g=t=>{if(t===i)return;i&&c.get(i)?.classList.remove("active"),t&&c.get(t)?.classList.add("active"),i=t;const o=t?l.get(t):null;f.forEach(e=>{e.classList.toggle("expanded",e===o)})},u=new IntersectionObserver(t=>{const o=t.filter(n=>n.isIntersecting).sort((n,p)=>n.boundingClientRect.top-p.boundingClientRect.top);if(o.length>0){g(o[0].target.id);return}const e=d.filter(n=>n.getBoundingClientRect().top<110);e.length>0&&g(e[e.length-1].id)},{rootMargin:"-110px 0px -70% 0px",threshold:0});d.forEach(t=>u.observe(t))});</script>  </div> <article class="knowledge-content" data-astro-cid-sibu3b5v> <header class="knowledge-header" data-astro-cid-sibu3b5v> <p class="breadcrumb" data-astro-cid-sibu3b5v> <a href="/" data-astro-cid-sibu3b5v>Home</a> <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge" data-astro-cid-sibu3b5v>Knowledge Base</a>  <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <span data-astro-cid-sibu3b5v>ML Engineering</span>   <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-sibu3b5v> Math Foundations </a>  </p> <p class="eyebrow" data-astro-cid-sibu3b5v> Math Foundations </p> <h1 data-astro-cid-sibu3b5v>Linear Regression (Training)</h1> <p class="knowledge-dek" data-astro-cid-sibu3b5v>See how a linear model learns its weight and bias by measuring prediction errors and repeatedly reducing them.</p> <div class="knowledge-meta" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v> Added  <time datetime="2026-07-25T00:00:00.000Z"> Jul 25, 2026 </time> </span> <span data-astro-cid-sibu3b5v>7 min read</span>  </div> <div class="knowledge-topics" aria-label="Topics" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v>linear regression</span><span data-astro-cid-sibu3b5v>model training</span><span data-astro-cid-sibu3b5v>mean squared error</span><span data-astro-cid-sibu3b5v>gradients</span> </div> </header> <div class="knowledge-body" data-astro-cid-sibu3b5v>  <div class="prose"> <p>In the
+<a href="/knowledge/ml-engineering/math-foundations/linear-regression-forward/">Linear Regression forward-pass lesson</a>,
+we estimated investigation effort with this model:</p>
+<p><code>predicted analyst-hours = w × affected endpoints + b</code></p>
+<p>The calculation was straightforward once we had a weight <code>w</code> and a bias <code>b</code>.
+But who decides what those two parameters should be?</p>
+<p>Training finds them from completed examples.</p>
+<p>For each completed alert, we know:</p>
+<ul>
+<li>the input: how many endpoints were affected, and</li>
+<li>the observed answer: how many analyst-hours the investigation required.</li>
+</ul>
+<p>The model begins with poor parameter values, makes predictions, measures its
+errors, and adjusts the parameters. It repeats this process until further
+adjustments produce little improvement.</p>
+<h2 id="start-with-completed-investigations">Start with completed investigations</h2>
+<p>We will use six small alerts:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:right">Affected endpoints (<code>x</code>)</th><th style="text-align:right">Observed analyst-hours (<code>y</code>)</th></tr></thead><tbody><tr><td style="text-align:right"><code>0</code></td><td style="text-align:right"><code>2.2</code></td></tr><tr><td style="text-align:right"><code>1</code></td><td style="text-align:right"><code>3.4</code></td></tr><tr><td style="text-align:right"><code>2</code></td><td style="text-align:right"><code>5.1</code></td></tr><tr><td style="text-align:right"><code>3</code></td><td style="text-align:right"><code>6.6</code></td></tr><tr><td style="text-align:right"><code>4</code></td><td style="text-align:right"><code>8.2</code></td></tr><tr><td style="text-align:right"><code>5</code></td><td style="text-align:right"><code>9.4</code></td></tr></tbody></table>
+<p>The points follow a general upward pattern, but they do not form a perfect
+line. That is normal. Two investigations with similar endpoint counts may still
+require different amounts of work.</p>
+<p>Training will look for one straight line that fits all six examples reasonably
+well.</p>
+<h2 id="follow-the-training-loop">Follow the training loop</h2>
+<p>One training update has four parts:</p>
+<ol>
+<li><strong>Forward pass:</strong> use the current weight and bias to predict every answer.</li>
+<li><strong>Loss calculation:</strong> turn the prediction errors into one number.</li>
+<li><strong>Gradient calculation:</strong> measure how changing each parameter would change
+the loss.</li>
+<li><strong>Parameter update:</strong> move the weight and bias in the direction that should
+reduce the loss.</li>
+</ol>
+<p>The model then returns to the forward pass and repeats the cycle with its new
+parameters.</p>
+<p>This is the same predict, measure, adjust, and repeat pattern used to train much
+larger models. Linear regression lets us see every part without a framework
+hiding the calculations.</p>
+<h2 id="measure-the-line-with-mean-squared-error">Measure the line with mean squared error</h2>
+<p>For each alert, the model’s error is:</p>
+<p><code>error = prediction − observed analyst-hours</code></p>
+<p>Some errors will be positive and others negative. Averaging those raw errors
+could allow them to cancel, so we square each error before averaging:</p>
+<p><code>mean squared error = average of (prediction − observed value)²</code></p>
+<p>This loss function is called <strong>mean squared error</strong>, or <strong>MSE</strong>:</p>
+<ul>
+<li><strong>mean</strong> means average,</li>
+<li><strong>squared error</strong> means every error is multiplied by itself.</li>
+</ul>
+<p>Squaring makes every contribution nonnegative and gives larger mistakes a
+larger penalty.</p>
+<p>Suppose training starts with:</p>
+<p><code>w = 0</code></p>
+<p><code>b = 0</code></p>
+<p>The model predicts <code>0</code> analyst-hours for every alert. Its initial MSE across the
+six examples is:</p>
+<p><code>40.262</code></p>
+<p>That number gives training a baseline. A later line is better if it produces a
+smaller MSE on these examples.</p>
+<figure class="math-lab" data-math-lab data-mode="linear-training" data-astro-cid-rlobe7kc> <header class="lab-header" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Interactive concept</span> <h3 data-astro-cid-rlobe7kc>Fit a line to completed alerts</h3> </div> <p data-astro-cid-rlobe7kc>Each outlined point is one completed investigation. Apply updates and watch the model’s line move toward the observations while mean squared error falls.</p> </header> <div class="lab-canvas-frame" data-astro-cid-rlobe7kc> <canvas width="900" height="340" aria-label="Interactive graph showing a prediction line moving toward observed data" data-astro-cid-rlobe7kc>
+Your browser does not support canvas. The live values below still
+			show the result of each control.
+</canvas> </div>  <div class="lab-controls training-controls" aria-label="Linear regression training controls" data-astro-cid-rlobe7kc> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Learning rate
+<output data-output="learning-rate" data-astro-cid-rlobe7kc>0.020</output> </span> <input data-control="learning-rate" type="range" min="0.005" max="0.045" step="0.005" value="0.02" data-astro-cid-rlobe7kc> </label> <div class="button-group" data-astro-cid-rlobe7kc> <button type="button" data-action="step" data-astro-cid-rlobe7kc>Take one update</button> <button type="button" data-action="run" data-astro-cid-rlobe7kc>Run 12 updates</button> <button type="button" class="quiet-button" data-action="reset" data-astro-cid-rlobe7kc>
+Reset
+</button> </div> <div class="metric-grid" aria-live="polite" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Updates completed</span> <strong data-result="step" data-astro-cid-rlobe7kc>0</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Mean squared error</span> <strong data-result="mse" data-astro-cid-rlobe7kc>40.262</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Current model</span> <strong data-result="equation" data-astro-cid-rlobe7kc>ŷ = 0.00x + 0.00</strong> </div> </div> </div>     <figcaption data-caption data-astro-cid-rlobe7kc> Take a training step and watch the prediction line move toward the observed data. </figcaption> </figure> <script type="module" src="/_astro/MathConceptLab.astro_astro_type_script_index_0_lang.BE_Iq2AY.js"></script> 
+<p>Leave the learning rate at <code>0.020</code> and select <strong>Take one update</strong>. The model
+moves from:</p>
+<p><code>ŷ = 0.00x + 0.00</code></p>
+<p>to approximately:</p>
+<p><code>ŷ = 0.75x + 0.23</code></p>
+<p>The MSE falls from <code>40.262</code> to about <code>15.232</code>. One update does not find the best
+line, but it moves the model in a useful direction.</p>
+<p>Select <strong>Reset</strong>, then <strong>Run 12 updates</strong>. The line moves much closer to the
+observed points, and the MSE falls to about <code>0.604</code>.</p>
+<p>You can run another group of updates to keep refining the line. The later
+updates produce smaller visible improvements because the model is already near
+a useful fit.</p>
+<h2 id="use-gradients-to-adjust-both-parameters">Use gradients to adjust both parameters</h2>
+<p>The training system needs to know how the loss responds to the weight and the
+bias separately.</p>
+<p>A <strong>gradient</strong> is a local slope. Here we calculate two gradients:</p>
+<ul>
+<li>the weight gradient estimates how the MSE changes when <code>w</code> changes, and</li>
+<li>the bias gradient estimates how the MSE changes when <code>b</code> changes.</li>
+</ul>
+<p>For our linear model, the formulas are:</p>
+<p><code>weight gradient = average of 2 × error × x</code></p>
+<p><code>bias gradient = average of 2 × error</code></p>
+<p>At the starting line <code>w = 0</code> and <code>b = 0</code>, the gradients are approximately:</p>
+<p><code>weight gradient = −37.733</code></p>
+<p><code>bias gradient = −11.633</code></p>
+<p>A negative gradient means increasing that parameter should reduce the loss near
+the current position.</p>
+<p>The update rule is:</p>
+<p><code>new parameter = current parameter − learning rate × gradient</code></p>
+<p>With a learning rate of <code>0.020</code>, the first weight update is:</p>
+<p><code>new w = 0 − 0.020 × (−37.733) ≈ 0.755</code></p>
+<p>The first bias update is:</p>
+<p><code>new b = 0 − 0.020 × (−11.633) ≈ 0.233</code></p>
+<p>Those are the values shown after the first interactive update.</p>
+<p>The gradient formulas come from calculus, but their job is practical: tell the
+training loop which direction should reduce the current loss and how steep that
+loss is.</p>
+<h2 id="the-learning-rate-controls-the-update-size">The learning rate controls the update size</h2>
+<p>The <strong>learning rate</strong> determines how much of each gradient the update uses.</p>
+<ul>
+<li>A small learning rate makes cautious progress and may require many updates.</li>
+<li>A useful learning rate reduces the loss steadily.</li>
+<li>A learning rate that is too large may jump past a good line and make the loss
+unstable.</li>
+</ul>
+<p>Changing the learning rate does not immediately change the current line. It
+changes the size of the next parameter update.</p>
+<p>The separate
+<a href="/knowledge/ml-engineering/math-foundations/gradient-descent/">Gradient Descent lesson</a>
+explores this behavior in detail.</p>
+<h2 id="what-counts-as-one-pass-through-the-data">What counts as one pass through the data?</h2>
+<p>In our interactive example, every update uses all six training examples. One
+complete pass through the training data is called an <strong>epoch</strong>. Here, one update
+is also one epoch.</p>
+<p>Large datasets are usually divided into smaller groups called <strong>batches</strong>. Each
+batch produces an update, so a large training run may perform many updates
+during one epoch.</p>
+<p>These terms describe how the data is scheduled:</p>
+<ul>
+<li><strong>Example:</strong> one completed alert.</li>
+<li><strong>Batch:</strong> the examples used for one parameter update.</li>
+<li><strong>Epoch:</strong> one complete pass through all training examples.</li>
+</ul>
+<h2 id="implement-the-full-loop-in-python">Implement the full loop in Python</h2>
+<p>The code below reproduces the interactive training process without a
+machine-learning library:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">endpoints </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">actual_hours </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">2.2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3.4</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">5.1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">6.6</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">8.2</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">9.4</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">w </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0.0</span></span>
+<span class="line"><span style="color:#E1E4E8">b </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0.0</span></span>
+<span class="line"><span style="color:#E1E4E8">learning_rate </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0.02</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> update </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1000</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#6A737D">    # 1. Forward pass</span></span>
+<span class="line"><span style="color:#E1E4E8">    predictions </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        w </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> x </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> b</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> x </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> endpoints</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # 2. Errors and mean squared error</span></span>
+<span class="line"><span style="color:#E1E4E8">    errors </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        predicted </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> actual</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> predicted, actual </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> zip</span><span style="color:#E1E4E8">(predictions, actual_hours)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">    mse </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sum</span><span style="color:#E1E4E8">(error </span><span style="color:#F97583">**</span><span style="color:#79B8FF"> 2</span><span style="color:#F97583"> for</span><span style="color:#E1E4E8"> error </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> errors) </span><span style="color:#F97583">/</span><span style="color:#79B8FF"> len</span><span style="color:#E1E4E8">(errors)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> update </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> {</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">12</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">250</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">999</span><span style="color:#E1E4E8">}:</span></span>
+<span class="line"><span style="color:#79B8FF">        print</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#F97583">            f</span><span style="color:#9ECBFF">&quot;update </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">update</span><span style="color:#F97583">:3</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">: &quot;</span></span>
+<span class="line"><span style="color:#F97583">            f</span><span style="color:#9ECBFF">&quot;w=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">w</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">, b=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">b</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">, mse=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">mse</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">        )</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # 3. Gradients averaged across all examples</span></span>
+<span class="line"><span style="color:#E1E4E8">    grad_w </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sum</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">        2</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> error </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> x</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> error, x </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> zip</span><span style="color:#E1E4E8">(errors, endpoints)</span></span>
+<span class="line"><span style="color:#E1E4E8">    ) </span><span style="color:#F97583">/</span><span style="color:#79B8FF"> len</span><span style="color:#E1E4E8">(errors)</span></span>
+<span class="line"><span style="color:#E1E4E8">    grad_b </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> sum</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#79B8FF">        2</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> error</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> error </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> errors</span></span>
+<span class="line"><span style="color:#E1E4E8">    ) </span><span style="color:#F97583">/</span><span style="color:#79B8FF"> len</span><span style="color:#E1E4E8">(errors)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # 4. Parameter update</span></span>
+<span class="line"><span style="color:#E1E4E8">    w </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> w </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> learning_rate </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> grad_w</span></span>
+<span class="line"><span style="color:#E1E4E8">    b </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> b </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> learning_rate </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> grad_b</span></span></code></pre>
+<p>Running it produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>update   0: w=0.000, b=0.000, mse=40.262</span></span>
+<span class="line"><span>update   1: w=0.755, b=0.233, mse=15.232</span></span>
+<span class="line"><span>update  12: w=1.861, b=0.749, mse=0.604</span></span>
+<span class="line"><span>update 100: w=1.617, b=1.632, mse=0.087</span></span>
+<span class="line"><span>update 250: w=1.505, b=2.029, mse=0.017</span></span>
+<span class="line"><span>update 999: w=1.483, b=2.110, mse=0.015</span></span></code></pre>
+<p>The final line is close to:</p>
+<p><code>ŷ = 1.48x + 2.11</code></p>
+<p>It does not pass through every point, and its MSE does not reach zero. It finds
+the straight line that balances the small disagreements across all six noisy
+examples.</p>
+<h2 id="training-loss-is-not-the-final-test">Training loss is not the final test</h2>
+<p>The loop directly optimizes performance on its training examples. A low
+training MSE only tells us that the line fits those examples.</p>
+<p>To test whether the relationship also works for new alerts, engineers evaluate
+the model on separate completed investigations that were not used for parameter
+updates. This separate data is called <strong>validation data</strong>.</p>
+<p>If training loss keeps falling while validation performance gets worse, the
+model may be learning details that do not carry over to new examples. This
+failure is called <strong>overfitting</strong>.</p>
+<h2 id="the-training-data-defines-what-the-model-learns">The training data defines what the model learns</h2>
+<p>Gradient descent follows the loss produced by the supplied examples. It does
+not know whether a record is accurate, representative, or malicious.</p>
+<p>Investigation-effort data may have problems such as:</p>
+<ul>
+<li>inconsistent time tracking between response teams,</li>
+<li>missing work performed outside the ticketing system,</li>
+<li>duplicate incidents,</li>
+<li>a training history dominated by small alerts, or</li>
+<li>deliberately altered records.</li>
+</ul>
+<p>The optimizer will faithfully learn from those problems unless the surrounding
+data pipeline detects them.</p>
+<h2 id="why-security-engineers-should-care">Why security engineers should care</h2>
+<ul>
+<li><strong>Training data is a write-sensitive asset.</strong> Unauthorized changes can move
+the learned parameters and therefore change future predictions.</li>
+<li><strong>Data lineage matters.</strong> Teams should be able to identify where each
+training record and label came from.</li>
+<li><strong>Average loss can hide important failures.</strong> A good overall MSE may conceal
+poor estimates for rare, high-impact incidents.</li>
+<li><strong>Training and validation data must remain separate.</strong> Reusing validation
+answers during parameter updates makes the evaluation look better than it
+really is.</li>
+<li><strong>Learned parameters are not proof of causation.</strong> A positive endpoint weight
+describes a pattern in the supplied data, not a universal rule about incident
+effort.</li>
+</ul>
+<h2 id="common-wrong-ideas">Common wrong ideas</h2>
+<ul>
+<li><strong>“Someone chooses the final weight and bias by hand.”</strong> Engineers choose the
+model and training process; the update loop learns the parameter values from
+data.</li>
+<li><strong>“Training changes the formula.”</strong> The formula remains <code>ŷ = wx + b</code>.
+Training changes <code>w</code> and <code>b</code>.</li>
+<li><strong>“The loss must reach zero.”</strong> Noisy real-world examples may not lie on one
+perfect line. The goal is a useful fit that also works on new data.</li>
+<li><strong>“One lower-loss update proves the model is trained.”</strong> Training usually
+requires many updates plus validation on separate examples.</li>
+<li><strong>“Gradient descent can detect poisoned records.”</strong> It optimizes the supplied
+loss. It does not determine whether the underlying data should be trusted.</li>
+</ul>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>1. What are the four parts of one training update?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Run a forward pass, calculate the loss, calculate the gradients, and update the
+parameters.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>2. Why square the prediction errors?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Squaring prevents positive and negative errors from canceling and gives larger
+errors a larger penalty.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>3. What does the learning rate control?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>It controls how much of each gradient is used when updating the weight and
+bias.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>4. Why does the fitted line not pass through every point?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The completed investigations contain variation that one straight line cannot
+match exactly. Training finds a line that balances the errors across all the
+points.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>5. Why do we need validation data after training?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>Training loss measures fit on examples the optimizer already used. Validation
+data checks whether the learned relationship also works on separate examples.</p> </div> </details> 
+<h2 id="keep-this-mental-model">Keep this mental model</h2>
+<blockquote>
+<p>Training repeats four actions: predict with the current line, measure its
+errors, calculate how the parameters should move, and update them. The data
+supplies the examples; the loss and gradients guide the line.</p>
+</blockquote>
+<h2 id="additional-practice">Additional practice</h2>
+<span class="practice-link" data-astro-cid-6qortkoi> <span class="favicon-mark favicon-mark--compact" data-fallback style="background-color: var(--bg-card); background-image: url(&#34;/assets/neetcode-logo.png&#34;); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 8px) calc(100% - 8px);" aria-hidden="true" data-astro-cid-n453gl5e>  </span>  <span class="practice-copy" data-astro-cid-6qortkoi><span data-astro-cid-6qortkoi>Implement the training loop in</span> <a href="https://neetcode.io/problems/linear-regression-training/question" data-astro-cid-6qortkoi>NeetCode’s Linear Regression (Training) problem</a>.</span> </span>  </div>  </div> </article> </main>  <footer data-astro-cid-sz7xmlte> <div class="footer-shell" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>&copy; 2026 Taraka Vishnumolakala</p> </div> </footer>   </body></html> 

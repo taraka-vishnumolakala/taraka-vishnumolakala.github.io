@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="en"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Taraka Vishnumolakala" href="https://taraka-vishnumolakala.github.io/rss.xml"><meta name="generator" content="Astro v5.17.3"><meta name="theme-color" content="#111111"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><!-- Canonical URL --><link rel="canonical" href="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/cross-entropy-loss/"><!-- Primary Meta Tags --><title>Cross-Entropy Loss — Knowledge Base — Taraka Vishnumolakala</title><meta name="title" content="Cross-Entropy Loss — Knowledge Base — Taraka Vishnumolakala"><meta name="description" content="Learn how classification training penalizes a model for giving too little probability to the correct answer."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/cross-entropy-loss/"><meta property="og:title" content="Cross-Entropy Loss — Knowledge Base — Taraka Vishnumolakala"><meta property="og:description" content="Learn how classification training penalizes a model for giving too little probability to the correct answer."><meta property="og:image" content="https://taraka-vishnumolakala.github.io/og.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/cross-entropy-loss/"><meta property="twitter:title" content="Cross-Entropy Loss — Knowledge Base — Taraka Vishnumolakala"><meta property="twitter:description" content="Learn how classification training penalizes a model for giving too little probability to the correct answer."><meta property="twitter:image" content="https://taraka-vishnumolakala.github.io/og.png"><link rel="stylesheet" href="/_astro/_slug_.eRbihVQg.css">
+<style>.favicon-mark[data-astro-cid-n453gl5e]{position:relative;display:inline-grid;width:32px;height:32px;flex:0 0 32px;place-items:center;overflow:hidden;border:1px solid var(--border);border-radius:7px;background:var(--bg-card);color:var(--text-muted);font-family:var(--font-mono);font-size:.72rem;font-weight:600;line-height:1;text-transform:none}.favicon-mark--compact[data-astro-cid-n453gl5e]{width:30px;height:30px;flex-basis:30px}.favicon-mark[data-astro-cid-n453gl5e]:before{content:attr(data-fallback)}.favicon-mark[data-astro-cid-n453gl5e] img[data-astro-cid-n453gl5e]{position:absolute;inset:4px;z-index:1;width:calc(100% - 8px);height:calc(100% - 8px);object-fit:contain;background:var(--bg-card)}
+.page-toc[data-astro-cid-lhkl6hl6]{position:sticky;top:7.5rem;width:230px;max-height:calc(100vh - 9rem);overflow-y:auto;scrollbar-width:thin}.page-toc-label[data-astro-cid-lhkl6hl6]{margin:0 0 .9rem 1.25rem;color:var(--accent-strong);font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:none}.page-toc[data-astro-cid-lhkl6hl6] ul[data-astro-cid-lhkl6hl6]{margin:0;padding:0;list-style:none}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{display:flex;align-items:flex-start;gap:.65rem;padding:.38rem 0;color:var(--text-muted);font-size:.75rem;line-height:1.45}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:before{content:"";width:8px;height:1px;margin-top:.55rem;flex-shrink:0;background:var(--border);transition:width .15s ease,background .15s ease}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:hover,.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{color:var(--heading)}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{font-weight:600}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:16px;background:var(--accent)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .2s ease}.page-toc-section[data-astro-cid-lhkl6hl6].expanded>.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{padding-left:1rem;color:var(--text-faint);font-size:.71rem}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:10px}@media(max-width:1340px){.page-toc[data-astro-cid-lhkl6hl6]{position:relative;top:0;width:auto;max-height:none;padding:.85rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--accent-faint);overflow:visible}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:flex;align-items:center;gap:.55rem;padding:.2rem 0;color:var(--accent-strong);font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;list-style:none;text-transform:uppercase;cursor:pointer}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]::-webkit-details-marker{display:none}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]:before{content:"+";font-size:1rem;line-height:1}.page-toc-details[data-astro-cid-lhkl6hl6][open]>summary[data-astro-cid-lhkl6hl6]:before{content:"−"}.page-toc-label[data-astro-cid-lhkl6hl6]{display:none}.page-toc-list[data-astro-cid-lhkl6hl6]{margin-top:.8rem!important;padding-top:.65rem!important;border-top:1px solid var(--border)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}}
+</style>
+<link rel="stylesheet" href="/_astro/_slug_.DQij-Xgb.css">
+<link rel="stylesheet" href="/_astro/_slug_.DeHMcmab.css"></head> <body>  <header class="site-header" data-astro-cid-3ef6ksr2> <nav class="nav-shell" aria-label="Primary" data-astro-cid-3ef6ksr2> <a href="/" class="brand" aria-label="Taraka Vishnumolakala, home" data-astro-cid-3ef6ksr2> <span class="brand-mark" aria-hidden="true" data-astro-cid-3ef6ksr2>TV</span> <span class="brand-copy" data-astro-cid-3ef6ksr2> <strong data-astro-cid-3ef6ksr2>Taraka Vishnumolakala</strong> <span data-astro-cid-3ef6ksr2>Security Architecture</span> </span> </a> <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav" data-astro-cid-3ef6ksr2> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> </button> <div class="nav-links" id="primary-nav" data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Home </a>  <a href="/knowledge" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Knowledge </a>  <a href="/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Writing </a>  <a href="/tags" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Tags </a>  <a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer" data-astro-cid-3ef6ksr2>
+GitHub <span aria-hidden="true" data-astro-cid-3ef6ksr2>↗</span> </a> </div> </nav> </header> <div class="page-actions" data-page-actions data-astro-cid-jjhxq4hj> <button type="button" class="page-actions-toggle" aria-label="Page actions" aria-haspopup="true" aria-expanded="false" data-page-actions-toggle data-astro-cid-jjhxq4hj> <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="label" data-astro-cid-jjhxq4hj>Copy page</span> <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <polyline points="6 9 12 15 18 9" data-astro-cid-jjhxq4hj></polyline> </svg> </button> <div class="page-actions-menu" role="menu" hidden data-page-actions-menu data-astro-cid-jjhxq4hj> <button type="button" class="action-item" role="menuitem" data-action="copy" data-md-path="/knowledge/ml-engineering/math-foundations/cross-entropy-loss.md" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-copy-label data-astro-cid-jjhxq4hj>Copy page</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Copy page as Markdown for LLMs</span> </span> </button> <a class="action-item" role="menuitem" href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss.md" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" data-astro-cid-jjhxq4hj></path> <polyline points="14 2 14 8 20 8" data-astro-cid-jjhxq4hj></polyline> <line x1="9" y1="13" x2="15" y2="13" data-astro-cid-jjhxq4hj></line> <line x1="9" y1="17" x2="15" y2="17" data-astro-cid-jjhxq4hj></line> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>View as Markdown</span> <span class="subtitle" data-astro-cid-jjhxq4hj>View this page as plain text</span> </span> </a> <a class="action-item" role="menuitem" href="/llms.txt" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>llms.txt</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Open llms.txt for this site</span> </span> </a> </div> </div> <script type="module">const c=document.querySelector("[data-page-actions]"),i=document.querySelector("[data-page-actions-toggle]"),o=document.querySelector("[data-page-actions-menu]");if(c&&i&&o){const d=()=>{o.hidden=!1,i.setAttribute("aria-expanded","true"),c.classList.add("open")},a=()=>{o.hidden=!0,i.setAttribute("aria-expanded","false"),c.classList.remove("open")};i.addEventListener("click",()=>{o.hidden?d():a()}),document.addEventListener("click",t=>{c.contains(t.target)||a()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&a()});const n=o.querySelector('[data-action="copy"]');if(n){const t=n.querySelector("[data-copy-label]"),r=t?.textContent??"Copy page";n.addEventListener("click",async()=>{const s=n.dataset.mdPath;if(!(!s||!t))try{const e=await fetch(s);if(!e.ok)throw new Error(`fetch failed: ${e.status}`);const l=await e.text();await navigator.clipboard.writeText(l),t.textContent="Copied!",setTimeout(()=>{t.textContent=r,a()},900)}catch(e){console.error("Copy failed",e),t.textContent="Copy failed",setTimeout(()=>{t.textContent=r},1500)}})}}</script>  <script type="module">const t=document.querySelector(".nav-toggle"),s=document.getElementById("primary-nav"),a=document.querySelector(".site-header");if(t&&s&&a){const n=()=>{s.classList.remove("open"),t.classList.remove("open"),t.setAttribute("aria-expanded","false")};t.addEventListener("click",()=>{const e=s.classList.toggle("open");t.classList.toggle("open",e),t.setAttribute("aria-expanded",String(e))}),s.addEventListener("click",e=>{e.target.closest("a")&&n()}),document.addEventListener("click",e=>{a.contains(e.target)||n()}),document.addEventListener("keydown",e=>{e.key==="Escape"&&n()}),window.matchMedia("(min-width: 769px)").addEventListener("change",e=>{e.matches&&n()})}</script>   <main class="knowledge-shell has-toc" data-astro-cid-sibu3b5v> <div class="knowledge-navigation" data-astro-cid-sibu3b5v> <aside class="knowledge-sidebar" data-astro-cid-24d5mdw3> <details class="knowledge-nav-details" open data-astro-cid-24d5mdw3> <summary data-astro-cid-24d5mdw3> <span data-astro-cid-24d5mdw3>Knowledge navigation</span> <strong data-astro-cid-24d5mdw3>10 notes</strong> </summary> <nav aria-label="Knowledge base" data-astro-cid-24d5mdw3> <a class="knowledge-overview-link" href="/knowledge" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Overview</strong> </a> <section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>ML Engineering</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/data-splits-and-leakage/" data-astro-cid-24d5mdw3> Dataset Splits and Leakage </a> </li> </ul> <div class="knowledge-subsection" data-astro-cid-24d5mdw3> <a class="knowledge-subsection-link" href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Math Foundations</strong> </a> <ul class="knowledge-subsection-list" data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/gradient-descent/" data-astro-cid-24d5mdw3> Gradient Descent </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/sigmoid-and-relu/" data-astro-cid-24d5mdw3> Sigmoid &amp; ReLU </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/softmax/" data-astro-cid-24d5mdw3> Softmax </a> </li><li data-astro-cid-24d5mdw3> <a class="active" href="/knowledge/ml-engineering/math-foundations/cross-entropy-loss/" aria-current="page" data-astro-cid-24d5mdw3> Cross-Entropy Loss </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-forward/" data-astro-cid-24d5mdw3> Linear Regression (Forward Pass) </a> </li><li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/math-foundations/linear-regression-training/" data-astro-cid-24d5mdw3> Linear Regression (Training) </a> </li> </ul> </div>  </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Web Application Security</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/web-application-security/request-trust-boundaries/" data-astro-cid-24d5mdw3> Request Trust Boundaries </a> </li> </ul>   </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Security Payloads</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/security-payloads/context-aware-test-payloads/" data-astro-cid-24d5mdw3> Context-Aware Test Payloads </a> </li> </ul>   </section> </nav> </details> </aside>  </div> <div class="knowledge-toc" data-astro-cid-sibu3b5v> <aside class="page-toc" aria-label="Table of contents" data-page-toc data-astro-cid-lhkl6hl6> <details class="page-toc-details" open data-astro-cid-lhkl6hl6> <summary data-astro-cid-lhkl6hl6>On this page</summary> <p class="page-toc-label" data-astro-cid-lhkl6hl6>On this page</p> <ul class="page-toc-list" data-astro-cid-lhkl6hl6> <li class="page-toc-section" data-toc-section="grade-the-probability-given-to-the-correct-class" data-astro-cid-lhkl6hl6> <a href="#grade-the-probability-given-to-the-correct-class" data-toc-link="grade-the-probability-given-to-the-correct-class" data-astro-cid-lhkl6hl6> Grade the probability given to the correct class </a>  </li><li class="page-toc-section" data-toc-section="compare-two-correct-predictions" data-astro-cid-lhkl6hl6> <a href="#compare-two-correct-predictions" data-toc-link="compare-two-correct-predictions" data-astro-cid-lhkl6hl6> Compare two correct predictions </a>  </li><li class="page-toc-section" data-toc-section="why-the-other-probabilities-still-matter" data-astro-cid-lhkl6hl6> <a href="#why-the-other-probabilities-still-matter" data-toc-link="why-the-other-probabilities-still-matter" data-astro-cid-lhkl6hl6> Why the other probabilities still matter </a>  </li><li class="page-toc-section" data-toc-section="from-one-alert-to-a-training-set" data-astro-cid-lhkl6hl6> <a href="#from-one-alert-to-a-training-set" data-toc-link="from-one-alert-to-a-training-set" data-astro-cid-lhkl6hl6> From one alert to a training set </a>  </li><li class="page-toc-section" data-toc-section="implement-the-calculation-in-python" data-astro-cid-lhkl6hl6> <a href="#implement-the-calculation-in-python" data-toc-link="implement-the-calculation-in-python" data-astro-cid-lhkl6hl6> Implement the calculation in Python </a>  </li><li class="page-toc-section" data-toc-section="loss-and-accuracy-answer-different-questions" data-astro-cid-lhkl6hl6> <a href="#loss-and-accuracy-answer-different-questions" data-toc-link="loss-and-accuracy-answer-different-questions" data-astro-cid-lhkl6hl6> Loss and accuracy answer different questions </a>  </li><li class="page-toc-section" data-toc-section="what-high-loss-examples-can-tell-us" data-astro-cid-lhkl6hl6> <a href="#what-high-loss-examples-can-tell-us" data-toc-link="what-high-loss-examples-can-tell-us" data-astro-cid-lhkl6hl6> What high-loss examples can tell us </a>  </li><li class="page-toc-section" data-toc-section="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> <a href="#why-security-engineers-should-care" data-toc-link="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> Why security engineers should care </a>  </li><li class="page-toc-section" data-toc-section="common-wrong-ideas" data-astro-cid-lhkl6hl6> <a href="#common-wrong-ideas" data-toc-link="common-wrong-ideas" data-astro-cid-lhkl6hl6> Common wrong ideas </a>  </li><li class="page-toc-section" data-toc-section="check-your-understanding" data-astro-cid-lhkl6hl6> <a href="#check-your-understanding" data-toc-link="check-your-understanding" data-astro-cid-lhkl6hl6> Check your understanding </a>  </li><li class="page-toc-section" data-toc-section="keep-this-mental-model" data-astro-cid-lhkl6hl6> <a href="#keep-this-mental-model" data-toc-link="keep-this-mental-model" data-astro-cid-lhkl6hl6> Keep this mental model </a>  </li><li class="page-toc-section" data-toc-section="additional-practice" data-astro-cid-lhkl6hl6> <a href="#additional-practice" data-toc-link="additional-practice" data-astro-cid-lhkl6hl6> Additional practice </a>  </li> </ul> </details> </aside> <script type="module">const h=window.matchMedia("(max-width: 1340px)");document.querySelectorAll("[data-page-toc]").forEach(r=>{const a=r.querySelector(".page-toc-details");a&&h.matches&&a.removeAttribute("open");const s=r.querySelectorAll("[data-toc-link]");if(s.length===0)return;const c=new Map,l=new Map,f=Array.from(r.querySelectorAll("[data-toc-section]"));s.forEach(t=>{const o=t.dataset.tocLink;if(!o)return;c.set(o,t);const e=t.closest("[data-toc-section]");e&&l.set(o,e)});const d=Array.from(c.keys()).map(t=>document.getElementById(t)).filter(t=>t!==null);let i=null;const g=t=>{if(t===i)return;i&&c.get(i)?.classList.remove("active"),t&&c.get(t)?.classList.add("active"),i=t;const o=t?l.get(t):null;f.forEach(e=>{e.classList.toggle("expanded",e===o)})},u=new IntersectionObserver(t=>{const o=t.filter(n=>n.isIntersecting).sort((n,p)=>n.boundingClientRect.top-p.boundingClientRect.top);if(o.length>0){g(o[0].target.id);return}const e=d.filter(n=>n.getBoundingClientRect().top<110);e.length>0&&g(e[e.length-1].id)},{rootMargin:"-110px 0px -70% 0px",threshold:0});d.forEach(t=>u.observe(t))});</script>  </div> <article class="knowledge-content" data-astro-cid-sibu3b5v> <header class="knowledge-header" data-astro-cid-sibu3b5v> <p class="breadcrumb" data-astro-cid-sibu3b5v> <a href="/" data-astro-cid-sibu3b5v>Home</a> <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge" data-astro-cid-sibu3b5v>Knowledge Base</a>  <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <span data-astro-cid-sibu3b5v>ML Engineering</span>   <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-sibu3b5v> Math Foundations </a>  </p> <p class="eyebrow" data-astro-cid-sibu3b5v> Math Foundations </p> <h1 data-astro-cid-sibu3b5v>Cross-Entropy Loss</h1> <p class="knowledge-dek" data-astro-cid-sibu3b5v>Learn how classification training penalizes a model for giving too little probability to the correct answer.</p> <div class="knowledge-meta" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v> Added  <time datetime="2026-07-25T00:00:00.000Z"> Jul 25, 2026 </time> </span> <span data-astro-cid-sibu3b5v>6 min read</span>  </div> <div class="knowledge-topics" aria-label="Topics" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v>classification</span><span data-astro-cid-sibu3b5v>loss functions</span><span data-astro-cid-sibu3b5v>probability</span><span data-astro-cid-sibu3b5v>model training</span> </div> </header> <div class="knowledge-body" data-astro-cid-sibu3b5v>  <div class="prose"> <p>Suppose an incident has already been investigated. The response team confirmed
+that its primary cause was <strong>credential abuse</strong>.</p>
+<p>Before seeing that answer, a model assigned these probability shares:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Class</th><th style="text-align:right">Model probability</th></tr></thead><tbody><tr><td>Credential abuse</td><td style="text-align:right"><code>82.6%</code></td></tr><tr><td>Malware</td><td style="text-align:right"><code>13.7%</code></td></tr><tr><td>Misconfiguration</td><td style="text-align:right"><code>3.7%</code></td></tr></tbody></table>
+<p>The correct class received the largest share, so the model chose the right
+answer. But training needs more than a right-or-wrong result. It needs a number
+that measures how good the complete prediction was.</p>
+<p>That measurement is called <strong>loss</strong>. A smaller loss means the prediction fits
+the known answer more closely.</p>
+<p>For classification, a common measurement is <strong>cross-entropy loss</strong>.</p>
+<h2 id="grade-the-probability-given-to-the-correct-class">Grade the probability given to the correct class</h2>
+<p>For one example with one correct class, cross-entropy asks a focused question:</p>
+<blockquote>
+<p>How much probability did the model give the answer that turned out to be
+correct?</p>
+</blockquote>
+<p>It uses this rule:</p>
+<p><code>loss = −ln(probability given to the correct class)</code></p>
+<p>The letters <code>ln</code> mean <strong>natural logarithm</strong>. A logarithm is a mathematical
+function that produces the penalty shape we want here: the penalty is small
+near probability <code>1</code> and grows rapidly as the probability approaches <code>0</code>.</p>
+<p>You do not need to calculate logarithms by hand to follow the idea:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:right">Probability given to correct class</th><th style="text-align:right">Cross-entropy loss</th></tr></thead><tbody><tr><td style="text-align:right"><code>95%</code></td><td style="text-align:right"><code>0.051</code></td></tr><tr><td style="text-align:right"><code>80%</code></td><td style="text-align:right"><code>0.223</code></td></tr><tr><td style="text-align:right"><code>50%</code></td><td style="text-align:right"><code>0.693</code></td></tr><tr><td style="text-align:right"><code>10%</code></td><td style="text-align:right"><code>2.303</code></td></tr><tr><td style="text-align:right"><code>1%</code></td><td style="text-align:right"><code>4.605</code></td></tr></tbody></table>
+<p>The minus sign keeps the loss positive. The natural logarithm of a number
+between <code>0</code> and <code>1</code> is negative, so placing a minus sign in front turns it into
+a positive penalty.</p>
+<h2 id="compare-two-correct-predictions">Compare two correct predictions</h2>
+<p>Consider two models that both choose credential abuse:</p>
+<ul>
+<li>Model A gives credential abuse <code>55%</code>.</li>
+<li>Model B gives credential abuse <code>95%</code>.</li>
+</ul>
+<p>Both models are correct if the system chooses the class with the largest share.
+Cross-entropy still prefers Model B:</p>
+<p><code>Model A loss = −ln(0.55) ≈ 0.598</code></p>
+<p><code>Model B loss = −ln(0.95) ≈ 0.051</code></p>
+<p>This gives training more information than accuracy alone. It can distinguish a
+weak correct prediction from a strong correct prediction.</p>
+<figure class="math-lab" data-math-lab data-mode="cross-entropy" data-astro-cid-rlobe7kc> <header class="lab-header" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Interactive concept</span> <h3 data-astro-cid-rlobe7kc>Grade an alert classification</h3> </div> <p data-astro-cid-rlobe7kc>The investigation has confirmed the correct class. Change the probability that the model assigned to that class and watch the training penalty respond.</p> </header> <div class="lab-canvas-frame" data-astro-cid-rlobe7kc> <canvas width="900" height="340" aria-label="Interactive curve showing cross-entropy loss as correct-answer probability changes" data-astro-cid-rlobe7kc>
+Your browser does not support canvas. The live values below still
+			show the result of each control.
+</canvas> </div>      <div class="lab-controls entropy-controls" aria-label="Cross-entropy controls" data-astro-cid-rlobe7kc> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Probability given to the correct class
+<output data-output="probability" data-astro-cid-rlobe7kc>80%</output> </span> <input data-control="probability" type="range" min="1" max="99" step="1" value="80" data-astro-cid-rlobe7kc> </label> <div class="preset-group" aria-label="Probability examples" data-astro-cid-rlobe7kc> <button type="button" data-probability="95" data-astro-cid-rlobe7kc>95% to correct class</button> <button type="button" data-probability="50" data-astro-cid-rlobe7kc>50% to correct class</button> <button type="button" data-probability="10" data-astro-cid-rlobe7kc>10% to correct class</button> <button type="button" data-probability="1" data-astro-cid-rlobe7kc>1% to correct class</button> </div> <div class="metric-grid" aria-live="polite" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Correct-class probability</span> <strong data-result="probability-display" data-astro-cid-rlobe7kc>80%</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Cross-entropy loss</span> <strong data-result="loss" data-astro-cid-rlobe7kc>0.223</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Penalty size</span> <strong data-result="surprise" data-astro-cid-rlobe7kc>Small penalty</strong> </div> </div> </div> <figcaption data-caption data-astro-cid-rlobe7kc> Change the model’s belief in the correct answer and watch its penalty respond. </figcaption> </figure> <script type="module" src="/_astro/MathConceptLab.astro_astro_type_script_index_0_lang.BE_Iq2AY.js"></script> 
+<p>Use the preset buttons to compare the curve at <code>95%</code>, <code>50%</code>, <code>10%</code>, and <code>1%</code>.
+The loss rises slowly near the right side, where the model gave substantial
+probability to the truth. It rises sharply near the left side, where the model
+was confident in the wrong classes.</p>
+<p>This behavior is often summarized as:</p>
+<blockquote>
+<p>Cross-entropy gives a large penalty to a confidently wrong prediction.</p>
+</blockquote>
+<h2 id="why-the-other-probabilities-still-matter">Why the other probabilities still matter</h2>
+<p>The formula appears to read only the correct class’s probability. The wrong
+classes still matter indirectly.</p>
+<p><a href="/knowledge/ml-engineering/math-foundations/softmax/">Softmax</a> makes all class
+probabilities share one fixed total of <code>100%</code>. Giving more probability to a
+wrong class leaves less for the correct class, which increases the loss.</p>
+<p>For our original alert:</p>
+<p><code>loss = −ln(0.826) ≈ 0.191</code></p>
+<p>If the real cause had been malware instead, the correct-class probability would
+have been <code>0.137</code>:</p>
+<p><code>loss = −ln(0.137) ≈ 1.988</code></p>
+<p>If the real cause had been misconfiguration, the loss would have been even
+larger:</p>
+<p><code>loss = −ln(0.037) ≈ 3.297</code></p>
+<p>The same prediction receives a different grade because the known answer tells
+us which probability to examine.</p>
+<h2 id="from-one-alert-to-a-training-set">From one alert to a training set</h2>
+<p>A useful model trains on many labeled examples. The training system calculates
+the cross-entropy loss for each example and usually takes the average across a
+group of examples called a <strong>batch</strong>.</p>
+<p>That average gives the model one summary number for the batch. Training then
+uses gradients to determine how each model parameter contributed to the loss.
+<a href="/knowledge/ml-engineering/math-foundations/gradient-descent/">Gradient Descent</a>
+updates the parameters in the direction that should reduce future loss.</p>
+<p>The cycle is:</p>
+<ol>
+<li>The model produces raw class scores.</li>
+<li>Softmax turns the scores into probability shares.</li>
+<li>Cross-entropy compares those shares with the known class.</li>
+<li>The training system calculates gradients.</li>
+<li>Gradient descent updates the model parameters.</li>
+<li>The process repeats with more examples.</li>
+</ol>
+<h2 id="implement-the-calculation-in-python">Implement the calculation in Python</h2>
+<p>This small function calculates the loss from a probability list and the
+position of the correct class:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> math</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> cross_entropy</span><span style="color:#E1E4E8">(probabilities, correct_index):</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;&quot;&quot;Measure how much probability the model gave the correct class.&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    correct_probability </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> probabilities[correct_index]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Avoid taking the logarithm of zero.</span></span>
+<span class="line"><span style="color:#E1E4E8">    safe_probability </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> max</span><span style="color:#E1E4E8">(correct_probability, </span><span style="color:#79B8FF">1e-15</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#F97583"> -</span><span style="color:#E1E4E8">math.log(safe_probability)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">probabilities </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">0.826</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.137</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.037</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">class_names </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;credential abuse&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;malware&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;misconfiguration&quot;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> correct_index, class_name </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> enumerate</span><span style="color:#E1E4E8">(class_names):</span></span>
+<span class="line"><span style="color:#E1E4E8">    loss </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> cross_entropy(probabilities, correct_index)</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">&quot;correct class: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">class_name</span><span style="color:#F97583">:20</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF"> loss: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">loss</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<p>Running it produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>correct class: credential abuse     loss: 0.191</span></span>
+<span class="line"><span>correct class: malware              loss: 1.988</span></span>
+<span class="line"><span>correct class: misconfiguration     loss: 3.297</span></span></code></pre>
+<p>The value <code>1e-15</code> means a very small positive number. Without that lower limit,
+a probability of exactly zero would ask Python to calculate <code>ln(0)</code>, which is
+not a finite number.</p>
+<p>This separated implementation is useful for learning. Production
+machine-learning libraries usually accept the raw logits and the correct class,
+then combine softmax and cross-entropy in one numerically stable operation.</p>
+<h2 id="loss-and-accuracy-answer-different-questions">Loss and accuracy answer different questions</h2>
+<p><strong>Accuracy</strong> asks whether the top-scoring class was correct. <strong>Cross-entropy</strong>
+also considers how much probability the model gave that class.</p>
+<p>This means:</p>
+<ul>
+<li>Two models can have the same accuracy but different average losses.</li>
+<li>A model’s loss can improve even when its number of correct answers has not
+changed yet.</li>
+<li>A small average loss does not guarantee acceptable security performance.</li>
+</ul>
+<p>Security teams still need measures that reflect the decision’s consequences,
+such as the rate of missed attacks, the rate of harmless activity incorrectly
+blocked, and performance for each important class.</p>
+<h2 id="what-high-loss-examples-can-tell-us">What high-loss examples can tell us</h2>
+<p>An example receives a high loss when the model gave very little probability to
+its recorded label. That can happen for several reasons:</p>
+<ul>
+<li>The example represents a pattern the model has not learned.</li>
+<li>The input is unusual or comes from a changed environment.</li>
+<li>The recorded label is wrong.</li>
+<li>Poisoned training data deliberately pairs an input with a misleading label.</li>
+</ul>
+<p>High-loss examples deserve investigation, but they should not be removed
+automatically. A genuinely new attack may look unusual for exactly the same
+reason as a bad record. Engineers need context to tell the difference.</p>
+<h2 id="why-security-engineers-should-care">Why security engineers should care</h2>
+<ul>
+<li><strong>An average can hide a weak class.</strong> A low overall loss may coexist with poor
+performance on a rare but important attack category.</li>
+<li><strong>Labels control what the model learns.</strong> Incorrect or poisoned labels create
+penalties that push training toward the wrong answer.</li>
+<li><strong>Lower loss does not choose an operating threshold.</strong> Deployment still
+requires a reviewed decision policy based on the cost of false negatives and
+false positives.</li>
+<li><strong>Confidence is not evidence.</strong> Cross-entropy trains probability-shaped
+outputs, but the resulting model must still be tested for calibration,
+distribution shifts, and adversarial inputs.</li>
+</ul>
+<h2 id="common-wrong-ideas">Common wrong ideas</h2>
+<ul>
+<li><strong>“Cross-entropy is another name for accuracy.”</strong> Accuracy records whether the
+top answer was correct. Cross-entropy also grades the probability assigned to
+the correct answer.</li>
+<li><strong>“The loss only cares about one class.”</strong> The formula directly selects the
+correct class, but softmax makes all the classes compete for the same 100%.</li>
+<li><strong>“A loss of zero is required before deployment.”</strong> Real data contains noise
+and uncertainty. Chasing nearly zero training loss can encourage
+memorization without improving new examples.</li>
+<li><strong>“The example with the highest loss must be bad data.”</strong> It could be
+mislabeled, but it could also represent an important pattern the model
+currently misses.</li>
+</ul>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>1. Which probability does cross-entropy use for one labeled example?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>It uses the probability assigned to the class that the label identifies as
+correct.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>2. Which receives the larger loss: 90% or 10% on the correct class?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p><code>10%</code> receives the larger loss. The model placed most of its probability on
+wrong classes.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>3. How can two models have the same accuracy but different loss?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>They may choose the same top class for every example while assigning different
+probabilities to those choices. Cross-entropy distinguishes between tentative
+and strong predictions.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>4. Why should engineers inspect high-loss training examples?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>They can reveal unlearned patterns, changed environments, labeling mistakes, or
+poisoned data. The loss identifies a disagreement but does not explain its
+cause.</p> </div> </details> 
+<h2 id="keep-this-mental-model">Keep this mental model</h2>
+<blockquote>
+<p>Cross-entropy looks at the probability given to the correct class. A large
+probability earns a small penalty; a small probability earns a large one.</p>
+</blockquote>
+<h2 id="additional-practice">Additional practice</h2>
+<span class="practice-link" data-astro-cid-6qortkoi> <span class="favicon-mark favicon-mark--compact" data-fallback style="background-color: var(--bg-card); background-image: url(&#34;/assets/neetcode-logo.png&#34;); background-position: center; background-repeat: no-repeat; background-size: calc(100% - 8px) calc(100% - 8px);" aria-hidden="true" data-astro-cid-n453gl5e>  </span>  <span class="practice-copy" data-astro-cid-6qortkoi><span data-astro-cid-6qortkoi>Implement the loss in</span> <a href="https://neetcode.io/problems/cross-entropy-loss/question" data-astro-cid-6qortkoi>NeetCode’s Cross-Entropy Loss problem</a>.</span> </span>  </div>  </div> </article> </main>  <footer data-astro-cid-sz7xmlte> <div class="footer-shell" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>&copy; 2026 Taraka Vishnumolakala</p> </div> </footer>   </body></html> 

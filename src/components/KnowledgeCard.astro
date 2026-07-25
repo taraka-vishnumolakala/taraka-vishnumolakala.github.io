@@ -1,5 +1,8 @@
 ---
-import { getKnowledgeCategory } from '../content/knowledge-taxonomy';
+import {
+	getKnowledgeCategory,
+	getKnowledgeSection,
+} from '../content/knowledge-taxonomy';
 import type { KnowledgeNote } from '../lib/knowledge';
 import FormattedDate from './FormattedDate.astro';
 
@@ -9,12 +12,15 @@ type Props = {
 
 const { note } = Astro.props;
 const category = getKnowledgeCategory(note.data.category);
+const section = note.data.section
+	? getKnowledgeSection(note.data.section)
+	: undefined;
 const date = note.data.updatedDate ?? note.data.pubDate;
 ---
 
 <article class="knowledge-card">
 	<div class="card-meta">
-		<span>{category.label}</span>
+		<span>{section ? `${category.label} · ${section.label}` : category.label}</span>
 		<span>Updated <FormattedDate date={date} /></span>
 	</div>
 	<h3>

@@ -1,6 +1,7 @@
 ---
 import {
 	KNOWLEDGE_CATEGORIES,
+	KNOWLEDGE_SECTIONS,
 } from '../content/knowledge-taxonomy';
 import type { KnowledgeNote } from '../lib/knowledge';
 
@@ -20,28 +21,32 @@ const { notes, activeId } = Astro.props;
 		</summary>
 		<nav aria-label="Knowledge base">
 			<a
-				class:list={['overview-link', { active: !activeId }]}
+				class:list={['knowledge-overview-link', { active: !activeId }]}
 				href="/knowledge"
 			>
-				<span>00</span>
 				<strong>Overview</strong>
 			</a>
 
 			{
-				KNOWLEDGE_CATEGORIES.map((category, categoryIndex) => {
+				KNOWLEDGE_CATEGORIES.map((category) => {
 					const categoryNotes = notes.filter(
 						(note) => note.data.category === category.id,
 					);
+					const directNotes = categoryNotes.filter(
+						(note) => !note.data.section,
+					);
+					const sections = KNOWLEDGE_SECTIONS.filter(
+						(section) => section.category === category.id,
+					);
 
 					return (
-						<section class="nav-group">
-							<div class="nav-group-heading">
-								<span>{String(categoryIndex + 1).padStart(2, '0')}</span>
+						<section class="knowledge-domain">
+							<div class="knowledge-domain-heading">
 								<h2>{category.label}</h2>
 							</div>
-							{categoryNotes.length > 0 ? (
+							{directNotes.length > 0 && (
 								<ul>
-									{categoryNotes.map((note) => (
+									{directNotes.map((note) => (
 										<li>
 											<a
 												class:list={{ active: note.id === activeId }}
@@ -53,8 +58,60 @@ const { notes, activeId } = Astro.props;
 										</li>
 									))}
 								</ul>
-							) : (
-								<p class="empty-category">Notes coming soon</p>
+							)}
+							{sections.map((section) => {
+								const sectionNotes = categoryNotes.filter(
+									(note) => note.data.section === section.id,
+								);
+								const landing = sectionNotes.find(
+									(note) => note.data.sectionLanding,
+								);
+								const lessons = sectionNotes.filter(
+									(note) => !note.data.sectionLanding,
+								);
+
+								if (sectionNotes.length === 0) return null;
+
+								return (
+									<div class="knowledge-subsection">
+										{landing ? (
+											<a
+												class:list={[
+													'knowledge-subsection-link',
+													{ active: landing.id === activeId },
+												]}
+												href={`/knowledge/${landing.id}/`}
+												aria-current={
+													landing.id === activeId ? 'page' : undefined
+												}
+											>
+												<strong>{section.label}</strong>
+											</a>
+										) : (
+											<p class="knowledge-subsection-link">
+												<strong>{section.label}</strong>
+											</p>
+										)}
+										<ul class="knowledge-subsection-list">
+											{lessons.map((note) => (
+												<li>
+													<a
+														class:list={{ active: note.id === activeId }}
+														href={`/knowledge/${note.id}/`}
+														aria-current={
+															note.id === activeId ? 'page' : undefined
+														}
+													>
+														{note.data.title}
+													</a>
+												</li>
+											))}
+										</ul>
+									</div>
+								);
+							})}
+							{categoryNotes.length === 0 && (
+								<p class="knowledge-empty-category">Notes coming soon</p>
 							)}
 						</section>
 					);
@@ -79,11 +136,9 @@ const { notes, activeId } = Astro.props;
 		display: none;
 	}
 
-	.overview-link {
-		display: grid;
-		grid-template-columns: 28px minmax(0, 1fr);
-		gap: 0.7rem;
-		align-items: baseline;
+	.knowledge-overview-link {
+		display: block;
+		width: 100%;
 		margin-bottom: 2rem;
 		padding: 0.75rem;
 		border: 1px solid var(--border);
@@ -91,40 +146,28 @@ const { notes, activeId } = Astro.props;
 		color: var(--text-secondary);
 	}
 
-	.overview-link span,
-	.nav-group-heading > span {
-		color: var(--text-faint);
-		font-family: var(--font-mono);
-		font-size: 0.61rem;
-		letter-spacing: 0.06em;
-	}
-
-	.overview-link strong {
+	.knowledge-overview-link strong {
 		font-size: 0.82rem;
 		font-weight: 500;
 	}
 
-	.overview-link:hover,
-	.overview-link.active {
+	.knowledge-overview-link:hover,
+	.knowledge-overview-link.active {
 		border-color: var(--accent);
 		background: var(--accent-faint);
 		color: var(--heading);
 	}
 
-	.nav-group {
+	.knowledge-domain {
 		margin-bottom: 2rem;
 	}
 
-	.nav-group-heading {
-		display: grid;
-		grid-template-columns: 28px minmax(0, 1fr);
-		gap: 0.7rem;
-		align-items: baseline;
+	.knowledge-domain-heading {
 		margin-bottom: 0.65rem;
 		padding: 0 0.75rem;
 	}
 
-	.nav-group-heading h2 {
+	.knowledge-domain-heading h2 {
 		color: var(--heading);
 		font-family: var(--font-mono);
 		font-size: 0.68rem;
@@ -134,38 +177,70 @@ const { notes, activeId } = Astro.props;
 		text-transform: uppercase;
 	}
 
-	.nav-group ul {
+	.knowledge-domain ul {
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	.nav-group li + li {
+	.knowledge-domain li + li {
 		margin-top: 0.15rem;
 	}
 
-	.nav-group li a {
+	.knowledge-domain li a {
 		display: block;
-		padding: 0.52rem 0.65rem 0.52rem 2.15rem;
+		width: 100%;
+		padding: 0.52rem 0.75rem;
 		border-radius: 5px;
 		color: var(--text-muted);
 		font-size: 0.78rem;
 		line-height: 1.45;
 	}
 
-	.nav-group li a:hover,
-	.nav-group li a.active {
+	.knowledge-domain li a:hover,
+	.knowledge-domain li a.active {
 		background: var(--accent-faint);
 		color: var(--heading);
 	}
 
-	.nav-group li a.active {
+	.knowledge-domain li a.active {
 		font-weight: 600;
 	}
 
-	.empty-category {
+	.knowledge-subsection {
+		margin: 0.35rem 0 0 0.75rem;
+		padding-left: 0.35rem;
+		border-left: 1px solid var(--border);
+	}
+
+	.knowledge-subsection-link {
+		display: block;
+		width: 100%;
 		margin: 0;
-		padding-left: 2.15rem;
+		padding: 0.5rem 0.65rem;
+		border-radius: 5px;
+		color: var(--heading);
+		font-size: 0.78rem;
+		line-height: 1.45;
+	}
+
+	a.knowledge-subsection-link:hover,
+	a.knowledge-subsection-link.active {
+		background: var(--accent-faint);
+	}
+
+	.knowledge-subsection-link strong {
+		font-weight: 600;
+	}
+
+	.knowledge-domain .knowledge-subsection-list li a {
+		padding: 0.48rem 0.65rem 0.48rem 1.1rem;
+		font-size: 0.74rem;
+	}
+
+	.knowledge-empty-category {
+		margin: 0;
+		padding-left: 0.75rem;
 		color: var(--text-faint);
 		font-size: 0.72rem;
 	}
@@ -226,12 +301,12 @@ const { notes, activeId } = Astro.props;
 			border-top: 1px solid var(--border);
 		}
 
-		.overview-link {
+		.knowledge-overview-link {
 			grid-column: 1 / -1;
 			margin-bottom: 0;
 		}
 
-		.nav-group {
+		.knowledge-domain {
 			margin-bottom: 0;
 		}
 	}

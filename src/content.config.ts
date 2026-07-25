@@ -1,6 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { KNOWLEDGE_CATEGORY_IDS } from './content/knowledge-taxonomy';
+import {
+	KNOWLEDGE_CATEGORY_IDS,
+	KNOWLEDGE_SECTION_IDS,
+} from './content/knowledge-taxonomy';
 import { BLOG_TAGS } from './content/taxonomy';
 
 const blog = defineCollection({
@@ -29,6 +32,8 @@ const knowledge = defineCollection({
 		title: z.string(),
 		description: z.string(),
 		category: z.enum(KNOWLEDGE_CATEGORY_IDS),
+		section: z.enum(KNOWLEDGE_SECTION_IDS).optional(),
+		sectionLanding: z.boolean().default(false),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		topics: z.array(z.string()).default([]),

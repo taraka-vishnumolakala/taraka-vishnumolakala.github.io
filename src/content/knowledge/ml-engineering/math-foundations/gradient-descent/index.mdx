@@ -1,0 +1,306 @@
+---
+title: "Gradient Descent"
+description: "Learn how a model improves by changing a number, checking its error, and repeating."
+category: ml-engineering
+section: math-foundations
+pubDate: 2026-07-25
+topics:
+  - optimization
+  - model training
+  - learning rate
+order: 10
+---
+
+Imagine that your team is building a model to estimate how long a security
+alert will take to investigate. One of its inputs is the number of systems
+affected by the alert.
+
+For one completed alert, the input is `1` affected system. The investigation
+actually took `2` hours. Because the work is already complete, this observed
+time gives us a clear answer against which to compare the model.
+
+We will deliberately use a very small model so that we can follow every
+calculation. It multiplies the number of affected systems by an adjustable
+value called `w`:
+
+`predicted hours = w × affected systems`
+
+An adjustable value inside a model is called a **parameter**. Training is the
+process of finding parameter values that produce better predictions.
+
+Here, `w` represents the predicted investigation time for each affected system.
+Suppose it currently equals `8`. Because this alert affected one system, the
+model predicts:
+
+`8 hours per system × 1 system = 8 hours`
+
+The investigation actually took `2` hours, so the prediction is too high by
+`6` hours. Gradient descent is the method we will use to move `w` toward a
+better value.
+
+## Turn the mistake into a loss
+
+Before the model can improve, it needs a consistent way to measure its mistake.
+That measurement is called **loss**.
+
+For this example, we subtract the actual investigation time from the predicted
+time and square the result:
+
+`loss = (predicted hours − actual hours)²`
+
+This rule is called **squared error**. Without the square, one prediction that is
+6 hours too high and another that is 6 hours too low would produce errors of
+`+6` and `−6`. They could cancel even though both predictions are wrong.
+Squaring turns both errors into `36`.
+
+Squaring also gives larger mistakes a stronger penalty. It is not the only way
+to define loss, but its smooth curve makes gradient descent easy to see in this
+example.
+
+Because our input is `1`, the prediction is simply `w`. The rule therefore
+becomes:
+
+`loss(w) = (w − 2)²`
+
+At `w = 8`, the loss is:
+
+`(8 − 2)² = 36`
+
+At `w = 5`, the loss is only:
+
+`(5 − 2)² = 9`
+
+The second value is better because it produces a smaller loss. Training will
+repeat this comparison indirectly until it finds a useful value.
+
+## Use the slope to choose a direction
+
+With only one parameter, we could try nearby values by hand:
+
+| Parameter `w` | Loss |
+| ---: | ---: |
+| 7 | 25 |
+| 8 | 36 |
+| 9 | 49 |
+
+From `w = 8`, moving left lowers the loss and moving right raises it. A real
+model may contain millions or billions of parameters, so checking every nearby
+combination is not practical. We need a direct signal that tells each parameter
+which way to move.
+
+That signal is the **gradient**. The gradient measures the local slope of the
+loss. Its sign gives us a direction, and its size tells us how steep the loss is
+at the current position.
+
+For our squared loss, the gradient is:
+
+`gradient = 2 × (w − 2)`
+
+At `w = 8`, the difference between the predicted and actual time is `6` hours.
+Twice that difference gives a gradient of `12`.
+
+A positive gradient means the loss rises as `w` increases, so we should move
+toward a smaller value. The size `12` tells us that the curve is fairly steep
+here. For a very small change in `w`, the loss changes by roughly twelve times
+that amount.
+
+The gradient gives us the direction, but we still choose how far to move. That
+step-size setting is called the **learning rate**.
+
+The update rule is:
+
+`new value = current value − learning rate × gradient`
+
+We subtract because the gradient points uphill, toward greater loss.
+
+<MathConceptLab
+	mode="gradient-descent"
+	title="Improve the alert-time estimate"
+	description="For this one-system alert, w is the predicted investigation time in hours. Apply one update at a time to move the estimate toward the observed 2 hours."
+/>
+
+## Follow the first updates
+
+Leave the starting parameter at `8` and the learning rate at `0.25`. We already
+know that the gradient at this point is `12`, so the first update is:
+
+`new value = 8 − 0.25 × 12 = 5`
+
+Select **Take one update** in the interactive graph. The parameter moves to `5`,
+and the loss falls from `36` to `9`.
+
+At `w = 5`, the gradient is now:
+
+`2 × (5 − 2) = 6`
+
+The next update moves the parameter to `3.5`, where the loss is `2.25`.
+
+| Update | Parameter before update | Gradient | Parameter after update | New loss |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 8 | 12 | 5 | 9 |
+| 2 | 5 | 6 | 3.5 | 2.25 |
+| 3 | 3.5 | 3 | 2.75 | 0.5625 |
+
+The learning rate stays at `0.25`, but the updates become smaller. As the
+parameter approaches `2`, the curve becomes flatter and the gradient shrinks.
+The model slows down naturally near the bottom.
+
+<Collapsible title="What should I notice on the graph?">
+
+The filled dot is the current parameter value. The earlier dots show the path
+taken by previous updates. A useful learning rate moves the dots toward the
+bottom while steadily reducing the loss.
+
+</Collapsible>
+
+## See why the learning rate matters
+
+The gradient describes the slope near the current position. If the learning
+rate creates a very large update, the parameter can jump across the bottom and
+land on the other side.
+
+Try these settings in the interactive example:
+
+1. Set the learning rate to `0.05` and select **Run 8 updates**. The loss falls,
+   but progress is slow.
+2. Start over, use `0.25`, and run eight updates. The model moves steadily
+   toward the bottom.
+3. Start over and use `0.75`. The parameter crosses the bottom repeatedly, but
+   each jump becomes smaller, so the loss still falls.
+4. Try `1.00`. The parameter bounces between two equally bad values. It keeps
+   updating, but the loss does not improve.
+5. Try `1.10`. Each update lands farther away, and the loss grows.
+
+This distinction matters when reading training logs. A running training process
+is not necessarily a learning process. The loss must move in the right
+direction.
+
+<Collapsible title="Why can a large learning rate make the loss grow?">
+
+The slope tells us what happens close to the current point. If we move too far,
+the update can cross the bottom and land higher on the other side. The next
+gradient points back, but another oversized update can carry the parameter even
+farther away.
+
+</Collapsible>
+
+## Implement the same update in Python
+
+The code below follows the exact example from the graph. The loss function
+measures how far `w` is from `2`, and the gradient function returns the local
+slope.
+
+```python
+def loss(w):
+    """Measure the prediction error at the current parameter value."""
+    return (w - 2) ** 2
+
+
+def gradient(w):
+    """Return the slope of the loss at the current parameter value."""
+    return 2 * (w - 2)
+
+
+w = 8.0
+learning_rate = 0.25
+
+for update in range(5):
+    print(f"update {update}: w={w:.3f}, loss={loss(w):.3f}")
+
+    # Move in the direction opposite the gradient.
+    w = w - learning_rate * gradient(w)
+```
+
+Running it produces:
+
+```text
+update 0: w=8.000, loss=36.000
+update 1: w=5.000, loss=9.000
+update 2: w=3.500, loss=2.250
+update 3: w=2.750, loss=0.562
+update 4: w=2.375, loss=0.141
+```
+
+There is no hidden training framework here. Each loop measures the current
+slope and applies the same update rule used in the interactive graph:
+
+`w = w − learning rate × gradient`
+
+## How this fits into real training
+
+A real model contains many parameters and learns from many examples. One
+training step still follows the same pattern:
+
+1. The model produces predictions.
+2. A loss function measures the prediction errors.
+3. The training system calculates a gradient for every parameter.
+4. The parameters are updated, and the process repeats.
+
+**Backpropagation** is the calculation used to find how sensitive the loss is to
+each parameter. The part of the training code that applies the resulting
+updates is called an **optimizer**.
+
+Those tools make the process efficient at scale. The core idea remains the one
+shown in the graph: measure the local slope, take a controlled step toward
+lower loss, and repeat.
+
+## What a lower loss does not prove
+
+A lower training loss only means that the model fits the supplied examples and
+loss function more closely. It does not prove that the time estimates will be
+accurate for new alerts.
+
+Historical data may omit large incidents, contain inconsistent time records, or
+come from a team with different tools and processes. Gradient descent cannot
+correct those problems. Engineers check the model with **validation data**:
+separate completed alerts that were not used to update the parameters.
+
+## Why security engineers should care
+
+Training changes model parameters to reduce a chosen error. Some attacks reverse
+that idea: they keep the model fixed and change the input until the model makes
+a chosen mistake. In machine-learning security, such a deliberately modified
+input is called an
+[**adversarial example**](https://www.nist.gov/publications/adversarial-machine-learning-taxonomy-and-terminology-attacks-and-mitigations).
+
+An attacker may calculate gradients directly or estimate useful directions from
+repeated queries and detailed model outputs. Model-facing APIs should therefore
+consider how much feedback their responses expose.
+
+## Common wrong ideas
+
+- **“The gradient reveals the best parameter value.”** It only describes the
+  slope at the current position. It is a local direction, not a complete map.
+- **“A bigger learning rate always means faster training.”** A bigger step can
+  overshoot a useful value and make the loss unstable.
+- **“A low training loss proves that the model is useful.”** The model may have
+  learned patterns that do not hold for new incidents or other response teams.
+
+## Check your understanding
+
+<Collapsible title="1. What does the gradient tell us?">
+
+It gives the local slope of the loss. Its sign tells us which direction raises
+the loss, and its size tells us how steep the loss is at the current position.
+
+</Collapsible>
+
+<Collapsible title="2. Why do the updates shrink near the bottom of this graph?">
+
+The curve becomes flatter, so its gradient becomes smaller. Since each update
+uses the gradient, the resulting move becomes smaller too.
+
+</Collapsible>
+
+<Collapsible title="3. What does the learning rate control?">
+
+It controls how much of the gradient is used in each update. A small learning
+rate may make slow progress, while a large one can overshoot and make the loss
+unstable.
+
+</Collapsible>
+
+## Keep this mental model
+
+> Measure the prediction error, use its local slope to choose a direction, take
+> a controlled step, and repeat.

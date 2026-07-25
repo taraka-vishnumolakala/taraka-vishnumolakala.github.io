@@ -1,0 +1,284 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+type Props = {
+	headings: MarkdownHeading[];
+};
+
+type TocSection = {
+	slug: string;
+	text: string;
+	children: { slug: string; text: string }[];
+};
+
+const { headings } = Astro.props;
+const sections: TocSection[] = [];
+let currentSection: TocSection | null = null;
+
+for (const heading of headings) {
+	if (heading.depth === 2) {
+		currentSection = {
+			slug: heading.slug,
+			text: heading.text,
+			children: [],
+		};
+		sections.push(currentSection);
+	} else if (heading.depth === 3 && currentSection) {
+		currentSection.children.push({
+			slug: heading.slug,
+			text: heading.text,
+		});
+	}
+}
+---
+
+<aside class="page-toc" aria-label="Table of contents" data-page-toc>
+	<details class="page-toc-details" open>
+		<summary>On this page</summary>
+		<p class="page-toc-label">On this page</p>
+		<ul class="page-toc-list">
+			{
+				sections.map((section) => (
+					<li class="page-toc-section" data-toc-section={section.slug}>
+						<a href={`#${section.slug}`} data-toc-link={section.slug}>
+							{section.text}
+						</a>
+						{section.children.length > 0 && (
+							<ul class="page-toc-children">
+								{section.children.map((child) => (
+									<li>
+										<a href={`#${child.slug}`} data-toc-link={child.slug}>
+											{child.text}
+										</a>
+									</li>
+								))}
+							</ul>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</details>
+</aside>
+
+<script>
+	const compactLayout = window.matchMedia('(max-width: 1340px)');
+
+	document.querySelectorAll('[data-page-toc]').forEach((toc) => {
+		const details = toc.querySelector('.page-toc-details');
+		if (details && compactLayout.matches) {
+			details.removeAttribute('open');
+		}
+
+		const links = toc.querySelectorAll('[data-toc-link]');
+		if (links.length === 0) return;
+
+		const linkBySlug = new Map();
+		const sectionBySlug = new Map();
+		const allSections = Array.from(
+			toc.querySelectorAll('[data-toc-section]'),
+		);
+
+		links.forEach((link) => {
+			const slug = link.dataset.tocLink;
+			if (!slug) return;
+			linkBySlug.set(slug, link);
+			const section = link.closest('[data-toc-section]');
+			if (section) sectionBySlug.set(slug, section);
+		});
+
+		const articleHeadings = Array.from(linkBySlug.keys())
+			.map((slug) => document.getElementById(slug))
+			.filter((element) => element !== null);
+
+		let activeSlug = null;
+		const setActive = (slug) => {
+			if (slug === activeSlug) return;
+			if (activeSlug) {
+				linkBySlug.get(activeSlug)?.classList.remove('active');
+			}
+			if (slug) linkBySlug.get(slug)?.classList.add('active');
+			activeSlug = slug;
+
+			const activeSection = slug ? sectionBySlug.get(slug) : null;
+			allSections.forEach((section) => {
+				section.classList.toggle('expanded', section === activeSection);
+			});
+		};
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort(
+						(a, b) =>
+							a.boundingClientRect.top - b.boundingClientRect.top,
+					);
+
+				if (visible.length > 0) {
+					setActive(visible[0].target.id);
+					return;
+				}
+
+				const above = articleHeadings.filter(
+					(heading) => heading.getBoundingClientRect().top < 110,
+				);
+				if (above.length > 0) {
+					setActive(above[above.length - 1].id);
+				}
+			},
+			{ rootMargin: '-110px 0px -70% 0px', threshold: 0 },
+		);
+
+		articleHeadings.forEach((heading) => observer.observe(heading));
+	});
+</script>
+
+<style>
+	.page-toc {
+		position: sticky;
+		top: 7.5rem;
+		width: 230px;
+		max-height: calc(100vh - 9rem);
+		overflow-y: auto;
+		scrollbar-width: thin;
+	}
+
+	.page-toc-label {
+		margin: 0 0 0.9rem 1.25rem;
+		color: var(--accent-strong);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.page-toc-details > summary {
+		display: none;
+	}
+
+	.page-toc ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.page-toc a {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.65rem;
+		padding: 0.38rem 0;
+		color: var(--text-muted);
+		font-size: 0.75rem;
+		line-height: 1.45;
+	}
+
+	.page-toc a::before {
+		content: "";
+		width: 8px;
+		height: 1px;
+		margin-top: 0.55rem;
+		flex-shrink: 0;
+		background: var(--border);
+		transition:
+			width 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.page-toc a:hover,
+	.page-toc a.active {
+		color: var(--heading);
+	}
+
+	.page-toc a.active {
+		font-weight: 600;
+	}
+
+	.page-toc a.active::before {
+		width: 16px;
+		background: var(--accent);
+	}
+
+	.page-toc-children {
+		max-height: 0;
+		opacity: 0;
+		overflow: hidden;
+		transition:
+			max-height 0.3s ease,
+			opacity 0.2s ease;
+	}
+
+	.page-toc-section.expanded > .page-toc-children {
+		max-height: 2000px;
+		opacity: 1;
+	}
+
+	.page-toc-children a {
+		padding-left: 1rem;
+		color: var(--text-faint);
+		font-size: 0.71rem;
+	}
+
+	.page-toc-children a.active::before {
+		width: 10px;
+	}
+
+	@media (max-width: 1340px) {
+		.page-toc {
+			position: relative;
+			top: 0;
+			width: auto;
+			max-height: none;
+			padding: 0.85rem 1rem;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			background: var(--accent-faint);
+			overflow: visible;
+		}
+
+		.page-toc-details > summary {
+			display: flex;
+			align-items: center;
+			gap: 0.55rem;
+			padding: 0.2rem 0;
+			color: var(--accent-strong);
+			font-family: var(--font-mono);
+			font-size: 0.66rem;
+			font-weight: 600;
+			letter-spacing: 0.08em;
+			list-style: none;
+			text-transform: uppercase;
+			cursor: pointer;
+		}
+
+		.page-toc-details > summary::-webkit-details-marker {
+			display: none;
+		}
+
+		.page-toc-details > summary::before {
+			content: "+";
+			font-size: 1rem;
+			line-height: 1;
+		}
+
+		.page-toc-details[open] > summary::before {
+			content: "−";
+		}
+
+		.page-toc-label {
+			display: none;
+		}
+
+		.page-toc-list {
+			margin-top: 0.8rem !important;
+			padding-top: 0.65rem !important;
+			border-top: 1px solid var(--border);
+		}
+
+		.page-toc-children {
+			max-height: 2000px;
+			opacity: 1;
+		}
+	}
+</style>

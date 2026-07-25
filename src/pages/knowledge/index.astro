@@ -1,6 +1,9 @@
 ---
 import KnowledgeCard from '../../components/KnowledgeCard.astro';
-import { KNOWLEDGE_CATEGORIES } from '../../content/knowledge-taxonomy';
+import {
+	KNOWLEDGE_CATEGORIES,
+	KNOWLEDGE_SECTIONS,
+} from '../../content/knowledge-taxonomy';
 import { SITE_TITLE } from '../../consts';
 import KnowledgeLayout from '../../layouts/KnowledgeLayout.astro';
 import {
@@ -34,6 +37,9 @@ const groups = groupKnowledgeNotes(notes);
 		<div class="domain-grid">
 			{groups.map((group, index) => {
 				const firstNote = group.notes[0];
+				const sections = KNOWLEDGE_SECTIONS.filter(
+					(section) => section.category === group.id,
+				);
 
 				return (
 					<article class="domain-card">
@@ -43,6 +49,23 @@ const groups = groupKnowledgeNotes(notes);
 						</div>
 						<h3>{group.label}</h3>
 						<p>{group.description}</p>
+						{sections.length > 0 && (
+							<div class="domain-sections">
+								{sections.map((section) => {
+									const landing = group.notes.find(
+										(note) =>
+											note.data.section === section.id &&
+											note.data.sectionLanding,
+									);
+
+									return landing ? (
+										<a href={`/knowledge/${landing.id}/`}>
+											{section.label} <span aria-hidden="true">→</span>
+										</a>
+									) : null;
+								})}
+							</div>
+						)}
 						{firstNote && (
 							<a href={`/knowledge/${firstNote.id}/`}>
 								Start with {firstNote.data.title}{' '}
@@ -160,6 +183,29 @@ const groups = groupKnowledgeNotes(notes);
 		color: var(--text-secondary);
 		font-size: 0.86rem;
 		line-height: 1.65;
+	}
+
+	.domain-sections {
+		display: grid;
+		gap: 0.45rem;
+		margin: 0 0 1.25rem;
+	}
+
+	.domain-sections a {
+		width: fit-content;
+		padding: 0.42rem 0.62rem;
+		border: 1px solid var(--border);
+		border-radius: 5px;
+		background: rgba(255, 255, 255, 0.6);
+		color: var(--heading);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		letter-spacing: 0.03em;
+	}
+
+	.domain-sections a:hover {
+		border-color: var(--accent);
+		background: var(--bg-card);
 	}
 
 	.domain-card > a {

@@ -21,7 +21,7 @@ type Props = KnowledgeNote;
 
 const note = Astro.props;
 const notes = await getKnowledgeNotes();
-const { Content } = await render(note);
+const { Content, headings } = await render(note);
 ---
 
 <KnowledgeLayout
@@ -31,10 +31,12 @@ const { Content } = await render(note);
 	{notes}
 	activeId={note.id}
 	category={note.data.category}
+	section={note.data.section}
 	pubDate={note.data.pubDate}
 	updatedDate={note.data.updatedDate}
 	readingTime={note.readingTime}
 	topics={note.data.topics}
+	{headings}
 >
 	<div class="prose">
 		<Content components={mdxComponents} />

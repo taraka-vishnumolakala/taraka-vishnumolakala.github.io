@@ -1,0 +1,1270 @@
+---
+type MathLabMode =
+	| 'linear-forward'
+	| 'linear-training'
+	| 'gradient-descent'
+	| 'activations'
+	| 'softmax'
+	| 'cross-entropy';
+
+type Props = {
+	mode: MathLabMode;
+	title: string;
+	description: string;
+};
+
+const { mode, title, description } = Astro.props;
+
+const canvasLabels: Record<MathLabMode, string> = {
+	'linear-forward':
+		'Interactive graph of a linear prediction changing with input, weight, and bias',
+	'linear-training':
+		'Interactive graph showing a prediction line moving toward observed data',
+	'gradient-descent':
+		'Interactive loss curve showing gradient descent steps toward its minimum',
+	activations:
+		'Interactive graph comparing sigmoid and ReLU activation functions',
+	softmax:
+		'Interactive probability bars calculated from three scores and a temperature',
+	'cross-entropy':
+		'Interactive curve showing cross-entropy loss as correct-answer probability changes',
+};
+---
+
+<figure class="math-lab" data-math-lab data-mode={mode}>
+	<header class="lab-header">
+		<div>
+			<span>Interactive concept</span>
+			<h3>{title}</h3>
+		</div>
+		<p>{description}</p>
+	</header>
+
+	<div class="lab-canvas-frame">
+		<canvas width="900" height="340" aria-label={canvasLabels[mode]}>
+			Your browser does not support canvas. The live values below still
+			show the result of each control.
+		</canvas>
+	</div>
+
+	{mode === 'linear-forward' && (
+		<div class="lab-controls three-controls" aria-label="Prediction controls">
+			<label>
+				<span>Input x <output data-output="x">24</output></span>
+				<input
+					data-control="x"
+					type="range"
+					min="0"
+					max="40"
+					step="1"
+					value="24"
+				/>
+			</label>
+			<label>
+				<span>Weight w <output data-output="w">2.5</output></span>
+				<input
+					data-control="w"
+					type="range"
+					min="0"
+					max="5"
+					step="0.1"
+					value="2.5"
+				/>
+			</label>
+			<label>
+				<span>Bias b <output data-output="b">10</output></span>
+				<input
+					data-control="b"
+					type="range"
+					min="0"
+					max="30"
+					step="1"
+					value="10"
+				/>
+			</label>
+			<div class="lab-result wide-result" aria-live="polite">
+				<span>Prediction</span>
+				<strong data-result="prediction">2.5 × 24 + 10 = 70</strong>
+			</div>
+		</div>
+	)}
+
+	{mode === 'linear-training' && (
+		<div class="lab-controls training-controls" aria-label="Training controls">
+			<label>
+				<span>
+					Learning rate
+					<output data-output="learning-rate">0.020</output>
+				</span>
+				<input
+					data-control="learning-rate"
+					type="range"
+					min="0.005"
+					max="0.045"
+					step="0.005"
+					value="0.02"
+				/>
+			</label>
+			<div class="button-group">
+				<button type="button" data-action="step">Take one step</button>
+				<button type="button" data-action="run">Run 12 steps</button>
+				<button type="button" class="quiet-button" data-action="reset">
+					Reset
+				</button>
+			</div>
+			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Step</span>
+					<strong data-result="step">0</strong>
+				</div>
+				<div>
+					<span>Mean squared error</span>
+					<strong data-result="mse">48.62</strong>
+				</div>
+				<div>
+					<span>Current line</span>
+					<strong data-result="equation">ŷ = 0.00x + 0.00</strong>
+				</div>
+			</div>
+		</div>
+	)}
+
+	{mode === 'gradient-descent' && (
+		<div class="lab-controls gradient-controls" aria-label="Gradient descent controls">
+			<label>
+				<span>
+					Starting parameter (w)
+					<output data-output="start">8.0</output>
+				</span>
+				<input
+					data-control="start"
+					type="range"
+					min="-5"
+					max="9"
+					step="0.5"
+					value="8"
+				/>
+			</label>
+			<label>
+				<span>
+					Learning rate
+					<output data-output="learning-rate">0.25</output>
+				</span>
+				<input
+					data-control="learning-rate"
+					type="range"
+					min="0.05"
+					max="1.1"
+					step="0.05"
+					value="0.25"
+				/>
+			</label>
+			<div class="button-group">
+				<button type="button" data-action="step">Take one update</button>
+				<button type="button" data-action="run">Run 8 updates</button>
+				<button type="button" class="quiet-button" data-action="reset">
+					Start over
+				</button>
+			</div>
+			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Current parameter (w)</span>
+					<strong data-result="position">8.000</strong>
+				</div>
+				<div>
+					<span>Current loss</span>
+					<strong data-result="loss">36.000</strong>
+				</div>
+				<div>
+					<span>What the updates do</span>
+					<strong data-result="behavior">Steady movement toward lower error</strong>
+				</div>
+			</div>
+		</div>
+	)}
+
+	{mode === 'activations' && (
+		<div class="lab-controls activation-controls" aria-label="Activation controls">
+			<label>
+				<span>Input x <output data-output="x">0.0</output></span>
+				<input
+					data-control="x"
+					type="range"
+					min="-8"
+					max="8"
+					step="0.1"
+					value="0"
+				/>
+			</label>
+			<fieldset class="segmented-control">
+				<legend>Emphasize</legend>
+				<label>
+					<input
+						type="radio"
+						name={`activation-${title}`}
+						value="sigmoid"
+						data-control="activation"
+						checked
+					/>
+					<span>Sigmoid</span>
+				</label>
+				<label>
+					<input
+						type="radio"
+						name={`activation-${title}`}
+						value="relu"
+						data-control="activation"
+					/>
+					<span>ReLU</span>
+				</label>
+			</fieldset>
+			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Sigmoid output</span>
+					<strong data-result="sigmoid">0.500</strong>
+				</div>
+				<div>
+					<span>ReLU output</span>
+					<strong data-result="relu">0.000</strong>
+				</div>
+				<div>
+					<span>Interpretation</span>
+					<strong data-result="activation-note">Half on</strong>
+				</div>
+			</div>
+		</div>
+	)}
+
+	{mode === 'softmax' && (
+		<div class="lab-controls softmax-controls" aria-label="Softmax controls">
+			<label>
+				<span>Cat score <output data-output="cat">2.1</output></span>
+				<input
+					data-control="cat"
+					type="range"
+					min="-4"
+					max="4"
+					step="0.1"
+					value="2.1"
+				/>
+			</label>
+			<label>
+				<span>Dog score <output data-output="dog">0.3</output></span>
+				<input
+					data-control="dog"
+					type="range"
+					min="-4"
+					max="4"
+					step="0.1"
+					value="0.3"
+				/>
+			</label>
+			<label>
+				<span>Fish score <output data-output="fish">−1.0</output></span>
+				<input
+					data-control="fish"
+					type="range"
+					min="-4"
+					max="4"
+					step="0.1"
+					value="-1"
+				/>
+			</label>
+			<label>
+				<span>
+					Temperature
+					<output data-output="temperature">1.0</output>
+				</span>
+				<input
+					data-control="temperature"
+					type="range"
+					min="0.2"
+					max="2.5"
+					step="0.1"
+					value="1"
+				/>
+			</label>
+			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Cat probability</span>
+					<strong data-result="cat-probability">82.3%</strong>
+				</div>
+				<div>
+					<span>Dog probability</span>
+					<strong data-result="dog-probability">13.6%</strong>
+				</div>
+				<div>
+					<span>Fish probability</span>
+					<strong data-result="fish-probability">4.1%</strong>
+				</div>
+			</div>
+		</div>
+	)}
+
+	{mode === 'cross-entropy' && (
+		<div class="lab-controls entropy-controls" aria-label="Cross-entropy controls">
+			<label>
+				<span>
+					Belief in the correct answer
+					<output data-output="probability">80%</output>
+				</span>
+				<input
+					data-control="probability"
+					type="range"
+					min="1"
+					max="99"
+					step="1"
+					value="80"
+				/>
+			</label>
+			<div class="preset-group" aria-label="Probability examples">
+				<button type="button" data-probability="95">95% sure</button>
+				<button type="button" data-probability="50">50% sure</button>
+				<button type="button" data-probability="10">10% sure</button>
+				<button type="button" data-probability="1">1% sure</button>
+			</div>
+			<div class="metric-grid" aria-live="polite">
+				<div>
+					<span>Cross-entropy loss</span>
+					<strong data-result="loss">0.223</strong>
+				</div>
+				<div>
+					<span>Perplexity</span>
+					<strong data-result="perplexity">1.250</strong>
+				</div>
+				<div>
+					<span>Meaning</span>
+					<strong data-result="surprise">Low surprise</strong>
+				</div>
+			</div>
+		</div>
+	)}
+
+	<figcaption data-caption>
+		Move a control and watch the calculation and drawing update together.
+	</figcaption>
+</figure>
+
+<script>
+	type CanvasSetup = {
+		context: CanvasRenderingContext2D;
+		width: number;
+		height: number;
+	};
+
+	const palette = {
+		ink: '#111111',
+		muted: '#686868',
+		faint: '#a3a3a3',
+		grid: '#ececec',
+		paper: '#ffffff',
+		soft: '#d8d8d8',
+		mid: '#737373',
+	};
+
+	const numberFrom = (root: HTMLElement, name: string) =>
+		Number(
+			root.querySelector<HTMLInputElement>(`[data-control="${name}"]`)
+				?.value ?? 0,
+		);
+
+	const outputTo = (root: HTMLElement, name: string, value: string) => {
+		const output = root.querySelector<HTMLOutputElement>(
+			`[data-output="${name}"]`,
+		);
+		if (output) output.value = value;
+	};
+
+	const resultTo = (root: HTMLElement, name: string, value: string) => {
+		const result = root.querySelector<HTMLElement>(
+			`[data-result="${name}"]`,
+		);
+		if (result) result.textContent = value;
+	};
+
+	const setupCanvas = (canvas: HTMLCanvasElement): CanvasSetup | null => {
+		const context = canvas.getContext('2d');
+		if (!context) return null;
+
+		const bounds = canvas.getBoundingClientRect();
+		const ratio = Math.min(window.devicePixelRatio || 1, 2);
+		const width = Math.max(300, bounds.width);
+		const height = bounds.height || 340;
+		canvas.width = Math.round(width * ratio);
+		canvas.height = Math.round(height * ratio);
+		context.setTransform(ratio, 0, 0, ratio, 0, 0);
+		context.clearRect(0, 0, width, height);
+		context.fillStyle = palette.paper;
+		context.fillRect(0, 0, width, height);
+
+		return { context, width, height };
+	};
+
+	const drawGrid = (
+		context: CanvasRenderingContext2D,
+		width: number,
+		height: number,
+	) => {
+		context.strokeStyle = palette.grid;
+		context.lineWidth = 1;
+		for (let x = 28; x < width; x += 44) {
+			context.beginPath();
+			context.moveTo(x, 0);
+			context.lineTo(x, height);
+			context.stroke();
+		}
+		for (let y = 28; y < height; y += 44) {
+			context.beginPath();
+			context.moveTo(0, y);
+			context.lineTo(width, y);
+			context.stroke();
+		}
+	};
+
+	const drawLabel = (
+		context: CanvasRenderingContext2D,
+		text: string,
+		x: number,
+		y: number,
+		align: CanvasTextAlign = 'left',
+		color = palette.muted,
+	) => {
+		context.fillStyle = color;
+		context.font =
+			'600 10px ui-monospace, SFMono-Regular, Menlo, monospace';
+		context.textAlign = align;
+		context.textBaseline = 'middle';
+		context.fillText(text.toUpperCase(), x, y);
+	};
+
+	const plotArea = (width: number, height: number) => ({
+		left: Math.max(46, width * 0.08),
+		right: width - Math.max(28, width * 0.05),
+		top: 30,
+		bottom: height - 42,
+	});
+
+	const scale = (
+		value: number,
+		fromMin: number,
+		fromMax: number,
+		toMin: number,
+		toMax: number,
+	) => toMin + ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
+
+	const drawAxes = (
+		context: CanvasRenderingContext2D,
+		area: ReturnType<typeof plotArea>,
+	) => {
+		context.strokeStyle = palette.faint;
+		context.lineWidth = 1;
+		context.beginPath();
+		context.moveTo(area.left, area.top);
+		context.lineTo(area.left, area.bottom);
+		context.lineTo(area.right, area.bottom);
+		context.stroke();
+	};
+
+	const drawLinearForward = (root: HTMLElement, canvas: HTMLCanvasElement) => {
+		const x = numberFrom(root, 'x');
+		const weight = numberFrom(root, 'w');
+		const bias = numberFrom(root, 'b');
+		const prediction = weight * x + bias;
+
+		outputTo(root, 'x', x.toFixed(0));
+		outputTo(root, 'w', weight.toFixed(1));
+		outputTo(root, 'b', bias.toFixed(0));
+		resultTo(
+			root,
+			'prediction',
+			`${weight.toFixed(1)} × ${x.toFixed(0)} + ${bias.toFixed(0)} = ${prediction.toFixed(1)}`,
+		);
+
+		const setup = setupCanvas(canvas);
+		if (!setup) return;
+		const { context, width, height } = setup;
+		drawGrid(context, width, height);
+		const area = plotArea(width, height);
+		drawAxes(context, area);
+
+		const maxY = Math.max(120, weight * 40 + bias + 15);
+		const px = (value: number) => scale(value, 0, 40, area.left, area.right);
+		const py = (value: number) =>
+			scale(value, 0, maxY, area.bottom, area.top);
+
+		context.strokeStyle = palette.ink;
+		context.lineWidth = 2.5;
+		context.beginPath();
+		context.moveTo(px(0), py(bias));
+		context.lineTo(px(40), py(weight * 40 + bias));
+		context.stroke();
+
+		context.setLineDash([5, 6]);
+		context.strokeStyle = palette.mid;
+		context.lineWidth = 1;
+		context.beginPath();
+		context.moveTo(px(x), area.bottom);
+		context.lineTo(px(x), py(prediction));
+		context.lineTo(area.left, py(prediction));
+		context.stroke();
+		context.setLineDash([]);
+
+		context.fillStyle = palette.ink;
+		context.beginPath();
+		context.arc(px(x), py(prediction), 6, 0, Math.PI * 2);
+		context.fill();
+
+		drawLabel(context, 'input x', area.right, area.bottom + 24, 'right');
+		drawLabel(context, 'prediction ŷ', area.left, area.top - 14);
+		drawLabel(
+			context,
+			`(${x.toFixed(0)}, ${prediction.toFixed(1)})`,
+			Math.min(area.right - 8, px(x) + 12),
+			Math.max(area.top + 14, py(prediction) - 14),
+		);
+	};
+
+	const trainingData = [
+		[0, 1.1],
+		[1, 3.2],
+		[2, 4.8],
+		[3, 7.2],
+		[4, 8.9],
+		[5, 11.1],
+	] as const;
+
+	const initializeLinearTraining = (
+		root: HTMLElement,
+		canvas: HTMLCanvasElement,
+	) => {
+		let weight = 0;
+		let bias = 0;
+		let step = 0;
+
+		const metrics = () => {
+			const errors = trainingData.map(
+				([x, actual]) => weight * x + bias - actual,
+			);
+			const mse =
+				errors.reduce((sum, error) => sum + error * error, 0) /
+				trainingData.length;
+			const gradW =
+				errors.reduce(
+					(sum, error, index) => sum + 2 * error * trainingData[index][0],
+					0,
+				) / trainingData.length;
+			const gradB =
+				errors.reduce((sum, error) => sum + 2 * error, 0) /
+				trainingData.length;
+			return { mse, gradW, gradB };
+		};
+
+		const draw = () => {
+			const learningRate = numberFrom(root, 'learning-rate');
+			const { mse } = metrics();
+			outputTo(root, 'learning-rate', learningRate.toFixed(3));
+			resultTo(root, 'step', String(step));
+			resultTo(root, 'mse', mse.toFixed(3));
+			resultTo(
+				root,
+				'equation',
+				`ŷ = ${weight.toFixed(2)}x + ${bias.toFixed(2)}`,
+			);
+
+			const setup = setupCanvas(canvas);
+			if (!setup) return;
+			const { context, width, height } = setup;
+			drawGrid(context, width, height);
+			const area = plotArea(width, height);
+			drawAxes(context, area);
+			const px = (value: number) =>
+				scale(value, 0, 5, area.left, area.right);
+			const py = (value: number) =>
+				scale(value, -2, 13, area.bottom, area.top);
+
+			context.strokeStyle = palette.ink;
+			context.lineWidth = 2.5;
+			context.beginPath();
+			context.moveTo(px(0), py(bias));
+			context.lineTo(px(5), py(weight * 5 + bias));
+			context.stroke();
+
+			for (const [x, actual] of trainingData) {
+				context.fillStyle = palette.paper;
+				context.strokeStyle = palette.ink;
+				context.lineWidth = 2;
+				context.beginPath();
+				context.arc(px(x), py(actual), 5, 0, Math.PI * 2);
+				context.fill();
+				context.stroke();
+			}
+
+			drawLabel(context, 'temperature x', area.right, area.bottom + 24, 'right');
+			drawLabel(context, 'cups sold y', area.left, area.top - 14);
+			drawLabel(context, `step ${step} · mse ${mse.toFixed(2)}`, area.left, area.bottom + 24);
+		};
+
+		const takeStep = () => {
+			const learningRate = numberFrom(root, 'learning-rate');
+			const { gradW, gradB } = metrics();
+			weight -= learningRate * gradW;
+			bias -= learningRate * gradB;
+			step += 1;
+		};
+
+		root.querySelector('[data-action="step"]')?.addEventListener('click', () => {
+			takeStep();
+			draw();
+		});
+		root.querySelector('[data-action="run"]')?.addEventListener('click', () => {
+			for (let index = 0; index < 12; index += 1) takeStep();
+			draw();
+		});
+		root.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
+			weight = 0;
+			bias = 0;
+			step = 0;
+			draw();
+		});
+		root
+			.querySelector('[data-control="learning-rate"]')
+			?.addEventListener('input', draw);
+		new ResizeObserver(draw).observe(canvas);
+		draw();
+	};
+
+	const initializeGradientDescent = (
+		root: HTMLElement,
+		canvas: HTMLCanvasElement,
+	) => {
+		let position = numberFrom(root, 'start');
+		let path = [position];
+
+		const behaviorFor = (learningRate: number) => {
+			if (learningRate < 0.12) return 'Small steps toward lower error';
+			if (learningRate < 0.65) return 'Steady movement toward lower error';
+			if (learningRate < 1) return 'Crosses the bottom but improves';
+			if (learningRate === 1) return 'Bounces without improving';
+			return 'Moves farther away';
+		};
+
+		const draw = () => {
+			const start = numberFrom(root, 'start');
+			const learningRate = numberFrom(root, 'learning-rate');
+			const loss = (position - 2) ** 2;
+			outputTo(root, 'start', start.toFixed(1));
+			outputTo(root, 'learning-rate', learningRate.toFixed(2));
+			resultTo(root, 'position', position.toFixed(3));
+			resultTo(root, 'loss', loss.toFixed(3));
+			resultTo(root, 'behavior', behaviorFor(learningRate));
+
+			const setup = setupCanvas(canvas);
+			if (!setup) return;
+			const { context, width, height } = setup;
+			drawGrid(context, width, height);
+			const area = plotArea(width, height);
+			drawAxes(context, area);
+			const px = (value: number) =>
+				scale(value, -5, 9, area.left, area.right);
+			const py = (value: number) =>
+				scale(Math.min(value, 64), 0, 64, area.bottom, area.top);
+
+			context.strokeStyle = palette.ink;
+			context.lineWidth = 2.5;
+			context.beginPath();
+			for (let sample = -5; sample <= 9; sample += 0.1) {
+				const x = px(sample);
+				const y = py((sample - 2) ** 2);
+				if (sample === -5) context.moveTo(x, y);
+				else context.lineTo(x, y);
+			}
+			context.stroke();
+
+			context.strokeStyle = palette.mid;
+			context.lineWidth = 1.5;
+			context.beginPath();
+			path.forEach((value, index) => {
+				const x = px(value);
+				const y = py((value - 2) ** 2);
+				if (index === 0) context.moveTo(x, y);
+				else context.lineTo(x, y);
+			});
+			context.stroke();
+
+			path.forEach((value, index) => {
+				context.fillStyle =
+					index === path.length - 1 ? palette.ink : palette.paper;
+				context.strokeStyle = palette.ink;
+				context.lineWidth = 1.5;
+				context.beginPath();
+				context.arc(
+					px(value),
+					py((value - 2) ** 2),
+					index === path.length - 1 ? 6 : 4,
+					0,
+					Math.PI * 2,
+				);
+				context.fill();
+				context.stroke();
+			});
+
+			drawLabel(context, 'parameter (w)', area.right, area.bottom + 24, 'right');
+			drawLabel(context, 'loss', area.left, area.top - 14);
+			drawLabel(context, 'lowest error at w = 2', px(2), area.bottom + 24, 'center');
+		};
+
+		const reset = () => {
+			position = numberFrom(root, 'start');
+			path = [position];
+		};
+		const takeStep = () => {
+			const learningRate = numberFrom(root, 'learning-rate');
+			const gradient = 2 * (position - 2);
+			position -= learningRate * gradient;
+			path.push(position);
+		};
+
+		root.querySelector('[data-action="step"]')?.addEventListener('click', () => {
+			takeStep();
+			draw();
+		});
+		root.querySelector('[data-action="run"]')?.addEventListener('click', () => {
+			for (let index = 0; index < 8; index += 1) takeStep();
+			draw();
+		});
+		root.querySelector('[data-action="reset"]')?.addEventListener('click', () => {
+			reset();
+			draw();
+		});
+		root.querySelector('[data-control="start"]')?.addEventListener('input', () => {
+			reset();
+			draw();
+		});
+		root
+			.querySelector('[data-control="learning-rate"]')
+			?.addEventListener('input', draw);
+		new ResizeObserver(draw).observe(canvas);
+		draw();
+	};
+
+	const drawActivations = (root: HTMLElement, canvas: HTMLCanvasElement) => {
+		const input = numberFrom(root, 'x');
+		const selected =
+			root.querySelector<HTMLInputElement>(
+				'[data-control="activation"]:checked',
+			)?.value ?? 'sigmoid';
+		const sigmoid = 1 / (1 + Math.exp(-input));
+		const relu = Math.max(0, input);
+
+		outputTo(root, 'x', input.toFixed(1));
+		resultTo(root, 'sigmoid', sigmoid.toFixed(3));
+		resultTo(root, 'relu', relu.toFixed(3));
+		resultTo(
+			root,
+			'activation-note',
+			selected === 'sigmoid'
+				? sigmoid < 0.1
+					? 'Nearly off'
+					: sigmoid > 0.9
+						? 'Nearly on'
+						: 'Responsive range'
+				: input <= 0
+					? 'Blocked at zero'
+					: 'Passed through',
+		);
+
+		const setup = setupCanvas(canvas);
+		if (!setup) return;
+		const { context, width, height } = setup;
+		drawGrid(context, width, height);
+		const area = plotArea(width, height);
+		drawAxes(context, area);
+		const px = (value: number) =>
+			scale(value, -8, 8, area.left, area.right);
+		const py = (value: number) =>
+			scale(value, 0, 8, area.bottom, area.top);
+
+		const drawCurve = (
+			fn: (value: number) => number,
+			active: boolean,
+		) => {
+			context.strokeStyle = active ? palette.ink : palette.faint;
+			context.lineWidth = active ? 3 : 1.5;
+			context.beginPath();
+			for (let sample = -8; sample <= 8; sample += 0.08) {
+				const x = px(sample);
+				const y = py(fn(sample));
+				if (sample === -8) context.moveTo(x, y);
+				else context.lineTo(x, y);
+			}
+			context.stroke();
+		};
+
+		drawCurve(
+			(value) => 1 / (1 + Math.exp(-value)),
+			selected === 'sigmoid',
+		);
+		drawCurve((value) => Math.max(0, value), selected === 'relu');
+
+		const activeValue = selected === 'sigmoid' ? sigmoid : relu;
+		context.setLineDash([5, 6]);
+		context.strokeStyle = palette.mid;
+		context.beginPath();
+		context.moveTo(px(input), area.bottom);
+		context.lineTo(px(input), py(activeValue));
+		context.stroke();
+		context.setLineDash([]);
+		context.fillStyle = palette.ink;
+		context.beginPath();
+		context.arc(px(input), py(activeValue), 6, 0, Math.PI * 2);
+		context.fill();
+
+		drawLabel(context, 'input x', area.right, area.bottom + 24, 'right');
+		drawLabel(context, 'output', area.left, area.top - 14);
+		drawLabel(context, 'sigmoid', area.right - 8, py(1) - 10, 'right');
+		drawLabel(context, 'relu', area.right - 8, py(8) + 12, 'right');
+	};
+
+	const drawSoftmax = (root: HTMLElement, canvas: HTMLCanvasElement) => {
+		const names = ['cat', 'dog', 'fish'] as const;
+		const scores = names.map((name) => numberFrom(root, name));
+		const temperature = numberFrom(root, 'temperature');
+		const adjusted = scores.map((score) => score / temperature);
+		const stableMax = Math.max(...adjusted);
+		const exponentials = adjusted.map((score) => Math.exp(score - stableMax));
+		const total = exponentials.reduce((sum, value) => sum + value, 0);
+		const probabilities = exponentials.map((value) => value / total);
+
+		names.forEach((name, index) => {
+			const score = scores[index];
+			outputTo(
+				root,
+				name,
+				score < 0 ? `−${Math.abs(score).toFixed(1)}` : score.toFixed(1),
+			);
+			resultTo(
+				root,
+				`${name}-probability`,
+				`${(probabilities[index] * 100).toFixed(1)}%`,
+			);
+		});
+		outputTo(root, 'temperature', temperature.toFixed(1));
+
+		const setup = setupCanvas(canvas);
+		if (!setup) return;
+		const { context, width, height } = setup;
+		drawGrid(context, width, height);
+		const area = plotArea(width, height);
+		const barGap = Math.max(18, width * 0.035);
+		const barWidth = (area.right - area.left - barGap * 2) / 3;
+
+		probabilities.forEach((probability, index) => {
+			const x = area.left + index * (barWidth + barGap);
+			const barHeight = (area.bottom - area.top) * probability;
+			context.fillStyle = index === 0 ? palette.ink : palette.soft;
+			context.fillRect(x, area.bottom - barHeight, barWidth, barHeight);
+			context.strokeStyle = palette.ink;
+			context.lineWidth = 1;
+			context.strokeRect(x, area.bottom - barHeight, barWidth, barHeight);
+			drawLabel(
+				context,
+				`${(probability * 100).toFixed(1)}%`,
+				x + barWidth / 2,
+				Math.max(area.top + 12, area.bottom - barHeight - 14),
+				'center',
+				palette.ink,
+			);
+			drawLabel(
+				context,
+				names[index],
+				x + barWidth / 2,
+				area.bottom + 24,
+				'center',
+				palette.ink,
+			);
+		});
+
+		context.strokeStyle = palette.faint;
+		context.beginPath();
+		context.moveTo(area.left, area.bottom);
+		context.lineTo(area.right, area.bottom);
+		context.stroke();
+		drawLabel(context, 'probability share', area.left, area.top - 14);
+		drawLabel(context, 'total = 100%', area.right, area.top - 14, 'right');
+	};
+
+	const drawCrossEntropy = (root: HTMLElement, canvas: HTMLCanvasElement) => {
+		const probabilityPercent = numberFrom(root, 'probability');
+		const probability = probabilityPercent / 100;
+		const loss = -Math.log(probability);
+		const perplexity = Math.exp(loss);
+		outputTo(root, 'probability', `${probabilityPercent.toFixed(0)}%`);
+		resultTo(root, 'loss', loss.toFixed(3));
+		resultTo(root, 'perplexity', perplexity.toFixed(3));
+		resultTo(
+			root,
+			'surprise',
+			probability >= 0.75
+				? 'Low surprise'
+				: probability >= 0.35
+					? 'Moderate surprise'
+					: probability >= 0.1
+						? 'High surprise'
+						: 'Extreme surprise',
+		);
+
+		const setup = setupCanvas(canvas);
+		if (!setup) return;
+		const { context, width, height } = setup;
+		drawGrid(context, width, height);
+		const area = plotArea(width, height);
+		drawAxes(context, area);
+		const px = (value: number) =>
+			scale(value, 0.01, 1, area.left, area.right);
+		const py = (value: number) =>
+			scale(Math.min(value, 4.7), 0, 4.7, area.bottom, area.top);
+
+		context.strokeStyle = palette.ink;
+		context.lineWidth = 2.5;
+		context.beginPath();
+		for (let p = 0.01; p <= 1; p += 0.005) {
+			const x = px(p);
+			const y = py(-Math.log(p));
+			if (p === 0.01) context.moveTo(x, y);
+			else context.lineTo(x, y);
+		}
+		context.stroke();
+
+		context.setLineDash([5, 6]);
+		context.strokeStyle = palette.mid;
+		context.beginPath();
+		context.moveTo(px(probability), area.bottom);
+		context.lineTo(px(probability), py(loss));
+		context.lineTo(area.left, py(loss));
+		context.stroke();
+		context.setLineDash([]);
+
+		context.fillStyle = palette.ink;
+		context.beginPath();
+		context.arc(px(probability), py(loss), 6, 0, Math.PI * 2);
+		context.fill();
+
+		drawLabel(
+			context,
+			'belief in correct answer',
+			area.right,
+			area.bottom + 24,
+			'right',
+		);
+		drawLabel(context, 'surprise penalty', area.left, area.top - 14);
+		drawLabel(
+			context,
+			`p ${probability.toFixed(2)} · loss ${loss.toFixed(2)}`,
+			Math.min(area.right - 8, px(probability) + 12),
+			Math.max(area.top + 14, py(loss) - 14),
+		);
+	};
+
+	const initializeMathLab = (root: HTMLElement) => {
+		if (root.dataset.ready === 'true') return;
+		root.dataset.ready = 'true';
+		const canvas = root.querySelector<HTMLCanvasElement>('canvas');
+		if (!canvas) return;
+
+		const mode = root.dataset.mode;
+		if (mode === 'linear-training') {
+			initializeLinearTraining(root, canvas);
+			return;
+		}
+		if (mode === 'gradient-descent') {
+			initializeGradientDescent(root, canvas);
+			return;
+		}
+
+		const draw = () => {
+			if (mode === 'linear-forward') drawLinearForward(root, canvas);
+			if (mode === 'activations') drawActivations(root, canvas);
+			if (mode === 'softmax') drawSoftmax(root, canvas);
+			if (mode === 'cross-entropy') drawCrossEntropy(root, canvas);
+		};
+
+		root
+			.querySelectorAll<HTMLInputElement>('[data-control]')
+			.forEach((control) => {
+				control.addEventListener('input', draw);
+				control.addEventListener('change', draw);
+			});
+
+		if (mode === 'cross-entropy') {
+			const probabilityControl = root.querySelector<HTMLInputElement>(
+				'[data-control="probability"]',
+			);
+			root.querySelectorAll<HTMLButtonElement>('[data-probability]').forEach(
+				(button) => {
+					button.addEventListener('click', () => {
+						if (!probabilityControl) return;
+						probabilityControl.value = button.dataset.probability ?? '50';
+						draw();
+					});
+				},
+			);
+		}
+
+		new ResizeObserver(draw).observe(canvas);
+		draw();
+	};
+
+	document
+		.querySelectorAll<HTMLElement>('[data-math-lab]')
+		.forEach(initializeMathLab);
+</script>
+
+<style>
+	.math-lab {
+		margin: 2.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		background: var(--bg-card);
+		box-shadow: var(--box-shadow-soft);
+		overflow: hidden;
+	}
+
+	.lab-header {
+		display: grid;
+		grid-template-columns: minmax(0, 0.85fr) minmax(260px, 1.15fr);
+		gap: 2rem;
+		align-items: end;
+		padding: 1.5rem;
+		border-bottom: 1px solid var(--border);
+	}
+
+	.lab-header span {
+		display: block;
+		margin-bottom: 0.45rem;
+		color: var(--accent-strong);
+		font-family: var(--font-mono);
+		font-size: 0.61rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.lab-header h3 {
+		margin: 0;
+		font-size: 1.15rem;
+	}
+
+	.lab-header p {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		line-height: 1.6;
+	}
+
+	.lab-canvas-frame {
+		padding: 1.25rem 1.25rem 0;
+		background: var(--accent-faint);
+	}
+
+	canvas {
+		display: block;
+		width: 100%;
+		height: 340px;
+		border: 1px solid var(--border);
+		background: #fff;
+	}
+
+	.lab-controls {
+		display: grid;
+		gap: 1.25rem;
+		padding: 1.25rem;
+		background: var(--accent-faint);
+	}
+
+	.three-controls,
+	.softmax-controls {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.training-controls,
+	.gradient-controls,
+	.activation-controls,
+	.entropy-controls {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.lab-controls > label {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.lab-controls label > span,
+	.segmented-control legend,
+	.lab-result span,
+	.metric-grid span {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		color: var(--text-secondary);
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.lab-controls output,
+	.lab-result strong,
+	.metric-grid strong {
+		color: var(--heading);
+		font-weight: 600;
+	}
+
+	.lab-controls input[type="range"] {
+		width: 100%;
+		accent-color: var(--heading);
+	}
+
+	.lab-result,
+	.metric-grid > div {
+		padding: 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		background: #fff;
+	}
+
+	.lab-result {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.wide-result,
+	.metric-grid {
+		grid-column: 1 / -1;
+	}
+
+	.metric-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.metric-grid > div {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.metric-grid strong {
+		font-size: 0.8rem;
+		line-height: 1.4;
+	}
+
+	.button-group,
+	.preset-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: end;
+	}
+
+	.button-group button,
+	.preset-group button {
+		min-height: 38px;
+		padding: 0.55rem 0.75rem;
+		border: 1px solid var(--heading);
+		border-radius: 5px;
+		background: var(--heading);
+		color: #fff;
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		cursor: pointer;
+	}
+
+	.button-group button:hover,
+	.preset-group button:hover {
+		transform: translateY(-1px);
+	}
+
+	.button-group .quiet-button,
+	.preset-group button {
+		border-color: var(--border);
+		background: #fff;
+		color: var(--heading);
+	}
+
+	.segmented-control {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.segmented-control legend {
+		margin-bottom: 0.55rem;
+	}
+
+	.segmented-control label {
+		display: inline-flex;
+		margin-right: 0.45rem;
+	}
+
+	.segmented-control input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.segmented-control label span {
+		display: block;
+		padding: 0.58rem 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: 5px;
+		background: #fff;
+		color: var(--text-secondary);
+		cursor: pointer;
+	}
+
+	.segmented-control input:checked + span {
+		border-color: var(--heading);
+		background: var(--heading);
+		color: #fff;
+	}
+
+	.segmented-control input:focus-visible + span {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.math-lab figcaption {
+		margin: 0;
+		padding: 0.8rem 1.25rem;
+		border-top: 1px solid var(--border);
+		color: var(--text-faint);
+		font-family: var(--font-mono);
+		font-size: 0.61rem;
+		letter-spacing: 0.03em;
+	}
+
+	@media (max-width: 760px) {
+		.lab-header,
+		.three-controls,
+		.softmax-controls,
+		.training-controls,
+		.gradient-controls,
+		.activation-controls,
+		.entropy-controls {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+
+		canvas {
+			height: 280px;
+		}
+
+		.metric-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

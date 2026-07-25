@@ -31,6 +31,8 @@ function renderFrontmatter(note: CollectionEntry<'knowledge'>): string {
 	lines.push(`title: ${JSON.stringify(note.data.title)}`);
 	lines.push(`description: ${JSON.stringify(note.data.description)}`);
 	lines.push(`category: ${note.data.category}`);
+	if (note.data.section) lines.push(`section: ${note.data.section}`);
+	if (note.data.sectionLanding) lines.push('sectionLanding: true');
 	lines.push(`pubDate: ${isoDate(note.data.pubDate)}`);
 	if (note.data.updatedDate) {
 		lines.push(`updatedDate: ${isoDate(note.data.updatedDate)}`);

@@ -395,7 +395,7 @@ mark {
 	font-family: var(--font-mono);
 	font-size: 0.84em;
 	line-height: 1.65;
-	color: var(--text);
+	color: inherit;
 }
 
 .prose blockquote {

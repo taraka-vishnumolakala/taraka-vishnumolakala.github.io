@@ -3,18 +3,13 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import type { MarkdownHeading } from 'astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import PageTableOfContents from '../components/PageTableOfContents.astro';
 import SiteLayout from './SiteLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings?: MarkdownHeading[];
 	readingTime?: number;
-};
-
-type TocSection = {
-	slug: string;
-	text: string;
-	children: { slug: string; text: string }[];
 };
 
 const {
@@ -31,20 +26,7 @@ const {
 	readingTime,
 } = Astro.props;
 
-const tocSections: TocSection[] = [];
-let currentSection: TocSection | null = null;
-for (const heading of headings) {
-	if (heading.depth === 2) {
-		currentSection = { slug: heading.slug, text: heading.text, children: [] };
-		tocSections.push(currentSection);
-	} else if (heading.depth === 3 && currentSection) {
-		currentSection.children.push({
-			slug: heading.slug,
-			text: heading.text,
-		});
-	}
-}
-const hasToc = tocSections.length > 0;
+const hasToc = headings.some((heading) => heading.depth === 2);
 ---
 
 <SiteLayout title={title} description={description} image={heroImage}>
@@ -66,38 +48,7 @@ const hasToc = tocSections.length > 0;
 				)}
 				<div class={`layout ${hasToc ? '' : 'no-toc'}`}>
 					{hasToc && (
-						<aside class="toc" aria-label="Table of contents">
-							<details class="toc-details" data-responsive-toc open>
-								<summary>On this page</summary>
-								<p class="toc-label">On this page</p>
-								<ul class="toc-list">
-									{tocSections.map((section) => (
-										<li class="toc-section" data-toc-section={section.slug}>
-											<a
-												href={`#${section.slug}`}
-												data-toc-link={section.slug}
-											>
-												{section.text}
-											</a>
-											{section.children.length > 0 && (
-												<ul class="toc-children">
-													{section.children.map((child) => (
-														<li>
-															<a
-																href={`#${child.slug}`}
-																data-toc-link={child.slug}
-															>
-																{child.text}
-															</a>
-														</li>
-													))}
-												</ul>
-											)}
-										</li>
-									))}
-								</ul>
-							</details>
-						</aside>
+						<PageTableOfContents headings={headings} />
 					)}
 					<div class="prose">
 						<header class="post-header">
@@ -155,13 +106,6 @@ const hasToc = tocSections.length > 0;
 		</main>
 
 		<script slot="body-end">
-			const responsiveToc =
-				document.querySelector('[data-responsive-toc]');
-			const compactLayout = window.matchMedia('(max-width: 1240px)');
-			if (responsiveToc && compactLayout.matches) {
-				responsiveToc.removeAttribute('open');
-			}
-
 			const progressBar =
 				document.querySelector('.reading-progress span');
 			const updateProgress = () => {
@@ -176,69 +120,6 @@ const hasToc = tocSections.length > 0;
 			};
 			updateProgress();
 			document.addEventListener('scroll', updateProgress, { passive: true });
-
-			const links =
-				document.querySelectorAll('[data-toc-link]');
-			if (links.length > 0) {
-				const linkBySlug = new Map();
-				const sectionBySlug = new Map();
-				const allSections = Array.from(
-					document.querySelectorAll('[data-toc-section]'),
-				);
-
-				links.forEach((link) => {
-					const slug = link.dataset.tocLink;
-					if (!slug) return;
-					linkBySlug.set(slug, link);
-					const section = link.closest('[data-toc-section]');
-					if (section) sectionBySlug.set(slug, section);
-				});
-
-				const articleHeadings = Array.from(linkBySlug.keys())
-					.map((slug) => document.getElementById(slug))
-					.filter((element) => element !== null);
-
-				let activeSlug = null;
-				const setActive = (slug) => {
-					if (slug === activeSlug) return;
-					if (activeSlug) {
-						linkBySlug.get(activeSlug)?.classList.remove('active');
-					}
-					if (slug) linkBySlug.get(slug)?.classList.add('active');
-					activeSlug = slug;
-
-					const activeSection = slug ? sectionBySlug.get(slug) : null;
-					allSections.forEach((section) => {
-						section.classList.toggle('expanded', section === activeSection);
-					});
-				};
-
-				const observer = new IntersectionObserver(
-					(entries) => {
-						const visible = entries
-							.filter((entry) => entry.isIntersecting)
-							.sort(
-								(a, b) =>
-									a.boundingClientRect.top - b.boundingClientRect.top,
-							);
-
-						if (visible.length > 0) {
-							setActive(visible[0].target.id);
-							return;
-						}
-
-						const above = articleHeadings.filter(
-							(heading) => heading.getBoundingClientRect().top < 110,
-						);
-						if (above.length > 0) {
-							setActive(above[above.length - 1].id);
-						}
-					},
-					{ rootMargin: '-110px 0px -70% 0px', threshold: 0 },
-				);
-
-				articleHeadings.forEach((heading) => observer.observe(heading));
-			}
 		</script>
 </SiteLayout>
 
@@ -294,95 +175,6 @@ const hasToc = tocSections.length > 0;
 	.layout.no-toc {
 		grid-template-columns: minmax(0, 900px);
 		justify-content: center;
-	}
-
-	.toc {
-		position: sticky;
-		top: 7.5rem;
-		width: 230px;
-		max-height: calc(100vh - 9rem);
-		overflow-y: auto;
-		scrollbar-width: thin;
-	}
-
-	.toc-label {
-		margin: 0 0 0.9rem 1.25rem;
-		color: var(--accent-strong);
-		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-	}
-
-	.toc-details > summary {
-		display: none;
-	}
-
-	.toc ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.toc a {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.65rem;
-		padding: 0.38rem 0;
-		color: var(--text-muted);
-		font-size: 0.75rem;
-		line-height: 1.45;
-	}
-
-	.toc a::before {
-		content: "";
-		width: 8px;
-		height: 1px;
-		margin-top: 0.55rem;
-		flex-shrink: 0;
-		background: var(--border);
-		transition:
-			width 0.15s ease,
-			background 0.15s ease;
-	}
-
-	.toc a:hover,
-	.toc a.active {
-		color: var(--heading);
-	}
-
-	.toc a.active {
-		font-weight: 600;
-	}
-
-	.toc a.active::before {
-		width: 16px;
-		background: var(--accent);
-	}
-
-	.toc-children {
-		max-height: 0;
-		opacity: 0;
-		overflow: hidden;
-		transition:
-			max-height 0.3s ease,
-			opacity 0.2s ease;
-	}
-
-	.toc-section.expanded > .toc-children {
-		max-height: 2000px;
-		opacity: 1;
-	}
-
-	.toc-children a {
-		padding-left: 1rem;
-		color: var(--text-faint);
-		font-size: 0.71rem;
-	}
-
-	.toc-children a.active::before {
-		width: 10px;
 	}
 
 	.prose :global(h2),
@@ -512,68 +304,11 @@ const hasToc = tocSections.length > 0;
 		transform: translateX(3px);
 	}
 
-	@media (max-width: 1240px) {
+	@media (max-width: 1340px) {
 		.layout {
 			grid-template-columns: minmax(0, 900px);
 			justify-content: center;
-			gap: 0;
-		}
-
-		.toc {
-			position: relative;
-			top: 0;
-			width: auto;
-			max-height: none;
-			margin-bottom: 2.5rem;
-			padding: 0.85rem 1rem;
-			border: 1px solid var(--border);
-			border-radius: 8px;
-			background: var(--accent-faint);
-			overflow: visible;
-		}
-
-		.toc-details > summary {
-			display: flex;
-			align-items: center;
-			gap: 0.55rem;
-			padding: 0.2rem 0;
-			color: var(--accent-strong);
-			font-family: var(--font-mono);
-			font-size: 0.66rem;
-			font-weight: 600;
-			letter-spacing: 0.08em;
-			list-style: none;
-			text-transform: uppercase;
-			cursor: pointer;
-		}
-
-		.toc-details > summary::-webkit-details-marker {
-			display: none;
-		}
-
-		.toc-details > summary::before {
-			content: "+";
-			font-size: 1rem;
-			line-height: 1;
-		}
-
-		.toc-details[open] > summary::before {
-			content: "−";
-		}
-
-		.toc-label {
-			display: none;
-		}
-
-		.toc-list {
-			margin-top: 0.8rem !important;
-			padding-top: 0.65rem !important;
-			border-top: 1px solid var(--border);
-		}
-
-		.toc-children {
-			max-height: 2000px;
-			opacity: 1;
+			gap: 2.5rem;
 		}
 	}
 

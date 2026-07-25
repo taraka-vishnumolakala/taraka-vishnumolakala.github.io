@@ -1,5 +1,4 @@
 ---
-import ExpertiseIcon from '../components/ExpertiseIcon.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
@@ -69,34 +68,22 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 
 			<ul class="expertise-strip" aria-label="Areas of expertise">
 				<li>
-					<div class="expertise-meta">
-						<span class="expertise-number">01</span>
-						<ExpertiseIcon type="agent-ml" />
-					</div>
+					<span class="expertise-number">01</span>
 					<strong>Agent & ML Security</strong>
 					<p>ML model risks, agent identity, MCP, A2A, A2UI, and AI system controls.</p>
 				</li>
 				<li>
-					<div class="expertise-meta">
-						<span class="expertise-number">02</span>
-						<ExpertiseIcon type="application-api" />
-					</div>
+					<span class="expertise-number">02</span>
 					<strong>Application & API Security</strong>
 					<p>Product attack surface, secure design, and defensive engineering.</p>
 				</li>
 				<li>
-					<div class="expertise-meta">
-						<span class="expertise-number">03</span>
-						<ExpertiseIcon type="cloud" />
-					</div>
+					<span class="expertise-number">03</span>
 					<strong>Cloud Security</strong>
 					<p>Hardening, identity, trust boundaries, and platform risk.</p>
 				</li>
 				<li>
-					<div class="expertise-meta">
-						<span class="expertise-number">04</span>
-						<ExpertiseIcon type="threat-modeling" />
-					</div>
+					<span class="expertise-number">04</span>
 					<strong>Threat Modeling & Culture</strong>
 					<p>Offensive thinking, champions programs, and durable workflows.</p>
 				</li>
@@ -155,6 +142,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 						<li class="timeline-item" data-timeline-item>
 							<div class="timeline-period">
 								<time datetime="2022-08">Aug 2022 — Sep 2023</time>
+								<span class="timeline-location">Dallas, TX</span>
 							</div>
 							<span class="timeline-marker" aria-hidden="true"></span>
 							<article class="timeline-entry">
@@ -188,6 +176,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 						<li class="timeline-item" data-timeline-item>
 							<div class="timeline-period">
 								<time datetime="2021-05">May 2021 — Aug 2022</time>
+								<span class="timeline-location">Omaha, NE</span>
 							</div>
 							<span class="timeline-marker" aria-hidden="true"></span>
 							<article class="timeline-entry">
@@ -221,6 +210,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 						<li class="timeline-item" data-timeline-item>
 							<div class="timeline-period">
 								<time datetime="2019-01">Jan 2019 — May 2021</time>
+								<span class="timeline-location">Omaha, NE</span>
 							</div>
 							<span class="timeline-marker" aria-hidden="true"></span>
 							<article class="timeline-entry">
@@ -253,6 +243,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 						<li class="timeline-item" data-timeline-item>
 							<div class="timeline-period">
 								<time datetime="2018-05">May 2018 — Dec 2018</time>
+								<span class="timeline-location">Omaha, NE</span>
 							</div>
 							<span class="timeline-marker" aria-hidden="true"></span>
 							<article class="timeline-entry">
@@ -622,15 +613,9 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		border-right: 0;
 	}
 
-	.expertise-meta {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 1.4rem;
-	}
-
 	.expertise-number {
+		display: block;
+		margin-bottom: 1.7rem;
 		color: var(--accent);
 		font-family: var(--font-mono);
 		font-size: 0.66rem;
@@ -1129,7 +1114,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			border-bottom: 0;
 		}
 
-		.expertise-meta {
+		.expertise-number {
 			margin-bottom: 0.85rem;
 		}
 

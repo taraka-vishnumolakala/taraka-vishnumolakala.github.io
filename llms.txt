@@ -5,3 +5,11 @@
 ## MCP Security Series
 
 - [Threat-Modeling MCP's Server Features](https://taraka-vishnumolakala.github.io/blog/mcp-security-server-features.md): Part 1 of the MCP Security series. A feature-by-feature threat model of Tools, Resources, Prompts, and the server-side utilities MCP added in 2025-11-25.
+
+## Knowledge Base
+
+- [Math Foundations](https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations.md): Beginner-friendly, interactive lessons for building an intuition for the math used in machine learning.
+- [Dataset Splits and Leakage](https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/data-splits-and-leakage.md): A working model for separating training, validation, and test data without letting evaluation information influence the model.
+- [Gradient Descent](https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/gradient-descent.md): Learn how a model improves by changing a number, checking its error, and repeating.
+- [Request Trust Boundaries](https://taraka-vishnumolakala.github.io/knowledge/web-application-security/request-trust-boundaries.md): Notes for identifying where a web request crosses identities, parsers, services, and authorization decisions.
+- [Context-Aware Test Payloads](https://taraka-vishnumolakala.github.io/knowledge/security-payloads/context-aware-test-payloads.md): A defensive approach to designing inert test inputs that reveal parsing, encoding, reflection, and trust-boundary behavior.

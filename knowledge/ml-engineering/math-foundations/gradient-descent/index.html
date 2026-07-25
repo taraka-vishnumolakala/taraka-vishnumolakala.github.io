@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="en"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Taraka Vishnumolakala" href="https://taraka-vishnumolakala.github.io/rss.xml"><meta name="generator" content="Astro v5.17.3"><meta name="theme-color" content="#111111"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"><!-- Canonical URL --><link rel="canonical" href="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/gradient-descent/"><!-- Primary Meta Tags --><title>Gradient Descent — Knowledge Base — Taraka Vishnumolakala</title><meta name="title" content="Gradient Descent — Knowledge Base — Taraka Vishnumolakala"><meta name="description" content="Learn how a model improves by changing a number, checking its error, and repeating."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/gradient-descent/"><meta property="og:title" content="Gradient Descent — Knowledge Base — Taraka Vishnumolakala"><meta property="og:description" content="Learn how a model improves by changing a number, checking its error, and repeating."><meta property="og:image" content="https://taraka-vishnumolakala.github.io/og.png"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://taraka-vishnumolakala.github.io/knowledge/ml-engineering/math-foundations/gradient-descent/"><meta property="twitter:title" content="Gradient Descent — Knowledge Base — Taraka Vishnumolakala"><meta property="twitter:description" content="Learn how a model improves by changing a number, checking its error, and repeating."><meta property="twitter:image" content="https://taraka-vishnumolakala.github.io/og.png"><link rel="stylesheet" href="/_astro/_slug_.NyIkvRh5.css">
+<style>.page-toc[data-astro-cid-lhkl6hl6]{position:sticky;top:7.5rem;width:230px;max-height:calc(100vh - 9rem);overflow-y:auto;scrollbar-width:thin}.page-toc-label[data-astro-cid-lhkl6hl6]{margin:0 0 .9rem 1.25rem;color:var(--accent-strong);font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:none}.page-toc[data-astro-cid-lhkl6hl6] ul[data-astro-cid-lhkl6hl6]{margin:0;padding:0;list-style:none}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{display:flex;align-items:flex-start;gap:.65rem;padding:.38rem 0;color:var(--text-muted);font-size:.75rem;line-height:1.45}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:before{content:"";width:8px;height:1px;margin-top:.55rem;flex-shrink:0;background:var(--border);transition:width .15s ease,background .15s ease}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]:hover,.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{color:var(--heading)}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active{font-weight:600}.page-toc[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:16px;background:var(--accent)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .2s ease}.page-toc-section[data-astro-cid-lhkl6hl6].expanded>.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6]{padding-left:1rem;color:var(--text-faint);font-size:.71rem}.page-toc-children[data-astro-cid-lhkl6hl6] a[data-astro-cid-lhkl6hl6].active:before{width:10px}@media(max-width:1340px){.page-toc[data-astro-cid-lhkl6hl6]{position:relative;top:0;width:auto;max-height:none;padding:.85rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--accent-faint);overflow:visible}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]{display:flex;align-items:center;gap:.55rem;padding:.2rem 0;color:var(--accent-strong);font-family:var(--font-mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;list-style:none;text-transform:uppercase;cursor:pointer}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]::-webkit-details-marker{display:none}.page-toc-details[data-astro-cid-lhkl6hl6]>summary[data-astro-cid-lhkl6hl6]:before{content:"+";font-size:1rem;line-height:1}.page-toc-details[data-astro-cid-lhkl6hl6][open]>summary[data-astro-cid-lhkl6hl6]:before{content:"−"}.page-toc-label[data-astro-cid-lhkl6hl6]{display:none}.page-toc-list[data-astro-cid-lhkl6hl6]{margin-top:.8rem!important;padding-top:.65rem!important;border-top:1px solid var(--border)}.page-toc-children[data-astro-cid-lhkl6hl6]{max-height:2000px;opacity:1}}
+</style>
+<link rel="stylesheet" href="/_astro/_slug_.DQij-Xgb.css">
+<link rel="stylesheet" href="/_astro/_slug_.DeHMcmab.css"></head> <body>  <header class="site-header" data-astro-cid-3ef6ksr2> <nav class="nav-shell" aria-label="Primary" data-astro-cid-3ef6ksr2> <a href="/" class="brand" aria-label="Taraka Vishnumolakala, home" data-astro-cid-3ef6ksr2> <span class="brand-mark" aria-hidden="true" data-astro-cid-3ef6ksr2>TV</span> <span class="brand-copy" data-astro-cid-3ef6ksr2> <strong data-astro-cid-3ef6ksr2>Taraka Vishnumolakala</strong> <span data-astro-cid-3ef6ksr2>Security Architecture</span> </span> </a> <button type="button" class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav" data-astro-cid-3ef6ksr2> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> <span class="bar" data-astro-cid-3ef6ksr2></span> </button> <div class="nav-links" id="primary-nav" data-astro-cid-3ef6ksr2> <a href="/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Home </a>  <a href="/knowledge" class="active" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Knowledge </a>  <a href="/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Writing </a>  <a href="/tags" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg> Tags </a>  <a href="https://github.com/taraka-vishnumolakala" target="_blank" rel="noopener noreferrer" data-astro-cid-3ef6ksr2>
+GitHub <span aria-hidden="true" data-astro-cid-3ef6ksr2>↗</span> </a> </div> </nav> </header> <div class="page-actions" data-page-actions data-astro-cid-jjhxq4hj> <button type="button" class="page-actions-toggle" aria-label="Page actions" aria-haspopup="true" aria-expanded="false" data-page-actions-toggle data-astro-cid-jjhxq4hj> <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="label" data-astro-cid-jjhxq4hj>Copy page</span> <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <polyline points="6 9 12 15 18 9" data-astro-cid-jjhxq4hj></polyline> </svg> </button> <div class="page-actions-menu" role="menu" hidden data-page-actions-menu data-astro-cid-jjhxq4hj> <button type="button" class="action-item" role="menuitem" data-action="copy" data-md-path="/knowledge/ml-engineering/math-foundations/gradient-descent.md" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <rect x="9" y="9" width="13" height="13" rx="2" ry="2" data-astro-cid-jjhxq4hj></rect> <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-copy-label data-astro-cid-jjhxq4hj>Copy page</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Copy page as Markdown for LLMs</span> </span> </button> <a class="action-item" role="menuitem" href="/knowledge/ml-engineering/math-foundations/gradient-descent.md" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" data-astro-cid-jjhxq4hj></path> <polyline points="14 2 14 8 20 8" data-astro-cid-jjhxq4hj></polyline> <line x1="9" y1="13" x2="15" y2="13" data-astro-cid-jjhxq4hj></line> <line x1="9" y1="17" x2="15" y2="17" data-astro-cid-jjhxq4hj></line> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>View as Markdown</span> <span class="subtitle" data-astro-cid-jjhxq4hj>View this page as plain text</span> </span> </a> <a class="action-item" role="menuitem" href="/llms.txt" target="_blank" rel="noopener" data-astro-cid-jjhxq4hj> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-jjhxq4hj> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-jjhxq4hj></path> </svg> <span class="text" data-astro-cid-jjhxq4hj> <span class="title" data-astro-cid-jjhxq4hj>llms.txt</span> <span class="subtitle" data-astro-cid-jjhxq4hj>Open llms.txt for this site</span> </span> </a> </div> </div> <script type="module">const c=document.querySelector("[data-page-actions]"),i=document.querySelector("[data-page-actions-toggle]"),o=document.querySelector("[data-page-actions-menu]");if(c&&i&&o){const d=()=>{o.hidden=!1,i.setAttribute("aria-expanded","true"),c.classList.add("open")},a=()=>{o.hidden=!0,i.setAttribute("aria-expanded","false"),c.classList.remove("open")};i.addEventListener("click",()=>{o.hidden?d():a()}),document.addEventListener("click",t=>{c.contains(t.target)||a()}),document.addEventListener("keydown",t=>{t.key==="Escape"&&a()});const n=o.querySelector('[data-action="copy"]');if(n){const t=n.querySelector("[data-copy-label]"),r=t?.textContent??"Copy page";n.addEventListener("click",async()=>{const s=n.dataset.mdPath;if(!(!s||!t))try{const e=await fetch(s);if(!e.ok)throw new Error(`fetch failed: ${e.status}`);const l=await e.text();await navigator.clipboard.writeText(l),t.textContent="Copied!",setTimeout(()=>{t.textContent=r,a()},900)}catch(e){console.error("Copy failed",e),t.textContent="Copy failed",setTimeout(()=>{t.textContent=r},1500)}})}}</script>  <script type="module">const t=document.querySelector(".nav-toggle"),s=document.getElementById("primary-nav"),a=document.querySelector(".site-header");if(t&&s&&a){const n=()=>{s.classList.remove("open"),t.classList.remove("open"),t.setAttribute("aria-expanded","false")};t.addEventListener("click",()=>{const e=s.classList.toggle("open");t.classList.toggle("open",e),t.setAttribute("aria-expanded",String(e))}),s.addEventListener("click",e=>{e.target.closest("a")&&n()}),document.addEventListener("click",e=>{a.contains(e.target)||n()}),document.addEventListener("keydown",e=>{e.key==="Escape"&&n()}),window.matchMedia("(min-width: 769px)").addEventListener("change",e=>{e.matches&&n()})}</script>   <main class="knowledge-shell has-toc" data-astro-cid-sibu3b5v> <div class="knowledge-navigation" data-astro-cid-sibu3b5v> <aside class="knowledge-sidebar" data-astro-cid-24d5mdw3> <details class="knowledge-nav-details" open data-astro-cid-24d5mdw3> <summary data-astro-cid-24d5mdw3> <span data-astro-cid-24d5mdw3>Knowledge navigation</span> <strong data-astro-cid-24d5mdw3>5 notes</strong> </summary> <nav aria-label="Knowledge base" data-astro-cid-24d5mdw3> <a class="knowledge-overview-link" href="/knowledge" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Overview</strong> </a> <section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>ML Engineering</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/ml-engineering/data-splits-and-leakage/" data-astro-cid-24d5mdw3> Dataset Splits and Leakage </a> </li> </ul> <div class="knowledge-subsection" data-astro-cid-24d5mdw3> <a class="knowledge-subsection-link" href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-24d5mdw3> <strong data-astro-cid-24d5mdw3>Math Foundations</strong> </a> <ul class="knowledge-subsection-list" data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a class="active" href="/knowledge/ml-engineering/math-foundations/gradient-descent/" aria-current="page" data-astro-cid-24d5mdw3> Gradient Descent </a> </li> </ul> </div>  </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Web Application Security</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/web-application-security/request-trust-boundaries/" data-astro-cid-24d5mdw3> Request Trust Boundaries </a> </li> </ul>   </section><section class="knowledge-domain" data-astro-cid-24d5mdw3> <div class="knowledge-domain-heading" data-astro-cid-24d5mdw3> <h2 data-astro-cid-24d5mdw3>Security Payloads</h2> </div> <ul data-astro-cid-24d5mdw3> <li data-astro-cid-24d5mdw3> <a href="/knowledge/security-payloads/context-aware-test-payloads/" data-astro-cid-24d5mdw3> Context-Aware Test Payloads </a> </li> </ul>   </section> </nav> </details> </aside>  </div> <div class="knowledge-toc" data-astro-cid-sibu3b5v> <aside class="page-toc" aria-label="Table of contents" data-page-toc data-astro-cid-lhkl6hl6> <details class="page-toc-details" open data-astro-cid-lhkl6hl6> <summary data-astro-cid-lhkl6hl6>On this page</summary> <p class="page-toc-label" data-astro-cid-lhkl6hl6>On this page</p> <ul class="page-toc-list" data-astro-cid-lhkl6hl6> <li class="page-toc-section" data-toc-section="turn-the-mistake-into-a-loss" data-astro-cid-lhkl6hl6> <a href="#turn-the-mistake-into-a-loss" data-toc-link="turn-the-mistake-into-a-loss" data-astro-cid-lhkl6hl6> Turn the mistake into a loss </a>  </li><li class="page-toc-section" data-toc-section="use-the-slope-to-choose-a-direction" data-astro-cid-lhkl6hl6> <a href="#use-the-slope-to-choose-a-direction" data-toc-link="use-the-slope-to-choose-a-direction" data-astro-cid-lhkl6hl6> Use the slope to choose a direction </a>  </li><li class="page-toc-section" data-toc-section="follow-the-first-updates" data-astro-cid-lhkl6hl6> <a href="#follow-the-first-updates" data-toc-link="follow-the-first-updates" data-astro-cid-lhkl6hl6> Follow the first updates </a>  </li><li class="page-toc-section" data-toc-section="see-why-the-learning-rate-matters" data-astro-cid-lhkl6hl6> <a href="#see-why-the-learning-rate-matters" data-toc-link="see-why-the-learning-rate-matters" data-astro-cid-lhkl6hl6> See why the learning rate matters </a>  </li><li class="page-toc-section" data-toc-section="implement-the-same-update-in-python" data-astro-cid-lhkl6hl6> <a href="#implement-the-same-update-in-python" data-toc-link="implement-the-same-update-in-python" data-astro-cid-lhkl6hl6> Implement the same update in Python </a>  </li><li class="page-toc-section" data-toc-section="how-this-fits-into-real-training" data-astro-cid-lhkl6hl6> <a href="#how-this-fits-into-real-training" data-toc-link="how-this-fits-into-real-training" data-astro-cid-lhkl6hl6> How this fits into real training </a>  </li><li class="page-toc-section" data-toc-section="what-a-lower-loss-does-not-prove" data-astro-cid-lhkl6hl6> <a href="#what-a-lower-loss-does-not-prove" data-toc-link="what-a-lower-loss-does-not-prove" data-astro-cid-lhkl6hl6> What a lower loss does not prove </a>  </li><li class="page-toc-section" data-toc-section="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> <a href="#why-security-engineers-should-care" data-toc-link="why-security-engineers-should-care" data-astro-cid-lhkl6hl6> Why security engineers should care </a>  </li><li class="page-toc-section" data-toc-section="common-wrong-ideas" data-astro-cid-lhkl6hl6> <a href="#common-wrong-ideas" data-toc-link="common-wrong-ideas" data-astro-cid-lhkl6hl6> Common wrong ideas </a>  </li><li class="page-toc-section" data-toc-section="check-your-understanding" data-astro-cid-lhkl6hl6> <a href="#check-your-understanding" data-toc-link="check-your-understanding" data-astro-cid-lhkl6hl6> Check your understanding </a>  </li><li class="page-toc-section" data-toc-section="keep-this-mental-model" data-astro-cid-lhkl6hl6> <a href="#keep-this-mental-model" data-toc-link="keep-this-mental-model" data-astro-cid-lhkl6hl6> Keep this mental model </a>  </li> </ul> </details> </aside> <script type="module">const h=window.matchMedia("(max-width: 1340px)");document.querySelectorAll("[data-page-toc]").forEach(r=>{const a=r.querySelector(".page-toc-details");a&&h.matches&&a.removeAttribute("open");const s=r.querySelectorAll("[data-toc-link]");if(s.length===0)return;const c=new Map,l=new Map,f=Array.from(r.querySelectorAll("[data-toc-section]"));s.forEach(t=>{const o=t.dataset.tocLink;if(!o)return;c.set(o,t);const e=t.closest("[data-toc-section]");e&&l.set(o,e)});const d=Array.from(c.keys()).map(t=>document.getElementById(t)).filter(t=>t!==null);let i=null;const g=t=>{if(t===i)return;i&&c.get(i)?.classList.remove("active"),t&&c.get(t)?.classList.add("active"),i=t;const o=t?l.get(t):null;f.forEach(e=>{e.classList.toggle("expanded",e===o)})},u=new IntersectionObserver(t=>{const o=t.filter(n=>n.isIntersecting).sort((n,p)=>n.boundingClientRect.top-p.boundingClientRect.top);if(o.length>0){g(o[0].target.id);return}const e=d.filter(n=>n.getBoundingClientRect().top<110);e.length>0&&g(e[e.length-1].id)},{rootMargin:"-110px 0px -70% 0px",threshold:0});d.forEach(t=>u.observe(t))});</script>  </div> <article class="knowledge-content" data-astro-cid-sibu3b5v> <header class="knowledge-header" data-astro-cid-sibu3b5v> <p class="breadcrumb" data-astro-cid-sibu3b5v> <a href="/" data-astro-cid-sibu3b5v>Home</a> <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge" data-astro-cid-sibu3b5v>Knowledge Base</a>  <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <span data-astro-cid-sibu3b5v>ML Engineering</span>   <span aria-hidden="true" data-astro-cid-sibu3b5v>/</span> <a href="/knowledge/ml-engineering/math-foundations/" data-astro-cid-sibu3b5v> Math Foundations </a>  </p> <p class="eyebrow" data-astro-cid-sibu3b5v> Math Foundations </p> <h1 data-astro-cid-sibu3b5v>Gradient Descent</h1> <p class="knowledge-dek" data-astro-cid-sibu3b5v>Learn how a model improves by changing a number, checking its error, and repeating.</p> <div class="knowledge-meta" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v> Added  <time datetime="2026-07-25T00:00:00.000Z"> Jul 25, 2026 </time> </span> <span data-astro-cid-sibu3b5v>7 min read</span>  </div> <div class="knowledge-topics" aria-label="Topics" data-astro-cid-sibu3b5v> <span data-astro-cid-sibu3b5v>optimization</span><span data-astro-cid-sibu3b5v>model training</span><span data-astro-cid-sibu3b5v>learning rate</span> </div> </header> <div class="knowledge-body" data-astro-cid-sibu3b5v>  <div class="prose"> <p>Imagine that your team is building a model to estimate how long a security
+alert will take to investigate. One of its inputs is the number of systems
+affected by the alert.</p>
+<p>For one completed alert, the input is <code>1</code> affected system. The investigation
+actually took <code>2</code> hours. Because the work is already complete, this observed
+time gives us a clear answer against which to compare the model.</p>
+<p>We will deliberately use a very small model so that we can follow every
+calculation. It multiplies the number of affected systems by an adjustable
+value called <code>w</code>:</p>
+<p><code>predicted hours = w × affected systems</code></p>
+<p>An adjustable value inside a model is called a <strong>parameter</strong>. Training is the
+process of finding parameter values that produce better predictions.</p>
+<p>Here, <code>w</code> represents the predicted investigation time for each affected system.
+Suppose it currently equals <code>8</code>. Because this alert affected one system, the
+model predicts:</p>
+<p><code>8 hours per system × 1 system = 8 hours</code></p>
+<p>The investigation actually took <code>2</code> hours, so the prediction is too high by
+<code>6</code> hours. Gradient descent is the method we will use to move <code>w</code> toward a
+better value.</p>
+<h2 id="turn-the-mistake-into-a-loss">Turn the mistake into a loss</h2>
+<p>Before the model can improve, it needs a consistent way to measure its mistake.
+That measurement is called <strong>loss</strong>.</p>
+<p>For this example, we subtract the actual investigation time from the predicted
+time and square the result:</p>
+<p><code>loss = (predicted hours − actual hours)²</code></p>
+<p>This rule is called <strong>squared error</strong>. Without the square, one prediction that is
+6 hours too high and another that is 6 hours too low would produce errors of
+<code>+6</code> and <code>−6</code>. They could cancel even though both predictions are wrong.
+Squaring turns both errors into <code>36</code>.</p>
+<p>Squaring also gives larger mistakes a stronger penalty. It is not the only way
+to define loss, but its smooth curve makes gradient descent easy to see in this
+example.</p>
+<p>Because our input is <code>1</code>, the prediction is simply <code>w</code>. The rule therefore
+becomes:</p>
+<p><code>loss(w) = (w − 2)²</code></p>
+<p>At <code>w = 8</code>, the loss is:</p>
+<p><code>(8 − 2)² = 36</code></p>
+<p>At <code>w = 5</code>, the loss is only:</p>
+<p><code>(5 − 2)² = 9</code></p>
+<p>The second value is better because it produces a smaller loss. Training will
+repeat this comparison indirectly until it finds a useful value.</p>
+<h2 id="use-the-slope-to-choose-a-direction">Use the slope to choose a direction</h2>
+<p>With only one parameter, we could try nearby values by hand:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:right">Parameter <code>w</code></th><th style="text-align:right">Loss</th></tr></thead><tbody><tr><td style="text-align:right">7</td><td style="text-align:right">25</td></tr><tr><td style="text-align:right">8</td><td style="text-align:right">36</td></tr><tr><td style="text-align:right">9</td><td style="text-align:right">49</td></tr></tbody></table>
+<p>From <code>w = 8</code>, moving left lowers the loss and moving right raises it. A real
+model may contain millions or billions of parameters, so checking every nearby
+combination is not practical. We need a direct signal that tells each parameter
+which way to move.</p>
+<p>That signal is the <strong>gradient</strong>. The gradient measures the local slope of the
+loss. Its sign gives us a direction, and its size tells us how steep the loss is
+at the current position.</p>
+<p>For our squared loss, the gradient is:</p>
+<p><code>gradient = 2 × (w − 2)</code></p>
+<p>At <code>w = 8</code>, the difference between the predicted and actual time is <code>6</code> hours.
+Twice that difference gives a gradient of <code>12</code>.</p>
+<p>A positive gradient means the loss rises as <code>w</code> increases, so we should move
+toward a smaller value. The size <code>12</code> tells us that the curve is fairly steep
+here. For a very small change in <code>w</code>, the loss changes by roughly twelve times
+that amount.</p>
+<p>The gradient gives us the direction, but we still choose how far to move. That
+step-size setting is called the <strong>learning rate</strong>.</p>
+<p>The update rule is:</p>
+<p><code>new value = current value − learning rate × gradient</code></p>
+<p>We subtract because the gradient points uphill, toward greater loss.</p>
+<figure class="math-lab" data-math-lab data-mode="gradient-descent" data-astro-cid-rlobe7kc> <header class="lab-header" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Interactive concept</span> <h3 data-astro-cid-rlobe7kc>Improve the alert-time estimate</h3> </div> <p data-astro-cid-rlobe7kc>For this one-system alert, w is the predicted investigation time in hours. Apply one update at a time to move the estimate toward the observed 2 hours.</p> </header> <div class="lab-canvas-frame" data-astro-cid-rlobe7kc> <canvas width="900" height="340" aria-label="Interactive loss curve showing gradient descent steps toward its minimum" data-astro-cid-rlobe7kc>
+Your browser does not support canvas. The live values below still
+			show the result of each control.
+</canvas> </div>   <div class="lab-controls gradient-controls" aria-label="Gradient descent controls" data-astro-cid-rlobe7kc> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Starting parameter (w)
+<output data-output="start" data-astro-cid-rlobe7kc>8.0</output> </span> <input data-control="start" type="range" min="-5" max="9" step="0.5" value="8" data-astro-cid-rlobe7kc> </label> <label data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>
+Learning rate
+<output data-output="learning-rate" data-astro-cid-rlobe7kc>0.25</output> </span> <input data-control="learning-rate" type="range" min="0.05" max="1.1" step="0.05" value="0.25" data-astro-cid-rlobe7kc> </label> <div class="button-group" data-astro-cid-rlobe7kc> <button type="button" data-action="step" data-astro-cid-rlobe7kc>Take one update</button> <button type="button" data-action="run" data-astro-cid-rlobe7kc>Run 8 updates</button> <button type="button" class="quiet-button" data-action="reset" data-astro-cid-rlobe7kc>
+Start over
+</button> </div> <div class="metric-grid" aria-live="polite" data-astro-cid-rlobe7kc> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Current parameter (w)</span> <strong data-result="position" data-astro-cid-rlobe7kc>8.000</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>Current loss</span> <strong data-result="loss" data-astro-cid-rlobe7kc>36.000</strong> </div> <div data-astro-cid-rlobe7kc> <span data-astro-cid-rlobe7kc>What the updates do</span> <strong data-result="behavior" data-astro-cid-rlobe7kc>Steady movement toward lower error</strong> </div> </div> </div>    <figcaption data-caption data-astro-cid-rlobe7kc>
+Move a control and watch the calculation and drawing update together.
+</figcaption> </figure> <script type="module" src="/_astro/MathConceptLab.astro_astro_type_script_index_0_lang.6lBIu4jO.js"></script> 
+<h2 id="follow-the-first-updates">Follow the first updates</h2>
+<p>Leave the starting parameter at <code>8</code> and the learning rate at <code>0.25</code>. We already
+know that the gradient at this point is <code>12</code>, so the first update is:</p>
+<p><code>new value = 8 − 0.25 × 12 = 5</code></p>
+<p>Select <strong>Take one update</strong> in the interactive graph. The parameter moves to <code>5</code>,
+and the loss falls from <code>36</code> to <code>9</code>.</p>
+<p>At <code>w = 5</code>, the gradient is now:</p>
+<p><code>2 × (5 − 2) = 6</code></p>
+<p>The next update moves the parameter to <code>3.5</code>, where the loss is <code>2.25</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:right">Update</th><th style="text-align:right">Parameter before update</th><th style="text-align:right">Gradient</th><th style="text-align:right">Parameter after update</th><th style="text-align:right">New loss</th></tr></thead><tbody><tr><td style="text-align:right">1</td><td style="text-align:right">8</td><td style="text-align:right">12</td><td style="text-align:right">5</td><td style="text-align:right">9</td></tr><tr><td style="text-align:right">2</td><td style="text-align:right">5</td><td style="text-align:right">6</td><td style="text-align:right">3.5</td><td style="text-align:right">2.25</td></tr><tr><td style="text-align:right">3</td><td style="text-align:right">3.5</td><td style="text-align:right">3</td><td style="text-align:right">2.75</td><td style="text-align:right">0.5625</td></tr></tbody></table>
+<p>The learning rate stays at <code>0.25</code>, but the updates become smaller. As the
+parameter approaches <code>2</code>, the curve becomes flatter and the gradient shrinks.
+The model slows down naturally near the bottom.</p>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>What should I notice on the graph?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The filled dot is the current parameter value. The earlier dots show the path
+taken by previous updates. A useful learning rate moves the dots toward the
+bottom while steadily reducing the loss.</p> </div> </details> 
+<h2 id="see-why-the-learning-rate-matters">See why the learning rate matters</h2>
+<p>The gradient describes the slope near the current position. If the learning
+rate creates a very large update, the parameter can jump across the bottom and
+land on the other side.</p>
+<p>Try these settings in the interactive example:</p>
+<ol>
+<li>Set the learning rate to <code>0.05</code> and select <strong>Run 8 updates</strong>. The loss falls,
+but progress is slow.</li>
+<li>Start over, use <code>0.25</code>, and run eight updates. The model moves steadily
+toward the bottom.</li>
+<li>Start over and use <code>0.75</code>. The parameter crosses the bottom repeatedly, but
+each jump becomes smaller, so the loss still falls.</li>
+<li>Try <code>1.00</code>. The parameter bounces between two equally bad values. It keeps
+updating, but the loss does not improve.</li>
+<li>Try <code>1.10</code>. Each update lands farther away, and the loss grows.</li>
+</ol>
+<p>This distinction matters when reading training logs. A running training process
+is not necessarily a learning process. The loss must move in the right
+direction.</p>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>Why can a large learning rate make the loss grow?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The slope tells us what happens close to the current point. If we move too far,
+the update can cross the bottom and land higher on the other side. The next
+gradient points back, but another oversized update can carry the parameter even
+farther away.</p> </div> </details> 
+<h2 id="implement-the-same-update-in-python">Implement the same update in Python</h2>
+<p>The code below follows the exact example from the graph. The loss function
+measures how far <code>w</code> is from <code>2</code>, and the gradient function returns the local
+slope.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> loss</span><span style="color:#E1E4E8">(w):</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;&quot;&quot;Measure the prediction error at the current parameter value.&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (w </span><span style="color:#F97583">-</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">**</span><span style="color:#79B8FF"> 2</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> gradient</span><span style="color:#E1E4E8">(w):</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;&quot;&quot;Return the slope of the loss at the current parameter value.&quot;&quot;&quot;</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 2</span><span style="color:#F97583"> *</span><span style="color:#E1E4E8"> (w </span><span style="color:#F97583">-</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">w </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 8.0</span></span>
+<span class="line"><span style="color:#E1E4E8">learning_rate </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0.25</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> update </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">&quot;update </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">update</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">: w=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">w</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">, loss=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">loss(w)</span><span style="color:#F97583">:.3f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Move in the direction opposite the gradient.</span></span>
+<span class="line"><span style="color:#E1E4E8">    w </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> w </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> learning_rate </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> gradient(w)</span></span></code></pre>
+<p>Running it produces:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="text"><code><span class="line"><span>update 0: w=8.000, loss=36.000</span></span>
+<span class="line"><span>update 1: w=5.000, loss=9.000</span></span>
+<span class="line"><span>update 2: w=3.500, loss=2.250</span></span>
+<span class="line"><span>update 3: w=2.750, loss=0.562</span></span>
+<span class="line"><span>update 4: w=2.375, loss=0.141</span></span></code></pre>
+<p>There is no hidden training framework here. Each loop measures the current
+slope and applies the same update rule used in the interactive graph:</p>
+<p><code>w = w − learning rate × gradient</code></p>
+<h2 id="how-this-fits-into-real-training">How this fits into real training</h2>
+<p>A real model contains many parameters and learns from many examples. One
+training step still follows the same pattern:</p>
+<ol>
+<li>The model produces predictions.</li>
+<li>A loss function measures the prediction errors.</li>
+<li>The training system calculates a gradient for every parameter.</li>
+<li>The parameters are updated, and the process repeats.</li>
+</ol>
+<p><strong>Backpropagation</strong> is the calculation used to find how sensitive the loss is to
+each parameter. The part of the training code that applies the resulting
+updates is called an <strong>optimizer</strong>.</p>
+<p>Those tools make the process efficient at scale. The core idea remains the one
+shown in the graph: measure the local slope, take a controlled step toward
+lower loss, and repeat.</p>
+<h2 id="what-a-lower-loss-does-not-prove">What a lower loss does not prove</h2>
+<p>A lower training loss only means that the model fits the supplied examples and
+loss function more closely. It does not prove that the time estimates will be
+accurate for new alerts.</p>
+<p>Historical data may omit large incidents, contain inconsistent time records, or
+come from a team with different tools and processes. Gradient descent cannot
+correct those problems. Engineers check the model with <strong>validation data</strong>:
+separate completed alerts that were not used to update the parameters.</p>
+<h2 id="why-security-engineers-should-care">Why security engineers should care</h2>
+<p>Training changes model parameters to reduce a chosen error. Some attacks reverse
+that idea: they keep the model fixed and change the input until the model makes
+a chosen mistake. In machine-learning security, such a deliberately modified
+input is called an
+<a href="https://www.nist.gov/publications/adversarial-machine-learning-taxonomy-and-terminology-attacks-and-mitigations"><strong>adversarial example</strong></a>.</p>
+<p>An attacker may calculate gradients directly or estimate useful directions from
+repeated queries and detailed model outputs. Model-facing APIs should therefore
+consider how much feedback their responses expose.</p>
+<h2 id="common-wrong-ideas">Common wrong ideas</h2>
+<ul>
+<li><strong>“The gradient reveals the best parameter value.”</strong> It only describes the
+slope at the current position. It is a local direction, not a complete map.</li>
+<li><strong>“A bigger learning rate always means faster training.”</strong> A bigger step can
+overshoot a useful value and make the loss unstable.</li>
+<li><strong>“A low training loss proves that the model is useful.”</strong> The model may have
+learned patterns that do not hold for new incidents or other response teams.</li>
+</ul>
+<h2 id="check-your-understanding">Check your understanding</h2>
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>1. What does the gradient tell us?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>It gives the local slope of the loss. Its sign tells us which direction raises
+the loss, and its size tells us how steep the loss is at the current position.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>2. Why do the updates shrink near the bottom of this graph?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>The curve becomes flatter, so its gradient becomes smaller. Since each update
+uses the gradient, the resulting move becomes smaller too.</p> </div> </details> 
+<details class="collapsible" data-astro-cid-hbmamkfo> <summary data-astro-cid-hbmamkfo>3. What does the learning rate control?</summary> <div class="collapsible-body" data-astro-cid-hbmamkfo> <p>It controls how much of the gradient is used in each update. A small learning
+rate may make slow progress, while a large one can overshoot and make the loss
+unstable.</p> </div> </details> 
+<h2 id="keep-this-mental-model">Keep this mental model</h2>
+<blockquote>
+<p>Measure the prediction error, use its local slope to choose a direction, take
+a controlled step, and repeat.</p>
+</blockquote> </div>  </div> </article> </main>  <footer data-astro-cid-sz7xmlte> <div class="footer-shell" data-astro-cid-sz7xmlte> <p data-astro-cid-sz7xmlte>&copy; 2026 Taraka Vishnumolakala</p> </div> </footer>   </body></html> 

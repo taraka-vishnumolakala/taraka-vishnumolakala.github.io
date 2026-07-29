@@ -454,6 +454,15 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		font-size: var(--font-size-page-title);
 	}
 
+	.hero .eyebrow::before,
+	.experience-section .eyebrow::before,
+	.approach-section .eyebrow::before,
+	.connect-section .eyebrow::before {
+		width: 2rem;
+		height: 3px;
+		clip-path: polygon(0 38%, 100% 0, 88% 100%, 0 68%);
+	}
+
 	.hero-lede {
 		max-width: 700px;
 		margin: 0 0 1.3rem;
@@ -497,14 +506,79 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		gap: 0.75rem;
 	}
 
+	.hero-actions .button {
+		border-width: 2px;
+	}
+
+	.hero-actions .button-primary {
+		box-shadow:
+			3px 3px 0 var(--text-faint),
+			0 8px 18px rgb(0 0 0 / 12%);
+	}
+
+	.hero-actions .button-secondary {
+		border-color: var(--text-muted);
+		box-shadow: 3px 3px 0 var(--accent-soft);
+	}
+
+	.hero-actions .button:hover {
+		transform: translate(-1px, -2px);
+	}
+
+	.hero-actions .button:active {
+		box-shadow: none;
+		transform: translate(2px, 2px);
+	}
+
 	.profile-card {
 		position: relative;
+		isolation: isolate;
 		max-width: 410px;
 		justify-self: end;
 	}
 
+	.profile-card::before,
+	.profile-card::after {
+		content: "";
+		position: absolute;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.profile-card::before {
+		top: -2rem;
+		right: -2.2rem;
+		width: 10rem;
+		height: 10rem;
+		background-image: radial-gradient(
+			circle,
+			rgb(17 17 17 / 42%) 0 1px,
+			transparent 1.3px
+		);
+		background-size: 8px 8px;
+		opacity: 0.38;
+		transform: rotate(4deg);
+		mask-image: linear-gradient(135deg, #000 8%, transparent 76%);
+	}
+
+	.profile-card::after {
+		top: 12%;
+		left: -2.4rem;
+		width: 3.5rem;
+		height: 45%;
+		background: repeating-linear-gradient(
+			165deg,
+			transparent 0 9px,
+			rgb(17 17 17 / 38%) 10px 11px,
+			transparent 12px 18px
+		);
+		clip-path: polygon(100% 0, 100% 100%, 0 74%, 45% 50%, 0 26%);
+		opacity: 0.55;
+	}
+
 	.portrait-frame {
 		position: relative;
+		z-index: 1;
 		padding: 0 0.9rem 0.9rem 0;
 	}
 
@@ -514,10 +588,13 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		display: block;
 		width: 100%;
 		aspect-ratio: 4 / 5;
-		border: 1px solid rgba(17, 17, 17, 0.16);
-		border-radius: 10px;
+		border: 2px solid var(--heading);
+		border-radius: 7px;
 		object-fit: cover;
-		box-shadow: var(--box-shadow);
+		box-shadow:
+			3px 3px 0 var(--bg-card),
+			5px 5px 0 var(--heading),
+			var(--box-shadow);
 	}
 
 	.portrait-accent {
@@ -527,10 +604,12 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		bottom: 0;
 		width: 72%;
 		height: 74%;
-		border-radius: 10px;
+		border: 1px solid var(--heading);
+		border-radius: 7px;
 		background:
 			linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
 			var(--accent);
+		transform: skew(-1deg, -1deg);
 	}
 
 	.expertise-section h2 {
@@ -548,9 +627,29 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 	}
 
 	.expertise-strip li {
+		position: relative;
 		min-height: 180px;
+		overflow: hidden;
 		padding: 1.75rem 1.5rem;
 		border-right: 1px solid var(--border);
+	}
+
+	.expertise-strip li::after {
+		content: "";
+		position: absolute;
+		top: 0.85rem;
+		right: 0.85rem;
+		width: 3rem;
+		height: 3rem;
+		background-image: radial-gradient(
+			circle,
+			var(--text-faint) 0 0.75px,
+			transparent 1px
+		);
+		background-size: 6px 6px;
+		clip-path: polygon(36% 0, 100% 0, 100% 64%);
+		opacity: 0.18;
+		pointer-events: none;
 	}
 
 	.expertise-strip li:first-child {
@@ -796,9 +895,10 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 
 	.background-card {
 		padding: clamp(1.75rem, 3vw, 2.4rem);
-		border: 1px solid var(--border);
-		border-radius: 10px;
+		border: 1px solid var(--text-faint);
+		border-radius: 7px;
 		background: rgba(255, 255, 255, 0.82);
+		box-shadow: 4px 4px 0 var(--accent-faint);
 	}
 
 	.background-card-header {

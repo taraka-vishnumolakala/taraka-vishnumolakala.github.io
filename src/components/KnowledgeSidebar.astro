@@ -141,8 +141,9 @@ const { notes, activeId } = Astro.props;
 		width: 100%;
 		margin-bottom: 2rem;
 		padding: 0.75rem;
-		border: 1px solid var(--border);
-		border-radius: 6px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
+		box-shadow: 2px 2px 0 var(--accent-faint);
 		color: var(--text-secondary);
 	}
 
@@ -204,6 +205,7 @@ const { notes, activeId } = Astro.props;
 	}
 
 	.knowledge-domain li a.active {
+		box-shadow: inset 3px 0 0 var(--heading);
 		font-weight: 600;
 	}
 
@@ -251,9 +253,10 @@ const { notes, activeId } = Astro.props;
 			top: 0;
 			max-height: none;
 			padding: 0;
-			border: 1px solid var(--border);
-			border-radius: 8px;
+			border: 1px solid var(--text-faint);
+			border-radius: var(--panel-radius);
 			background: rgba(255, 255, 255, 0.76);
+			box-shadow: var(--ink-shadow-flat);
 			overflow: visible;
 		}
 

@@ -22,6 +22,7 @@ const { tag, count, index } = Astro.props;
 
 <style>
 	.topic-card {
+		position: relative;
 		min-height: 330px;
 		display: flex;
 		flex-direction: column;
@@ -29,13 +30,33 @@ const { tag, count, index } = Astro.props;
 		border-right: 1px solid var(--border);
 		border-bottom: 1px solid var(--border);
 		background: rgba(255, 255, 255, 0.42);
+		overflow: hidden;
+	}
+
+	.topic-card::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 4.5rem;
+		height: 4.5rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(38% 0, 100% 0, 100% 68%);
+		opacity: 0.42;
+		pointer-events: none;
+	}
+
+	.topic-card > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.topic-card:hover {
 		z-index: 1;
 		background: var(--bg-card);
-		box-shadow: var(--box-shadow-soft);
-		transform: translateY(-3px);
+		box-shadow: var(--ink-shadow-raised);
+		transform: translate(-2px, -2px);
 	}
 
 	.topic-meta {

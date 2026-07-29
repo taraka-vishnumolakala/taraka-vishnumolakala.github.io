@@ -454,15 +454,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		font-size: var(--font-size-page-title);
 	}
 
-	.hero .eyebrow::before,
-	.experience-section .eyebrow::before,
-	.approach-section .eyebrow::before,
-	.connect-section .eyebrow::before {
-		width: 2rem;
-		height: 3px;
-		clip-path: polygon(0 38%, 100% 0, 88% 100%, 0 68%);
-	}
-
 	.hero-lede {
 		max-width: 700px;
 		margin: 0 0 1.3rem;
@@ -504,30 +495,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.75rem;
-	}
-
-	.hero-actions .button {
-		border-width: 2px;
-	}
-
-	.hero-actions .button-primary {
-		box-shadow:
-			3px 3px 0 var(--text-faint),
-			0 8px 18px rgb(0 0 0 / 12%);
-	}
-
-	.hero-actions .button-secondary {
-		border-color: var(--text-muted);
-		box-shadow: 3px 3px 0 var(--accent-soft);
-	}
-
-	.hero-actions .button:hover {
-		transform: translate(-1px, -2px);
-	}
-
-	.hero-actions .button:active {
-		box-shadow: none;
-		transform: translate(2px, 2px);
 	}
 
 	.profile-card {
@@ -641,12 +608,8 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		right: 0.85rem;
 		width: 3rem;
 		height: 3rem;
-		background-image: radial-gradient(
-			circle,
-			var(--text-faint) 0 0.75px,
-			transparent 1px
-		);
-		background-size: 6px 6px;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
 		clip-path: polygon(36% 0, 100% 0, 100% 64%);
 		opacity: 0.18;
 		pointer-events: none;
@@ -896,9 +859,9 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 	.background-card {
 		padding: clamp(1.75rem, 3vw, 2.4rem);
 		border: 1px solid var(--text-faint);
-		border-radius: 7px;
+		border-radius: var(--panel-radius);
 		background: rgba(255, 255, 255, 0.82);
-		box-shadow: 4px 4px 0 var(--accent-faint);
+		box-shadow: var(--ink-shadow-flat);
 	}
 
 	.background-card-header {

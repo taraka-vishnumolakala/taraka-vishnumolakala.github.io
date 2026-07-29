@@ -177,10 +177,11 @@ for (const heading of headings) {
 	.page-toc a::before {
 		content: "";
 		width: 8px;
-		height: 1px;
+		height: 2px;
 		margin-top: 0.55rem;
 		flex-shrink: 0;
 		background: var(--border);
+		clip-path: polygon(0 35%, 100% 0, 90% 100%, 0 72%);
 		transition:
 			width 0.15s ease,
 			background 0.15s ease;
@@ -231,9 +232,10 @@ for (const heading of headings) {
 			width: auto;
 			max-height: none;
 			padding: 0.85rem 1rem;
-			border: 1px solid var(--border);
-			border-radius: 8px;
+			border: 1px solid var(--text-faint);
+			border-radius: var(--panel-radius);
 			background: var(--accent-faint);
+			box-shadow: var(--ink-shadow-flat);
 			overflow: visible;
 		}
 

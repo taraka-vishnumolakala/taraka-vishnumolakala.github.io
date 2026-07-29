@@ -113,7 +113,8 @@ const markdownPath = contentMatch
 
 	.brand:hover .brand-mark {
 		background: var(--accent-strong);
-		transform: translateY(-1px);
+		box-shadow: 3px 3px 0 var(--text-faint);
+		transform: translate(-1px, -1px);
 	}
 
 	.brand-mark {
@@ -121,8 +122,10 @@ const markdownPath = contentMatch
 		height: 36px;
 		display: inline-grid;
 		place-items: center;
-		border-radius: 5px;
+		border: 1px solid var(--heading);
+		border-radius: 4px;
 		background: var(--heading);
+		box-shadow: 2px 2px 0 var(--text-faint);
 		color: #fff;
 		font-family: var(--font-mono);
 		font-size: 0.72rem;
@@ -130,6 +133,7 @@ const markdownPath = contentMatch
 		letter-spacing: 0.06em;
 		transition:
 			background 0.18s ease,
+			box-shadow 0.18s ease,
 			transform 0.18s ease;
 	}
 
@@ -176,8 +180,9 @@ const markdownPath = contentMatch
 		right: 0.75rem;
 		bottom: 0.25rem;
 		left: 0.75rem;
-		height: 1px;
+		height: 2px;
 		background: var(--accent);
+		clip-path: polygon(0 35%, 100% 0, 91% 100%, 4% 70%);
 		transform: scaleX(0);
 		transform-origin: left;
 		transition: transform 0.18s ease;
@@ -200,9 +205,10 @@ const markdownPath = contentMatch
 		display: none;
 		flex-shrink: 0;
 		padding: 0;
-		border: 1px solid var(--border);
-		border-radius: 6px;
+		border: 2px solid var(--text-muted);
+		border-radius: var(--panel-radius);
 		background: rgba(255, 255, 255, 0.55);
+		box-shadow: var(--ink-shadow-control);
 		color: var(--heading);
 		cursor: pointer;
 	}

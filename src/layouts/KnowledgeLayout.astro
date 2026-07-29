@@ -158,9 +158,30 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 	}
 
 	.knowledge-header {
+		position: relative;
 		margin-bottom: 3rem;
 		padding-bottom: 2.5rem;
 		border-bottom: 1px solid var(--border);
+		overflow: hidden;
+	}
+
+	.knowledge-header::after {
+		content: "";
+		position: absolute;
+		top: 2rem;
+		right: 0;
+		width: 5rem;
+		height: 5rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(48% 0, 100% 0, 100% 72%);
+		opacity: 0.44;
+		pointer-events: none;
+	}
+
+	.knowledge-header > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.breadcrumb {
@@ -268,6 +289,12 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 
 		.knowledge-dek {
 			font-size: 1rem;
+		}
+
+		.knowledge-header::after {
+			width: 3.75rem;
+			height: 3.75rem;
+			opacity: 0.32;
 		}
 	}
 </style>

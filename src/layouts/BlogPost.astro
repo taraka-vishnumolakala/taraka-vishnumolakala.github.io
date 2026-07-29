@@ -160,9 +160,12 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 	.hero-image img {
 		display: block;
 		margin: 0 auto;
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		box-shadow: var(--box-shadow-soft);
+		border: 2px solid var(--heading);
+		border-radius: var(--panel-radius);
+		box-shadow:
+			3px 3px 0 var(--bg-card),
+			5px 5px 0 var(--heading),
+			var(--box-shadow-soft);
 	}
 
 	.layout {
@@ -184,7 +187,28 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 	}
 
 	.post-header {
+		position: relative;
 		margin-bottom: 3rem;
+		overflow: hidden;
+	}
+
+	.post-header::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 5rem;
+		height: 5rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(48% 0, 100% 0, 100% 72%);
+		opacity: 0.42;
+		pointer-events: none;
+	}
+
+	.post-header > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.breadcrumb {
@@ -262,9 +286,10 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 		align-items: end;
 		justify-content: space-between;
 		gap: 2rem;
-		border: 1px solid var(--border);
-		border-radius: 10px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
 		background: var(--accent-faint);
+		box-shadow: var(--ink-shadow-flat);
 	}
 
 	.article-footer > div:first-child {
@@ -341,6 +366,12 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 
 		.article-footer-links {
 			align-items: flex-start;
+		}
+
+		.post-header::after {
+			width: 3.75rem;
+			height: 3.75rem;
+			opacity: 0.3;
 		}
 	}
 </style>

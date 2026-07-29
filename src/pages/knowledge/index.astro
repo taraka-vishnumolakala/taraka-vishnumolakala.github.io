@@ -145,9 +145,11 @@ const groups = groupKnowledgeNotes(notes);
 	.domain-grid {
 		border-top: 1px solid var(--border);
 		border-left: 1px solid var(--border);
+		box-shadow: var(--ink-shadow-flat);
 	}
 
 	.domain-card {
+		position: relative;
 		min-height: 260px;
 		display: flex;
 		flex-direction: column;
@@ -155,6 +157,26 @@ const groups = groupKnowledgeNotes(notes);
 		border-right: 1px solid var(--border);
 		border-bottom: 1px solid var(--border);
 		background: rgba(255, 255, 255, 0.52);
+		overflow: hidden;
+	}
+
+	.domain-card::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 4rem;
+		height: 4rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(42% 0, 100% 0, 100% 62%);
+		opacity: 0.36;
+		pointer-events: none;
+	}
+
+	.domain-card > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.domain-meta {

@@ -39,19 +39,41 @@ const date = note.data.updatedDate ?? note.data.pubDate;
 
 <style>
 	.knowledge-card {
+		position: relative;
 		min-height: 280px;
 		display: flex;
 		flex-direction: column;
 		padding: clamp(1.5rem, 3vw, 2.25rem);
-		border: 1px solid var(--border);
-		border-radius: 10px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
 		background: rgba(255, 255, 255, 0.72);
+		box-shadow: var(--ink-shadow-flat);
+		overflow: hidden;
+	}
+
+	.knowledge-card::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 4rem;
+		height: 4rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(42% 0, 100% 0, 100% 68%);
+		opacity: 0.42;
+		pointer-events: none;
+	}
+
+	.knowledge-card > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.knowledge-card:hover {
 		background: var(--bg-card);
-		box-shadow: var(--box-shadow-soft);
-		transform: translateY(-3px);
+		box-shadow: var(--ink-shadow-raised);
+		transform: translate(-2px, -2px);
 	}
 
 	.card-meta {

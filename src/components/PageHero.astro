@@ -42,9 +42,30 @@ const {
 
 <style>
 	.page-hero {
+		position: relative;
 		display: grid;
 		align-items: end;
 		border-bottom: 1px solid var(--border);
+		overflow: hidden;
+	}
+
+	.page-hero::after {
+		content: "";
+		position: absolute;
+		top: 0.25rem;
+		right: 0;
+		width: 5.5rem;
+		height: 5.5rem;
+		background-image: var(--halftone-pattern);
+		background-size: var(--halftone-size);
+		clip-path: polygon(40% 0, 100% 0, 100% 68%);
+		opacity: 0.55;
+		pointer-events: none;
+	}
+
+	.page-hero > * {
+		position: relative;
+		z-index: 1;
 	}
 
 	.page-hero--writing {
@@ -140,6 +161,12 @@ const {
 		.page-hero--writing {
 			grid-template-columns: 1fr;
 			padding-bottom: 3rem;
+		}
+
+		.page-hero::after {
+			width: 4rem;
+			height: 4rem;
+			opacity: 0.4;
 		}
 	}
 </style>

@@ -17,8 +17,9 @@ const { title, open = false } = Astro.props;
 <style>
 	.collapsible {
 		background-color: var(--accent-faint);
-		border: 1px solid var(--border);
-		border-radius: 10px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
+		box-shadow: var(--ink-shadow-flat);
 		margin: 2em 0;
 		overflow: hidden;
 	}

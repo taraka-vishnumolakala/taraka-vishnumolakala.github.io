@@ -159,14 +159,16 @@ const hasMarkdown = Boolean(markdownPath);
 		gap: 0.45rem;
 		padding: 0.55rem 0.75rem;
 		background: rgba(255, 255, 255, 0.92);
-		border: 1px solid var(--border);
-		border-radius: 6px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
 		color: var(--text-secondary);
 		font-size: 0.76rem;
 		font-weight: 600;
 		font-family: inherit;
 		cursor: pointer;
-		box-shadow: var(--box-shadow-soft);
+		box-shadow:
+			var(--ink-shadow-control),
+			var(--box-shadow-soft);
 		backdrop-filter: blur(12px);
 		transition:
 			border-color 0.15s ease,
@@ -207,9 +209,11 @@ const hasMarkdown = Boolean(markdownPath);
 		min-width: 300px;
 		max-width: calc(100vw - 2rem);
 		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		box-shadow: var(--box-shadow);
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
+		box-shadow:
+			var(--ink-shadow-flat),
+			var(--box-shadow);
 		padding: 0.5rem;
 		display: flex;
 		flex-direction: column;

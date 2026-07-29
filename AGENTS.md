@@ -148,10 +148,44 @@ Rules:
   decorative section simply to make a page feel more lively.
 - Prefer hierarchy created by spacing, typography, border weight, fill density,
   and line style.
-- Keep shadows soft and uncommon. Reuse `--box-shadow` or
-  `--box-shadow-soft`.
+- Keep photographic depth shadows soft and uncommon. Reuse `--box-shadow` or
+  `--box-shadow-soft`. Use the flat ink-shadow tokens described below for
+  manga-inspired panel depth.
 - Monochrome gradients are acceptable when they remain subtle and already fit
   the site. Avoid glossy, neon, or high-saturation effects.
+
+### Subtle manga-inspired visual language
+
+The entire site uses restrained manga-inspired graphic cues. This is a
+professional security portfolio with subtle visual references, not an
+anime-themed interface.
+
+- Reuse `--panel-radius`, `--ink-shadow-flat`, `--ink-shadow-control`,
+  `--ink-shadow-raised`, `--halftone-pattern`, and `--halftone-size` from
+  `src/styles/global.css`.
+- Use confident one- or two-pixel outlines, small two- to four-pixel flat
+  offset shadows, clipped halftone corners, and occasional angled line endings.
+- Apply these cues to focal frames, page headers, cards, buttons, menus,
+  callouts, code blocks, tables, and interactive shells. Keep long-form prose
+  backgrounds clean.
+- Use no more than two manga-inspired cues on one component. For example, pair
+  an ink outline with a flat shadow, or pair a halftone corner with an angled
+  rule.
+- Keep halftone fields small, faint, monochrome, and away from text. Decorative
+  pseudo-elements must use `pointer-events: none` and must not affect the
+  accessible name or reading order.
+- Prefer slightly imperfect geometry through clipped corners, angled rules, or
+  one-degree transforms. Do not distort text, controls, diagrams, or content
+  containers.
+- Do not introduce speech bubbles, character art, large speed-line fields,
+  comic sound effects, bright cel-shading colors, or exaggerated animation
+  unless the user explicitly requests a stronger thematic direction.
+- Preserve IBM Plex Sans for the interface and the existing monospace stack for
+  code, metadata, and technical labels.
+- When updating an existing component, use the shared tokens instead of
+  reproducing raw shadow, radius, or halftone values locally.
+- On narrow screens, reduce or remove decorative overhangs before allowing
+  horizontal overflow or overlap.
 
 ### Illustration-only color
 

@@ -1117,10 +1117,10 @@ const captions: Record<MathLabMode, string> = {
 <style>
 	.math-lab {
 		margin: 2.5rem 0;
-		border: 1px solid var(--border);
-		border-radius: 12px;
+		border: 1px solid var(--text-faint);
+		border-radius: var(--panel-radius);
 		background: var(--bg-card);
-		box-shadow: var(--box-shadow-soft);
+		box-shadow: var(--ink-shadow-raised);
 		overflow: hidden;
 	}
 
@@ -1165,7 +1165,7 @@ const captions: Record<MathLabMode, string> = {
 		display: block;
 		width: 100%;
 		height: 340px;
-		border: 1px solid var(--border);
+		border: 1px solid var(--text-faint);
 		background: #fff;
 	}
 
@@ -1223,7 +1223,7 @@ const captions: Record<MathLabMode, string> = {
 	.metric-grid > div {
 		padding: 0.8rem;
 		border: 1px solid var(--border);
-		border-radius: 6px;
+		border-radius: 5px;
 		background: #fff;
 	}
 
@@ -1270,6 +1270,7 @@ const captions: Record<MathLabMode, string> = {
 		border: 1px solid var(--heading);
 		border-radius: 5px;
 		background: var(--heading);
+		box-shadow: 2px 2px 0 var(--text-faint);
 		color: #fff;
 		font-family: var(--font-mono);
 		font-size: 0.62rem;
@@ -1280,13 +1281,20 @@ const captions: Record<MathLabMode, string> = {
 
 	.button-group button:hover,
 	.preset-group button:hover {
-		transform: translateY(-1px);
+		transform: translate(-1px, -1px);
+	}
+
+	.button-group button:active,
+	.preset-group button:active {
+		box-shadow: none;
+		transform: translate(1px, 1px);
 	}
 
 	.button-group .quiet-button,
 	.preset-group button {
 		border-color: var(--border);
 		background: #fff;
+		box-shadow: 2px 2px 0 var(--accent-soft);
 		color: var(--heading);
 	}
 

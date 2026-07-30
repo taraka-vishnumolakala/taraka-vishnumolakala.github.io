@@ -180,8 +180,12 @@ anime-themed interface.
 - Do not introduce speech bubbles, character art, large speed-line fields,
   comic sound effects, bright cel-shading colors, or exaggerated animation
   unless the user explicitly requests a stronger thematic direction.
-- Preserve IBM Plex Sans for the interface and the existing monospace stack for
-  code, metadata, and technical labels.
+- Preserve Albert Sans for the interface and Geist Mono for code, metadata, and
+  technical labels. Keep the system monospace stack as a fallback.
+- Use the variable font-weight tokens from `src/styles/global.css`: `450` for
+  regular interface text, `440` for long-form prose, and `450` for regular
+  monospace text. Reserve `500` for controls and labels and `600` for headings
+  and strong emphasis instead of making all text uniformly bold.
 - When updating an existing component, use the shared tokens instead of
   reproducing raw shadow, radius, or halftone values locally.
 - On narrow screens, reduce or remove decorative overhangs before allowing

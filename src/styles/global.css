@@ -1,7 +1,10 @@
 :root {
-	--font-sans: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--font-sans: "Albert Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--font-display: var(--font-sans);
-	--font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+	--font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+	--font-weight-body: 450;
+	--font-weight-prose: 440;
+	--font-weight-mono: 450;
 
 	--bg: #ffffff;
 	--bg-subtle: #ededed;
@@ -59,6 +62,7 @@ html {
 body {
 	position: relative;
 	font-family: var(--font-sans);
+	font-weight: var(--font-weight-body);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	margin: 0;
@@ -339,6 +343,7 @@ mark {
 	min-width: 0;
 	color: var(--text);
 	font-size: var(--font-size-article-body);
+	font-weight: var(--font-weight-prose);
 	line-height: 1.78;
 }
 
@@ -397,6 +402,7 @@ mark {
 .prose code {
 	font-family: var(--font-mono);
 	font-size: 0.86em;
+	font-weight: var(--font-weight-mono);
 	padding: 0.16em 0.38em;
 	border: 1px solid var(--bg-code-border);
 	border-radius: 4px;
@@ -418,6 +424,7 @@ mark {
 	all: unset;
 	font-family: var(--font-mono);
 	font-size: 0.84em;
+	font-weight: var(--font-weight-mono);
 	line-height: 1.65;
 	color: inherit;
 }

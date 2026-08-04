@@ -8,9 +8,10 @@ type Props = {
 	title: string;
 	description: string;
 	image?: ImageMetadata | string;
+	showPageActions?: boolean;
 };
 
-const { title, description, image } = Astro.props;
+const { title, description, image, showPageActions = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -21,7 +22,7 @@ const { title, description, image } = Astro.props;
 	</head>
 	<body>
 		<slot name="before-header" />
-		<Header />
+		<Header showPageActions={showPageActions} />
 		<slot />
 		<Footer />
 		<slot name="body-end" />

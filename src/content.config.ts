@@ -21,6 +21,8 @@ const blog = defineCollection({
 			heroImage: image().optional(),
 			coverImage: image().optional(),
 			coverAlt: z.string().optional(),
+			presentation: z.boolean().default(false),
+			showPageActions: z.boolean().default(true),
 			tags: z.array(z.enum(BLOG_TAGS)).optional(),
 			series: z.string().optional(),
 		}),

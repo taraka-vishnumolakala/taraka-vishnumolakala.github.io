@@ -3,6 +3,11 @@ import HeaderLink from './HeaderLink.astro';
 import PageActions from './PageActions.astro';
 import { SITE_TITLE } from '../consts';
 
+type Props = {
+	showPageActions?: boolean;
+};
+
+const { showPageActions = true } = Astro.props;
 const pathname = Astro.url.pathname.replace(/\/$/, '');
 const contentMatch = pathname.match(/^\/(blog|knowledge)\/(.+)$/);
 const markdownPath = contentMatch
@@ -45,7 +50,7 @@ const markdownPath = contentMatch
 		</div>
 	</nav>
 </header>
-{markdownPath && <PageActions markdownPath={markdownPath} />}
+{showPageActions && markdownPath && <PageActions markdownPath={markdownPath} />}
 
 <script>
 	const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');

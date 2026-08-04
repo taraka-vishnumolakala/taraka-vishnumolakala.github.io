@@ -15,11 +15,19 @@ const { post, variant, index = 0 } = Astro.props;
 const href = `/blog/${post.id}/`;
 const coverImage = post.data.coverImage ?? fallbackCover;
 const coverAlt = post.data.coverAlt ?? '';
+const isWideCover = typeof coverImage === 'object'
+	&& 'width' in coverImage
+	&& 'height' in coverImage
+	&& coverImage.width / coverImage.height >= 2.5;
 ---
 
 {
 	variant === 'featured' && (
-		<article class="featured-card">
+		<article
+			class="featured-card"
+			data-wide-cover={isWideCover ? 'true' : undefined}
+			style={isWideCover ? 'grid-template-columns: 1fr;' : undefined}
+		>
 			<a
 				class="featured-visual"
 				href={href}
@@ -99,9 +107,7 @@ const coverAlt = post.data.coverAlt ?? '';
 		min-height: 450px;
 		padding: clamp(1.5rem, 4vw, 3rem);
 		border-right: 1px solid var(--border);
-		background:
-			radial-gradient(circle at 70% 25%, rgba(17, 17, 17, 0.12), transparent 18rem),
-			var(--accent-faint);
+		background: var(--bg-card);
 		overflow: hidden;
 	}
 
@@ -134,6 +140,17 @@ const coverAlt = post.data.coverAlt ?? '';
 
 	.featured-visual:hover img {
 		transform: translateY(-4px) rotate(-0.35deg);
+	}
+
+	.featured-card[data-wide-cover="true"] {
+		grid-template-columns: 1fr;
+	}
+
+	.featured-card[data-wide-cover="true"] .featured-visual {
+		min-height: 0;
+		padding: clamp(2rem, 4vw, 3rem);
+		border-right: 0;
+		border-bottom: 1px solid var(--border);
 	}
 
 	.featured-copy {

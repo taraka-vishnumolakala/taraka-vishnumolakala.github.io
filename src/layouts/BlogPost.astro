@@ -22,14 +22,21 @@ const {
 	author,
 	tags,
 	series,
+	presentation = false,
+	showPageActions = true,
 	headings = [],
 	readingTime,
 } = Astro.props;
 
-const hasToc = headings.some((heading) => heading.depth === 2);
+const hasToc = !presentation && headings.some((heading) => heading.depth === 2);
 ---
 
-<SiteLayout title={title} description={description} image={heroImage}>
+<SiteLayout
+	title={title}
+	description={description}
+	image={heroImage}
+	showPageActions={showPageActions}
+>
 	<link
 		slot="head"
 		rel="alternate"
@@ -46,7 +53,7 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 						<Image width={1100} height={550} src={heroImage} alt="" />
 					</div>
 				)}
-				<div class={`layout ${hasToc ? '' : 'no-toc'}`}>
+				<div class={`layout ${hasToc ? '' : 'no-toc'} ${presentation ? 'presentation-layout' : ''}`}>
 					{hasToc && (
 						<PageTableOfContents headings={headings} />
 					)}
@@ -178,6 +185,26 @@ const hasToc = headings.some((heading) => heading.depth === 2);
 	.layout.no-toc {
 		grid-template-columns: minmax(0, 900px);
 		justify-content: center;
+	}
+
+	.layout.presentation-layout {
+		grid-template-columns: minmax(0, 1fr);
+		justify-content: stretch;
+	}
+
+	.presentation-layout .prose {
+		width: 100%;
+		max-width: none;
+	}
+
+	.presentation-layout .post-header,
+	.presentation-layout .article-footer,
+	.presentation-layout .prose > :global(p),
+	.presentation-layout .prose > :global(h2),
+	.presentation-layout .prose > :global(ul) {
+		width: min(100%, 900px);
+		margin-right: auto;
+		margin-left: auto;
 	}
 
 	.prose :global(h2),

@@ -1,0 +1,32 @@
+---
+title: "Securing Agentic Architecture: Risks and Potential Mitigations"
+description: "An evidence-based Reveal.js field guide to 53 agentic architecture risks, their credible impacts, synthesized baseline severities, and enforceable mitigations."
+pubDate: 2026-08-01
+series: "Agentic Security Architecture"
+tags:
+  - agent-and-ml-security
+  - agent-identity
+  - model-lifecycle-controls
+  - system-design
+  - secure-integration
+---
+
+This interactive field guide maps nine agentic trust-boundary families to 53 concrete child risks. Move horizontally between families and vertically through the risks inside each family. Every risk includes a plain-language failure path, credible impacts, architecture-level mitigations, a severity rationale, and hyperlinks to the original evidence.
+
+> Interactive Reveal.js presentation: browse all nine risk families and 53 child risks at /blog/securing-agentic-architecture/.
+
+
+## Reading the evidence
+
+The two primary sources were reviewed completely: Anthropic's [*Zero Trust for AI Agents*](https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/6a1611a04085d7cd3dadc924_Claude-eBook-Zero-Trust-for-AI-Agents-05182026.pdf) and OWASP's [*Agentic AI: Threats and Mitigations, Version 1.1*](https://genai.owasp.org/download/45674/?tmstv=1739819891). All 37 unique external destinations embedded in the Anthropic PDF were reviewed one hop deep when accessible. External links in the OWASP PDF were not opened.
+
+The Critical, High, Medium, and Low labels are synthesized architectural baselines for review. They are not severity ratings published by Anthropic or OWASP. A local assessment should consider autonomy, data sensitivity, production access, execution capability, internet exposure, propagation, reversibility, approval design, response capability, and blast radius.
+
+## What to take into an architecture review
+
+- Treat prompts, retrieved content, memory, peer messages, and tool metadata as influence—not as enforceable authorization.
+- Give each agent a unique workload identity and less authority than its general capability could use.
+- Authorize complete dataflows and action chains, not merely one tool call at a time.
+- Design traceability, granular revocation, containment, and trusted restoration before granting production autonomy.
+
+Research completed August 1, 2026. Web destinations and product documentation may change after that date.

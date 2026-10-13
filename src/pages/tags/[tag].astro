@@ -3,10 +3,12 @@ import PageHero from '../../components/PageHero.astro';
 import PostCard from '../../components/PostCard.astro';
 import { SITE_TITLE } from '../../consts';
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import { BLOG_TAGS } from '../../content/taxonomy';
 import {
 	addReadingTime,
 	formatTag,
 	getBlogEntries,
+	getTagDescription,
 	type BlogEntry,
 } from '../../lib/blog';
 
@@ -17,9 +19,7 @@ type Props = {
 
 export async function getStaticPaths() {
 	const posts = await getBlogEntries();
-	const tags = new Set(posts.flatMap((post) => post.data.tags ?? []));
-
-	return [...tags].map((tag) => ({
+	return BLOG_TAGS.map((tag) => ({
 		params: { tag },
 		props: {
 			tag,
@@ -35,24 +35,32 @@ const displayTag = formatTag(tag);
 
 <SiteLayout
 	title={`${displayTag} — ${SITE_TITLE}`}
-	description={`Security research and writing about ${displayTag}`}
+	description={getTagDescription(tag)}
 >
 	<main>
 		<PageHero
 			variant="tag"
-			eyebrow="Tag index"
+			eyebrow="Article tag"
 			title={displayTag}
-			summary={`Research, field notes, and practical security guidance tagged ${displayTag}.`}
+			summary={getTagDescription(tag)}
 			meta={`${String(posts.length).padStart(2, '0')} ${posts.length === 1 ? 'article' : 'articles'}`}
-			backHref="/tags"
+			backHref="/tags/"
 			backLabel="All tags"
 		/>
 
-		<section class="post-list" aria-label={`Articles about ${displayTag}`}>
-			{enrichedPosts.map((post, index) => (
-				<PostCard post={post} variant="list" index={index} />
-			))}
-		</section>
+		{enrichedPosts.length > 0 ? (
+			<section class="post-list" aria-label={`Articles about ${displayTag}`}>
+				{enrichedPosts.map((post, index) => (
+					<PostCard post={post} variant="list" index={index} />
+				))}
+			</section>
+		) : (
+			<div class="empty">
+				<h2>Articles coming soon.</h2>
+				<p>No articles have been published in this topic yet.</p>
+				<a href="/blog/">Browse all articles <span aria-hidden="true">→</span></a>
+			</div>
+		)}
 	</main>
 </SiteLayout>
 
@@ -66,6 +74,29 @@ const displayTag = formatTag(tag);
 	.post-list {
 		margin-top: 4rem;
 		border-top: 1px solid var(--border);
+	}
+
+	.empty {
+		margin-top: 3rem;
+		padding: clamp(1.5rem, 4vw, 3rem);
+		border: 1px solid var(--border);
+		border-radius: var(--panel-radius);
+		background: var(--bg-card);
+		box-shadow: var(--ink-shadow-flat);
+	}
+
+	.empty h2 {
+		margin-bottom: 0.75rem;
+		font-size: var(--font-size-card-title);
+	}
+
+	.empty p {
+		color: var(--text-secondary);
+	}
+
+	.empty a {
+		color: var(--heading);
+		font-weight: 500;
 	}
 
 	@media (max-width: 760px) {

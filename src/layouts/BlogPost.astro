@@ -5,6 +5,7 @@ import type { MarkdownHeading } from 'astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import PageTableOfContents from '../components/PageTableOfContents.astro';
 import SiteLayout from './SiteLayout.astro';
+import { formatTag } from '../lib/blog';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
@@ -36,6 +37,7 @@ const hasToc = !presentation && headings.some((heading) => heading.depth === 2);
 	description={description}
 	image={heroImage}
 	showPageActions={showPageActions}
+	activeTopic={tags?.[0]}
 >
 	<link
 		slot="head"
@@ -60,11 +62,11 @@ const hasToc = !presentation && headings.some((heading) => heading.depth === 2);
 					<div class="prose">
 						<header class="post-header">
 							<p class="breadcrumb">
-								<a href="/blog">Writing</a>
+								<a href="/blog/">Articles</a>
 								{tags?.[0] && (
 									<>
 										<span aria-hidden="true">/</span>
-										<a href={`/tags/${tags[0]}/`}>{tags[0]}</a>
+										<a href={`/tags/${tags[0]}/`}>{formatTag(tags[0])}</a>
 									</>
 								)}
 							</p>
@@ -103,8 +105,8 @@ const hasToc = !presentation && headings.some((heading) => heading.depth === 2);
 								<strong>Continue exploring the field notes.</strong>
 							</div>
 							<div class="article-footer-links">
-								<a href="/blog">All writing <span aria-hidden="true">→</span></a>
-								<a href="/tags">Browse tags <span aria-hidden="true">→</span></a>
+								<a href="/blog/">All articles <span aria-hidden="true">→</span></a>
+								<a href="/tags/">Browse tags <span aria-hidden="true">→</span></a>
 							</div>
 						</footer>
 					</div>

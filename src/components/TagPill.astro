@@ -1,4 +1,6 @@
 ---
+import { formatTag } from '../lib/blog';
+
 type Props = {
 	tag: string;
 };
@@ -6,9 +8,13 @@ type Props = {
 const { tag } = Astro.props;
 ---
 
-<a class="tag" href={`/tags/${tag}/`}>{tag}</a>
+<a class="tag" href={`/tags/${tag}/`}>{formatTag(tag)}</a>
 
 <style>
+	.tag {
+		line-height: 1.4;
+	}
+
 	.tag:hover {
 		border-color: var(--accent);
 		color: var(--accent-strong);

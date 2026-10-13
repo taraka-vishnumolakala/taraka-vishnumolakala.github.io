@@ -1,38 +1,27 @@
 ---
 import PageHero from '../../components/PageHero.astro';
 import PostCard from '../../components/PostCard.astro';
-import TagPill from '../../components/TagPill.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { getBlogPosts, getTags } from '../../lib/blog';
+import { getBlogPosts } from '../../lib/blog';
 
 const posts = await getBlogPosts();
 const featured = posts[0];
 const remaining = posts.slice(1);
-const tags = getTags(posts);
 ---
 
 <SiteLayout
-	title={`Writing — ${SITE_TITLE}`}
+	title={`Articles — ${SITE_TITLE}`}
 	description={SITE_DESCRIPTION}
 >
 	<main>
 		<PageHero
 			variant="writing"
 			eyebrow="Research & field notes"
-			title="Writing"
-			summary="Technical analysis across application and API security, cloud security, ML and agentic security, threat modeling, and defensive engineering."
+			title="Articles"
+			summary="Articles on ML engineering, web application security, security architecture and system design, and agent and ML security."
 			meta={`${String(posts.length).padStart(2, '0')} published ${posts.length === 1 ? 'article' : 'articles'}`}
 		/>
-
-		{tags.length > 0 && (
-			<nav class="topic-nav" aria-label="Filter writing by tag">
-				<span>Browse by tag</span>
-				<div>
-					{tags.map((tag) => <TagPill tag={tag} />)}
-				</div>
-			</nav>
-		)}
 
 		{featured ? (
 			<section class="featured-section" aria-labelledby="featured-heading">
@@ -40,13 +29,13 @@ const tags = getTags(posts);
 				<PostCard post={featured} variant="featured" />
 			</section>
 		) : (
-			<div class="empty">No published writing yet.</div>
+			<div class="empty">No articles have been published yet.</div>
 		)}
 
 		{remaining.length > 0 && (
 			<section class="archive-section" aria-labelledby="archive-heading">
 				<div class="archive-heading">
-					<p class="section-label" id="archive-heading">More writing</p>
+					<p class="section-label" id="archive-heading">More articles</p>
 					<span>{remaining.length} {remaining.length === 1 ? 'article' : 'articles'}</span>
 				</div>
 				<div class="post-grid">
@@ -61,29 +50,6 @@ const tags = getTags(posts);
 	main {
 		padding-top: 5.5rem;
 		padding-bottom: 7rem;
-	}
-
-	.topic-nav {
-		display: flex;
-		align-items: center;
-		gap: 1.5rem;
-		padding: 1.35rem 0;
-		border-bottom: 1px solid var(--border);
-	}
-
-	.topic-nav > span {
-		flex-shrink: 0;
-		color: var(--text-faint);
-		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.topic-nav > div {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
 	}
 
 	.featured-section {
@@ -135,11 +101,6 @@ const tags = getTags(posts);
 		main {
 			padding-top: 4rem;
 			padding-bottom: 5rem;
-		}
-
-		.topic-nav {
-			align-items: flex-start;
-			flex-direction: column;
 		}
 
 		.featured-section {

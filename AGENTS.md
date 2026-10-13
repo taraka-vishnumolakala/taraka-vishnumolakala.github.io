@@ -420,6 +420,9 @@ still teaches the concept.
 - Keep unrelated user changes intact.
 - Do not create commits, branches, pull requests, or deployments unless the
   user asks.
+- When the user requests a branch, use a descriptive name without a `codex/`
+  prefix.
+- Never include a `Co-authored-by` trailer in commit messages.
 - After a content or component change, run:
 
 ```sh

@@ -10,25 +10,21 @@ const tags = getTagCounts(await getBlogEntries());
 
 <SiteLayout
 	title={`Tags — ${SITE_TITLE}`}
-	description="Browse security research and writing by tag"
+	description="Articles on ML engineering, web application security, security architecture and system design, and agent and ML security."
 >
 	<main>
 		<PageHero
 			variant="tags"
 			eyebrow="Research index"
 			title="Tags"
-			summary="Browse writing by focus area, security practice, and system concern."
+			summary="Four areas of writing: ML engineering, web application security, security architecture and system design, and agent and ML security."
 		/>
 
-		{tags.length === 0 ? (
-			<p class="empty">No tags have been published yet.</p>
-		) : (
-			<section class="topic-grid" aria-label="Writing tags">
-				{tags.map(([tag, count], index) => (
-					<TagCard tag={tag} count={count} index={index} />
-				))}
-			</section>
-		)}
+			<section class="topic-grid" aria-label="Article tags">
+			{tags.map(([tag, count], index) => (
+				<TagCard tag={tag} count={count} index={index} />
+			))}
+		</section>
 	</main>
 </SiteLayout>
 
@@ -44,11 +40,6 @@ const tags = getTagCounts(await getBlogEntries());
 		margin-top: 4rem;
 		border-top: 1px solid var(--border);
 		border-left: 1px solid var(--border);
-	}
-
-	.empty {
-		margin-top: 4rem;
-		color: var(--text-muted);
 	}
 
 	@media (max-width: 760px) {

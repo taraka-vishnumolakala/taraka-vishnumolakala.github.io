@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { TAG_DESCRIPTIONS } from '../content/taxonomy';
+import { BLOG_TAGS, TAG_DESCRIPTIONS, TAG_LABELS } from '../content/taxonomy';
 import { getReadingTime } from './reading-time';
 
 export type BlogEntry = CollectionEntry<'blog'>;
@@ -30,7 +30,7 @@ export const getBlogPosts = async () =>
 	addReadingTime(await getBlogEntries());
 
 export const getTagCounts = (posts: BlogEntry[]) => {
-	const tagCounts = new Map<string, number>();
+	const tagCounts = new Map<string, number>(BLOG_TAGS.map((tag) => [tag, 0]));
 
 	for (const post of posts) {
 		for (const tag of post.data.tags ?? []) {
@@ -38,14 +38,14 @@ export const getTagCounts = (posts: BlogEntry[]) => {
 		}
 	}
 
-	return [...tagCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+	return [...tagCounts.entries()];
 };
 
 export const getTags = (posts: BlogEntry[]) =>
 	getTagCounts(posts).map(([tag]) => tag);
 
 export const formatTag = (tag: string) =>
-	tag
+	TAG_LABELS[tag as keyof typeof TAG_LABELS] ?? tag
 		.split('-')
 		.map((word, index) => {
 			const normalized = word.toLowerCase();

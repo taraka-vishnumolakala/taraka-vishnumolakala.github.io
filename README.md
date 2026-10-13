@@ -1,6 +1,6 @@
 # taraka-vishnumolakala.github.io
 
-Personal website, blog, and knowledge base built with
+Personal website and technical articles built with
 [Astro](https://astro.build).
 
 ## Development
@@ -48,16 +48,26 @@ coverImage: ./diagrams/cover.png
 coverAlt: "A concise description of the cover image"
 tags:
   - agent-and-ml-security
-  - system-design
+  - security-architecture-and-system-design
 series: "Optional series name"
 ---
 
 Write the article here.
 ```
 
-The supported tags are maintained in `src/content/taxonomy.ts`. The writing
-index, tag pages, reading time, RSS feed, Markdown endpoint, and `llms.txt`
-are generated automatically from MDX content.
+The four article tags are maintained in `src/content/taxonomy.ts`, in navigation
+order:
+
+- `ml-engineering`: ML Engineering
+- `web-application-security`: Web Application Security
+- `security-architecture-and-system-design`: Security Architecture and System Design
+- `agent-and-ml-security`: Agent and ML Security
+
+Use one or more of these IDs in `tags`. The first tag is the article's primary
+tag and is highlighted in the Articles dropdown. Tag pages exist even before
+their first article is published. The article index, tag pages, reading time,
+RSS feed, Markdown endpoint, and `llms.txt` are generated automatically from MDX
+content. Article URLs remain under `/blog/`, and tag URLs remain under `/tags/`.
 
 Shared MDX components are registered once in `src/components/mdx.ts`, so they
 can be used in a post without adding import statements. For example:
@@ -69,10 +79,18 @@ can be used in a post without adding import statements. For example:
 ```
 
 Use `heroImage` only when an image should also appear at the top of the full
-article. `coverImage` controls the writing-index card without changing the
+article. `coverImage` controls the article-index card without changing the
 article layout.
 
+The agentic architecture presentation, diagrams, React components, and research
+notes are preserved on the `agentic-architecture-draft` branch. They are
+excluded from `main` while the presentation is being improved.
+
 ## Add a Knowledge Base note
+
+The current Knowledge notes have been removed, and Knowledge is no longer in the
+main navigation. The collection and shared components remain available for
+future notes.
 
 Create a note under its learning domain:
 

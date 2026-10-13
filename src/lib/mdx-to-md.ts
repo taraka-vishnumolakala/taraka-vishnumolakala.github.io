@@ -14,8 +14,6 @@ const SELF_CLOSING_TRANSFORMS: Record<
 > = {
 	InteractiveCanvas: (attrs) =>
 		`> Interactive visualization: ${attrs.title ?? 'Concept explorer'}\n`,
-	AgenticArchitectureDeck: () =>
-		'> Interactive Reveal.js presentation: browse all nine risk families and 53 child risks at /blog/securing-agentic-architecture/.\n',
 };
 
 export function mdxBodyToMarkdown(body: string): string {
